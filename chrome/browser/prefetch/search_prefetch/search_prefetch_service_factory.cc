@@ -14,11 +14,8 @@
 // static
 SearchPrefetchService* SearchPrefetchServiceFactory::GetForProfile(
     Profile* profile) {
-  if (SearchPrefetchServiceIsEnabled()) {
-    return static_cast<SearchPrefetchService*>(
-        GetInstance()->GetServiceForBrowserContext(profile, true));
-  }
-  return nullptr;
+  return static_cast<SearchPrefetchService*>(
+      GetInstance()->GetServiceForBrowserContext(profile, true));
 }
 
 // static

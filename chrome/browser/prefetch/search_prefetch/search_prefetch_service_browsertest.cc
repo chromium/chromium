@@ -612,53 +612,19 @@ class SearchPrefetchBaseBrowserTest : public InProcessBrowserTest {
   raw_ptr<DevToolsWindow> window_ = nullptr;
 };
 
-class SearchPrefetchServiceDisabledBrowserTest
+class SearchPrefetchWithoutPrefetchingBrowserTest
     : public SearchPrefetchBaseBrowserTest {
  public:
-  SearchPrefetchServiceDisabledBrowserTest() {
-    feature_list_.InitAndDisableFeature(kSearchPrefetchService);
+  SearchPrefetchWithoutPrefetchingBrowserTest() {
+    feature_list_.InitWithFeatures({}, {kSearchPrefetchServicePrefetching});
   }
 
  private:
   base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceDisabledBrowserTest,
-                       ServiceNotCreatedWhenDisabled) {
-  EXPECT_EQ(nullptr,
-            SearchPrefetchServiceFactory::GetForProfile(browser()->profile()));
-}
-
-class SearchPrefetchServiceEnabledWithoutPrefetchingBrowserTest
-    : public SearchPrefetchBaseBrowserTest {
- public:
-  SearchPrefetchServiceEnabledWithoutPrefetchingBrowserTest() {
-    feature_list_.InitWithFeatures({kSearchPrefetchService},
-                                   {kSearchPrefetchServicePrefetching});
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(
-    SearchPrefetchServiceEnabledWithoutPrefetchingBrowserTest,
-    ServiceNotCreatedWhenIncognito) {
-  EXPECT_EQ(nullptr, SearchPrefetchServiceFactory::GetForProfile(
-                         browser()->profile()->GetPrimaryOTRProfile(
-                             /*create_if_needed=*/true)));
-}
-
-IN_PROC_BROWSER_TEST_F(
-    SearchPrefetchServiceEnabledWithoutPrefetchingBrowserTest,
-    ServiceCreatedWhenFeatureEnabled) {
-  EXPECT_NE(nullptr,
-            SearchPrefetchServiceFactory::GetForProfile(browser()->profile()));
-}
-
-IN_PROC_BROWSER_TEST_F(
-    SearchPrefetchServiceEnabledWithoutPrefetchingBrowserTest,
-    NoFetchWhenPrefetchDisabled) {
+IN_PROC_BROWSER_TEST_F(SearchPrefetchWithoutPrefetchingBrowserTest,
+                       NoFetchWhenPrefetchDisabled) {
   auto* search_prefetch_service =
       SearchPrefetchServiceFactory::GetForProfile(browser()->profile());
   EXPECT_NE(nullptr, search_prefetch_service);
@@ -684,8 +650,7 @@ class SearchPrefetchServiceEnabledBrowserTest
         {{kSearchPrefetchServicePrefetching,
           {{"max_attempts_per_caching_duration", "3"},
            {"cache_size", "1"},
-           {"device_memory_threshold_MB", "0"}}},
-         {{kSearchPrefetchService}, {}}},
+           {"device_memory_threshold_MB", "0"}}}},
         {});
   }
 
@@ -698,12 +663,6 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceEnabledBrowserTest,
   EXPECT_EQ(nullptr, SearchPrefetchServiceFactory::GetForProfile(
                          browser()->profile()->GetPrimaryOTRProfile(
                              /*create_if_needed=*/true)));
-}
-
-IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceEnabledBrowserTest,
-                       ServiceCreatedWhenFeatureEnabled) {
-  EXPECT_NE(nullptr,
-            SearchPrefetchServiceFactory::GetForProfile(browser()->profile()));
 }
 
 IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceEnabledBrowserTest,
@@ -2395,7 +2354,6 @@ class SearchPrefetchServiceBFCacheTest : public SearchPrefetchBaseBrowserTest {
   SearchPrefetchServiceBFCacheTest() {
     feature_list_.InitWithFeaturesAndParameters(
         {{kSearchPrefetchServicePrefetching, {{"cache_size", "1"}}},
-         {{kSearchPrefetchService}, {}},
          {{features::kBackForwardCache},
           {{"enable_same_site", "true"},
            {"ignore_outstanding_network_request_for_testing", "true"}}}},
@@ -2481,8 +2439,7 @@ class SearchPrefetchServiceZeroCacheTimeBrowserTest
         {{kSearchPrefetchServicePrefetching,
           {{"prefetch_caching_limit_ms", "10"},
            {"max_attempts_per_caching_duration", "3"},
-           {"device_memory_threshold_MB", "0"}}},
-         {{kSearchPrefetchService}, {}}},
+           {"device_memory_threshold_MB", "0"}}}},
         {});
 
     // Hang responses so the status will stay as InFlight until the entry is
@@ -2557,8 +2514,7 @@ class SearchPrefetchServiceZeroErrorTimeBrowserTest
     feature_list_.InitWithFeaturesAndParameters(
         {{kSearchPrefetchServicePrefetching,
           {{"error_backoff_duration_ms", "10"},
-           {"device_memory_threshold_MB", "0"}}},
-         {{kSearchPrefetchService}, {}}},
+           {"device_memory_threshold_MB", "0"}}}},
         {});
   }
 
@@ -2600,8 +2556,7 @@ class SearchPrefetchServiceLowMemoryDeviceBrowserTest
   SearchPrefetchServiceLowMemoryDeviceBrowserTest() {
     feature_list_.InitWithFeaturesAndParameters(
         {{kSearchPrefetchServicePrefetching,
-          {{"device_memory_threshold_MB", "2000000000"}}},
-         {{kSearchPrefetchService}, {}}},
+          {{"device_memory_threshold_MB", "2000000000"}}}},
         {});
   }
 

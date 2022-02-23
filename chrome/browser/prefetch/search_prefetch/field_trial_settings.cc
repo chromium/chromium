@@ -10,29 +10,10 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/system/sys_info.h"
 
-// Enables the feature completely with a few skipped checks to make local
-// testing easier.
-const char kSearchPrefetchServiceCommandLineFlag[] =
-    "enable-search-prefetch-service";
-
-const base::Feature kSearchPrefetchService{"SearchPrefetchService",
-                                           base::FEATURE_ENABLED_BY_DEFAULT};
-
 const base::Feature kSearchPrefetchServicePrefetching{
     "SearchPrefetchServicePrefetching", base::FEATURE_ENABLED_BY_DEFAULT};
 
-bool SearchPrefetchServiceIsEnabled() {
-  return base::CommandLine::ForCurrentProcess()->HasSwitch(
-             kSearchPrefetchServiceCommandLineFlag) ||
-         base::FeatureList::IsEnabled(kSearchPrefetchService);
-}
-
 bool SearchPrefetchServicePrefetchingIsEnabled() {
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          kSearchPrefetchServiceCommandLineFlag)) {
-    return true;
-  }
-
   if (!base::FeatureList::IsEnabled(kSearchPrefetchServicePrefetching)) {
     return false;
   }
@@ -49,20 +30,12 @@ base::TimeDelta SearchPrefetchCachingLimit() {
 }
 
 size_t SearchPrefetchMaxAttemptsPerCachingDuration() {
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          kSearchPrefetchServiceCommandLineFlag)) {
-    return 100;
-  }
   return base::GetFieldTrialParamByFeatureAsInt(
       kSearchPrefetchServicePrefetching, "max_attempts_per_caching_duration",
       7);
 }
 
 base::TimeDelta SearchPrefetchErrorBackoffDuration() {
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          kSearchPrefetchServiceCommandLineFlag)) {
-    return base::Seconds(1);
-  }
   return base::Milliseconds(base::GetFieldTrialParamByFeatureAsInt(
       kSearchPrefetchServicePrefetching, "error_backoff_duration_ms", 60000));
 }

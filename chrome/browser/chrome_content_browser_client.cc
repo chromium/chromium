@@ -5105,10 +5105,8 @@ ChromeContentBrowserClient::WillCreateURLLoaderRequestInterceptors(
         frame_tree_node_id));
   }
 
-  if (SearchPrefetchServiceIsEnabled()) {
-    interceptors.push_back(std::make_unique<SearchPrefetchURLLoaderInterceptor>(
-        frame_tree_node_id));
-  }
+  interceptors.push_back(
+      std::make_unique<SearchPrefetchURLLoaderInterceptor>(frame_tree_node_id));
 
   if (base::FeatureList::IsEnabled(features::kHttpsOnlyMode)) {
     interceptors.push_back(
@@ -5124,11 +5122,6 @@ ChromeContentBrowserClient::
         int frame_tree_node_id,
         const network::ResourceRequest& resource_request) {
   content::ContentBrowserClient::URLLoaderRequestHandler callback;
-
-  // If search prefetch is disabled, nothing needs to be handled.
-  if (!SearchPrefetchServiceIsEnabled()) {
-    return callback;
-  }
 
   std::unique_ptr<SearchPrefetchURLLoader> loader =
       SearchPrefetchURLLoaderInterceptor::MaybeCreateLoaderForRequest(

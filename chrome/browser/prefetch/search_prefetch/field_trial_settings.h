@@ -8,13 +8,9 @@
 #include "base/feature_list.h"
 #include "base/time/time.h"
 
-extern const base::Feature kSearchPrefetchService;
 extern const base::Feature kSearchPrefetchServicePrefetching;
 
 extern const char kSearchPrefetchServiceCommandLineFlag[];
-
-// Whether the search prefetch service and other objects should be created.
-bool SearchPrefetchServiceIsEnabled();
 
 // Whether the search prefetch service actually initiates prefetches.
 bool SearchPrefetchServicePrefetchingIsEnabled();
