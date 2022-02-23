@@ -2,34 +2,39 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {BrowserServiceImpl, ensureLazyLoaded} from 'chrome://history/history.js';
+import {BrowserServiceImpl, ensureLazyLoaded, ForeignSession, HistorySyncedDeviceCardElement, HistorySyncedDeviceManagerElement} from 'chrome://history/history.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitBeforeNextRender} from 'chrome://webui-test/test_util.js';
 
 import {TestBrowserService} from './test_browser_service.js';
-import {createSession, createWindow, polymerSelectAll} from './test_util.js';
+import {createSession, createWindow} from './test_util.js';
 
-function getCards(manager) {
-  return polymerSelectAll(manager, 'history-synced-device-card');
+function getCards(manager: HistorySyncedDeviceManagerElement):
+    NodeListOf<HistorySyncedDeviceCardElement> {
+  return manager.shadowRoot!.querySelectorAll('history-synced-device-card');
 }
 
-function numWindowSeparators(card) {
-  return polymerSelectAll(card, ':not([hidden]).window-separator').length;
+function numWindowSeparators(card: HistorySyncedDeviceCardElement): number {
+  return card.shadowRoot!.querySelectorAll(':not([hidden]).window-separator')
+      .length;
 }
 
-function assertNoSyncedTabsMessageShown(manager, stringID) {
+function assertNoSyncedTabsMessageShown(
+    manager: HistorySyncedDeviceManagerElement, stringID: string) {
   assertFalse(manager.$['no-synced-tabs'].hidden);
   const message = loadTimeData.getString(stringID);
-  assertNotEquals(-1, manager.$['no-synced-tabs'].textContent.indexOf(message));
+  assertNotEquals(
+      -1, manager.$['no-synced-tabs'].textContent!.indexOf(message));
 }
 
 suite('<history-synced-device-manager>', function() {
-  let element;
-  let testService;
+  let element: HistorySyncedDeviceManagerElement;
+  let testService: TestBrowserService;
 
-  const setForeignSessions = function(sessions) {
+  function setForeignSessions(sessions: Array<ForeignSession>) {
     element.sessionList = sessions;
-  };
+  }
 
   setup(function() {
     document.body.innerHTML = '';
@@ -45,30 +50,31 @@ suite('<history-synced-device-manager>', function() {
       // the same order in tests, in order to catch regressions like
       // https://crbug.com/915641.
       element.searchTerm = '';
-      element.signInState = true;
+      element.configureSignInForTest(
+          {signInState: true, signInAllowed: true, guestSession: false});
       document.body.appendChild(element);
     });
   });
 
   test('single card, single window', function() {
-    const sessionList = [createSession(
+    const sessionList: Array<ForeignSession> = [createSession(
         'Nexus 5',
         [createWindow(['http://www.google.com', 'http://example.com'])])];
     setForeignSessions(sessionList);
 
     return flushTasks().then(function() {
       const card =
-          element.shadowRoot.querySelector('history-synced-device-card');
+          element.shadowRoot!.querySelector('history-synced-device-card')!;
       assertEquals(
           'http://www.google.com',
-          card.shadowRoot.querySelectorAll('.website-title')[0]
-              .textContent.trim());
+          card.shadowRoot!.querySelectorAll<HTMLElement>(
+                              '.website-title')[0]!.textContent!.trim());
       assertEquals(2, card.tabs.length);
     });
   });
 
   test('two cards, multiple windows', function() {
-    const sessionList = [
+    const sessionList: Array<ForeignSession> = [
       createSession(
           'Nexus 5',
           [createWindow(['http://www.google.com', 'http://example.com'])]),
@@ -86,8 +92,8 @@ suite('<history-synced-device-manager>', function() {
       assertEquals(2, cards.length);
 
       // Ensure separators between windows are added appropriately.
-      assertEquals(0, numWindowSeparators(cards[0]));
-      assertEquals(1, numWindowSeparators(cards[1]));
+      assertEquals(0, numWindowSeparators(cards[0]!));
+      assertEquals(1, numWindowSeparators(cards[1]!));
     });
   });
 
@@ -120,19 +126,19 @@ suite('<history-synced-device-manager>', function() {
           assertEquals(2, cards.length);
 
           // There are now 2 windows in the first device.
-          assertEquals(1, numWindowSeparators(cards[0]));
+          assertEquals(1, numWindowSeparators(cards[0]!));
 
           // Check that the actual link changes.
           assertEquals(
               'http://crbug.com/new',
-              cards[0]
-                  .shadowRoot.querySelectorAll('.website-title')[1]
-                  .textContent.trim());
+              cards[0]!.shadowRoot!
+                  .querySelectorAll<HTMLElement>(
+                      '.website-title')[1]!.textContent!.trim());
         });
   });
 
   test('two cards, multiple windows, search', function() {
-    const sessionList = [
+    const sessionList: Array<ForeignSession> = [
       createSession(
           'Nexus 5',
           [createWindow(['http://www.google.com', 'http://example.com'])]),
@@ -152,8 +158,8 @@ suite('<history-synced-device-manager>', function() {
           assertEquals(2, cards.length);
 
           // Ensure separators between windows are added appropriately.
-          assertEquals(0, numWindowSeparators(cards[0]));
-          assertEquals(2, numWindowSeparators(cards[1]));
+          assertEquals(0, numWindowSeparators(cards[0]!));
+          assertEquals(2, numWindowSeparators(cards[1]!));
           element.searchTerm = 'g';
 
           return flushTasks();
@@ -161,21 +167,21 @@ suite('<history-synced-device-manager>', function() {
         .then(function() {
           const cards = getCards(element);
 
-          assertEquals(0, numWindowSeparators(cards[0]));
-          assertEquals(1, cards[0].tabs.length);
-          assertEquals('http://www.google.com', cards[0].tabs[0].title);
-          assertEquals(1, numWindowSeparators(cards[1]));
-          assertEquals(3, cards[1].tabs.length);
-          assertEquals('http://www.gmail.com', cards[1].tabs[0].title);
-          assertEquals('http://www.gmail.com', cards[1].tabs[1].title);
-          assertEquals('http://bagssl.com', cards[1].tabs[2].title);
+          assertEquals(0, numWindowSeparators(cards[0]!));
+          assertEquals(1, cards[0]!.tabs.length);
+          assertEquals('http://www.google.com', cards[0]!.tabs[0]!.title);
+          assertEquals(1, numWindowSeparators(cards[1]!));
+          assertEquals(3, cards[1]!.tabs.length);
+          assertEquals('http://www.gmail.com', cards[1]!.tabs[0]!.title);
+          assertEquals('http://www.gmail.com', cards[1]!.tabs[1]!.title);
+          assertEquals('http://bagssl.com', cards[1]!.tabs[2]!.title);
 
           // Ensure the title text is rendered during searches.
           assertEquals(
               'http://www.google.com',
-              cards[0]
-                  .shadowRoot.querySelectorAll('.website-title')[0]
-                  .textContent.trim());
+              cards[0]!.shadowRoot!
+                  .querySelectorAll<HTMLElement>(
+                      '.website-title')[0]!.textContent!.trim());
 
           element.searchTerm = 'Sans';
           return flushTasks();
@@ -188,7 +194,7 @@ suite('<history-synced-device-manager>', function() {
   });
 
   test('delete a session', function() {
-    const sessionList = [
+    const sessionList: Array<ForeignSession> = [
       createSession('Nexus 5', [createWindow(['http://www.example.com'])]),
       createSession('Pixel C', [createWindow(['http://www.badssl.com'])]),
     ];
@@ -200,30 +206,31 @@ suite('<history-synced-device-manager>', function() {
           const cards = getCards(element);
           assertEquals(2, cards.length);
 
-          cards[0].$['menu-button'].click();
+          cards[0]!.$['menu-button'].click();
           return flushTasks();
         })
         .then(function() {
-          element.shadowRoot.querySelector('#menuDeleteButton').click();
+          element.shadowRoot!.querySelector<HTMLElement>(
+                                 '#menuDeleteButton')!.click();
           return testService.whenCalled('deleteForeignSession');
         })
         .then(args => {
           assertEquals('Nexus 5', args);
 
           // Simulate deleting the first device.
-          setForeignSessions([sessionList[1]]);
+          setForeignSessions([sessionList[1]!]);
 
           return flushTasks();
         })
         .then(function() {
           const cards = getCards(element);
           assertEquals(1, cards.length);
-          assertEquals('http://www.badssl.com', cards[0].tabs[0].title);
+          assertEquals('http://www.badssl.com', cards[0]!.tabs[0]!.title);
         });
   });
 
   test('delete a collapsed session', function() {
-    const sessionList = [
+    const sessionList: Array<ForeignSession> = [
       createSession('Nexus 5', [createWindow(['http://www.example.com'])]),
       createSession('Pixel C', [createWindow(['http://www.badssl.com'])]),
     ];
@@ -232,16 +239,16 @@ suite('<history-synced-device-manager>', function() {
     return flushTasks()
         .then(function() {
           const cards = getCards(element);
-          cards[0].$['card-heading'].click();
-          assertFalse(cards[0].opened);
+          cards[0]!.$['card-heading'].click();
+          assertFalse(cards[0]!.opened);
 
           // Simulate deleting the first device.
-          setForeignSessions([sessionList[1]]);
+          setForeignSessions([sessionList[1]!]);
           return flushTasks();
         })
         .then(function() {
           const cards = getCards(element);
-          assertTrue(cards[0].opened);
+          assertTrue(cards[0]!.opened);
         });
   });
 
@@ -251,7 +258,7 @@ suite('<history-synced-device-manager>', function() {
     return flushTasks()
         .then(function() {
           const cards = getCards(element);
-          const anchor = cards[0].root.querySelector('a');
+          const anchor = cards[0]!.shadowRoot!.querySelector('a')!;
           anchor.click();
           return testService.whenCalled('openForeignSessionTab');
         })
@@ -272,17 +279,19 @@ suite('<history-synced-device-manager>', function() {
 
     return flushTasks().then(function() {
       const cards = getCards(element);
-      cards[0].$['menu-button'].click();
-      assertTrue(element.$.menu.getIfExists().open);
+      cards[0]!.$['menu-button'].click();
+      assertTrue(element.$.menu.getIfExists()!.open);
     });
   });
 
   test('show sign in promo', function() {
-    element.signInState = false;
+    element.configureSignInForTest(
+        {signInState: false, signInAllowed: true, guestSession: false});
     return flushTasks()
         .then(function() {
           assertFalse(element.$['sign-in-guide'].hidden);
-          element.signInState = true;
+          element.configureSignInForTest(
+              {signInState: true, signInAllowed: true, guestSession: false});
           return flushTasks();
         })
         .then(function() {
@@ -292,8 +301,9 @@ suite('<history-synced-device-manager>', function() {
 
   test('no synced tabs message', function() {
     // When user is not logged in, there is no synced tabs.
-    element.signInState = false;
-    element.syncedDevices_ = [];
+    element.configureSignInForTest(
+        {signInState: false, signInAllowed: true, guestSession: false});
+    element.clearSyncedDevicesForTest();
     return flushTasks()
         .then(function() {
           assertTrue(element.$['no-synced-tabs'].hidden);
@@ -301,7 +311,8 @@ suite('<history-synced-device-manager>', function() {
           const cards = getCards(element);
           assertEquals(0, cards.length);
 
-          element.signInState = true;
+          element.configureSignInForTest(
+              {signInState: true, signInAllowed: true, guestSession: false});
 
           return flushTasks();
         })
@@ -309,7 +320,7 @@ suite('<history-synced-device-manager>', function() {
           // When user signs in, first show loading message.
           assertNoSyncedTabsMessageShown(element, 'loading');
 
-          const sessionList = [];
+          const sessionList: Array<ForeignSession> = [];
           setForeignSessions(sessionList);
           return flushTasks();
         })
@@ -319,7 +330,7 @@ suite('<history-synced-device-manager>', function() {
           // If no synced tabs are fetched, show 'no synced tabs'.
           assertNoSyncedTabsMessageShown(element, 'noSyncedResults');
 
-          const sessionList = [createSession(
+          const sessionList: Array<ForeignSession> = [createSession(
               'Nexus 5',
               [createWindow(['http://www.google.com', 'http://example.com'])])];
           setForeignSessions(sessionList);
@@ -332,7 +343,8 @@ suite('<history-synced-device-manager>', function() {
           // If there are any synced tabs, hide the 'no synced tabs' message.
           assertTrue(element.$['no-synced-tabs'].hidden);
 
-          element.signInState = false;
+          element.configureSignInForTest(
+              {signInState: false, signInAllowed: true, guestSession: false});
           return flushTasks();
         })
         .then(function() {
@@ -342,22 +354,22 @@ suite('<history-synced-device-manager>', function() {
   });
 
   test('hide sign in promo in guest mode', function() {
-    element.signInState = false;
-    element.guestSession_ = true;
+    element.configureSignInForTest(
+        {signInState: false, signInAllowed: true, guestSession: true});
     return flushTasks().then(function() {
       assertTrue(element.$['sign-in-guide'].hidden);
     });
   });
 
   test('hide sign-in promo if sign-in is disabled', async function() {
-    element.signInState = false;
-    element.signInAllowed_ = false;
+    element.configureSignInForTest(
+        {signInState: false, signInAllowed: false, guestSession: false});
     await flushTasks();
     assertTrue(element.$['sign-in-guide'].hidden);
   });
 
   test('no synced tabs message displays on load', function() {
-    element.syncedDevices_ = [];
+    element.clearSyncedDevicesForTest();
     // Should show no synced tabs message on initial load. Regression test for
     // https://crbug.com/915641.
     return Promise.all([flushTasks(), waitBeforeNextRender(element)])

@@ -46,6 +46,8 @@ declare global {
 export interface HistorySyncedDeviceManagerElement {
   $: {
     'menu': CrLazyRenderElement<CrActionMenuElement>,
+    'no-synced-tabs': HTMLElement,
+    'sign-in-guide': HTMLElement,
   };
 }
 
@@ -127,6 +129,16 @@ export class HistorySyncedDeviceManagerElement extends PolymerElement {
   disconnectedCallback() {
     super.disconnectedCallback();
     this.focusGrid_!.destroy();
+  }
+
+  configureSignInForTest(data: {
+    signInState: boolean,
+    signInAllowed: boolean,
+    guestSession: boolean
+  }) {
+    this.signInState = data.signInState;
+    this.signInAllowed_ = data.signInAllowed;
+    this.guestSession_ = data.guestSession;
   }
 
   /** @return {HTMLElement} */
@@ -237,6 +249,10 @@ export class HistorySyncedDeviceManagerElement extends PolymerElement {
     browserService.deleteForeignSession(this.actionMenuModel_);
     this.actionMenuModel_ = null;
     menu.close();
+  }
+
+  clearSyncedDevicesForTest() {
+    this.clearDisplayedSyncedDevices_();
   }
 
   private clearDisplayedSyncedDevices_() {

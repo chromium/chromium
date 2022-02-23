@@ -19,3 +19,5 @@ export {ActionMenuModel, HistoryListElement} from './history_list.js';
 export {HistoryToolbarElement} from './history_toolbar.js';
 export {HistorySearchedLabelElement} from './searched_label.js';
 export {HistorySideBarElement} from './side_bar.js';
+export {HistorySyncedDeviceCardElement} from './synced_device_card.js';
+export {HistorySyncedDeviceManagerElement} from './synced_device_manager.js';
