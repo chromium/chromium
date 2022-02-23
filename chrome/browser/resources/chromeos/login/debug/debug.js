@@ -600,7 +600,7 @@ cr.define('cr.ui.login.debug', function() {
         {
           id: 'allowlist-customer',
           trigger: (screen) => {
-            screen.showAllowlistCheckFailedError(true, {
+            screen.showAllowlistCheckFailedError({
               enterpriseManaged: false,
             });
           },

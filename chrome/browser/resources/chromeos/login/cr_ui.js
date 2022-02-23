@@ -123,14 +123,6 @@ cr.define('cr.ui', function() {
     }
 
     /**
-     * Shows signin UI.
-     * @param {string} opt_email An optional email for signin UI.
-     */
-    static showSigninUI(opt_email) {
-      Oobe.getInstance().showSigninUI(opt_email);
-    }
-
-    /**
      * Sets the current height of the shelf area.
      * @param {number} height current shelf height
      */

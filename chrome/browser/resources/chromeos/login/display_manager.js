@@ -554,16 +554,6 @@ cr.define('cr.ui.login', function() {
       this.initializeDemoModeMultiTapListener();
     }
 
-    /**
-     * Shows signin UI.
-     * @param {string} opt_email An optional email for signin UI.
-     */
-    showSigninUI(opt_email) {
-      if (this.currentScreen.id == SCREEN_GAIA_SIGNIN) {
-        this.setOobeUIState(OOBE_UI_STATE.GAIA_SIGNIN);
-      }
-      chrome.send('showAddUser', [opt_email]);
-    }
 
     /**
      * Sets text content for a div with |labelId|.

@@ -1362,7 +1362,7 @@ void GaiaScreenHandler::ShowAllowlistCheckFailedError() {
                                   &family_link_allowed);
   params.SetBoolKey("familyLinkAllowed", family_link_allowed);
 
-  CallJS("login.GaiaSigninScreen.showAllowlistCheckFailedError", true, params);
+  CallJS("login.GaiaSigninScreen.showAllowlistCheckFailedError", params);
 }
 
 void GaiaScreenHandler::LoadAuthExtension(bool force) {

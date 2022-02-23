@@ -124,8 +124,11 @@
     </div>
     <notification-card id="gaia-allowlist-error" type="fail" class="fit"
         for-step="allowlist-error"
+        on-buttonclick="onAllowlistErrorTryAgainClick_"
+        on-linkclick="onAllowlistErrorLinkClick_"
         button-label="[[i18nDynamic(locale, 'tryAgainButton')]]"
         link-label="[[i18nDynamic(locale, 'learnMoreButton')]]">
+      [[i18nDynamic(locale, allowListError_)]]
     </notification-card>
   </template>
   <script src="gaia_signin.js"></script>

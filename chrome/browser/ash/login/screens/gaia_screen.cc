@@ -20,6 +20,7 @@ constexpr char kUserActionCancel[] = "cancel";
 constexpr char kUserActionStartEnrollment[] = "startEnrollment";
 constexpr char kUserActionReloadDefault[] = "reloadDefault";
 constexpr char kUserActionSAMLVideoTimeout[] = "samlVideoTimeout";
+constexpr char kUserActionRetry[] = "retry";
 
 }  // namespace
 
@@ -108,6 +109,8 @@ void GaiaScreen::OnUserAction(const std::string& action_id) {
     exit_callback_.Run(Result::ENTERPRISE_ENROLL);
   } else if (action_id == kUserActionReloadDefault) {
     DCHECK(features::IsRedirectToDefaultIdPEnabled());
+    LoadOnline(EmptyAccountId());
+  } else if (action_id == kUserActionRetry) {
     LoadOnline(EmptyAccountId());
   } else if (action_id == kUserActionSAMLVideoTimeout) {
     DCHECK(features::IsRedirectToDefaultIdPEnabled());
