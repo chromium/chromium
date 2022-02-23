@@ -68,8 +68,38 @@ TEST_F(WebStateListRemovingIndexesTest, Count) {
 }
 
 // Tests that WebStateListRemovingIndexes correctly returns the correct
-// updated value when asked for index once tabs have been removed.
-TEST_F(WebStateListRemovingIndexesTest, IndexAfterRemoval) {
+// updated value when asked for index if no tabs are removed.
+TEST_F(WebStateListRemovingIndexesTest, IndexAfterRemovalEmpty) {
+  WebStateListRemovingIndexes removing_indexes({});
+  EXPECT_EQ(removing_indexes.IndexAfterRemoval(0), 0);  // no removal before
+  EXPECT_EQ(removing_indexes.IndexAfterRemoval(1), 1);  // no removal before
+  EXPECT_EQ(removing_indexes.IndexAfterRemoval(2), 2);  // no removal before
+  EXPECT_EQ(removing_indexes.IndexAfterRemoval(3), 3);  // no removal before
+  EXPECT_EQ(removing_indexes.IndexAfterRemoval(4), 4);  // no removal before
+  EXPECT_EQ(removing_indexes.IndexAfterRemoval(5), 5);  // no removal before
+  EXPECT_EQ(removing_indexes.IndexAfterRemoval(6), 6);  // no removal before
+  EXPECT_EQ(removing_indexes.IndexAfterRemoval(7), 7);  // no removal before
+  EXPECT_EQ(removing_indexes.IndexAfterRemoval(8), 8);  // no removal before
+}
+
+// Tests that WebStateListRemovingIndexes correctly returns the correct
+// updated value when asked for index if one tab is removed.
+TEST_F(WebStateListRemovingIndexesTest, IndexAfterRemovalOneTab) {
+  WebStateListRemovingIndexes removing_indexes({4});
+  EXPECT_EQ(removing_indexes.IndexAfterRemoval(0), 0);
+  EXPECT_EQ(removing_indexes.IndexAfterRemoval(1), 1);
+  EXPECT_EQ(removing_indexes.IndexAfterRemoval(2), 2);
+  EXPECT_EQ(removing_indexes.IndexAfterRemoval(3), 3);
+  EXPECT_EQ(removing_indexes.IndexAfterRemoval(4), WebStateList::kInvalidIndex);
+  EXPECT_EQ(removing_indexes.IndexAfterRemoval(5), 4);  // one removals before
+  EXPECT_EQ(removing_indexes.IndexAfterRemoval(6), 5);  // one removals before
+  EXPECT_EQ(removing_indexes.IndexAfterRemoval(7), 6);  // one removals before
+  EXPECT_EQ(removing_indexes.IndexAfterRemoval(8), 7);  // one removals before
+}
+
+// Tests that WebStateListRemovingIndexes correctly returns the correct
+// updated value when asked for index if multiple tabs have been removed.
+TEST_F(WebStateListRemovingIndexesTest, IndexAfterRemovalMultipleTabs) {
   WebStateListRemovingIndexes removing_indexes({1, 3, 7});
   EXPECT_EQ(removing_indexes.IndexAfterRemoval(0), 0);  // no removal before
   EXPECT_EQ(removing_indexes.IndexAfterRemoval(1), WebStateList::kInvalidIndex);
@@ -80,76 +110,4 @@ TEST_F(WebStateListRemovingIndexesTest, IndexAfterRemoval) {
   EXPECT_EQ(removing_indexes.IndexAfterRemoval(6), 4);  // two removals before
   EXPECT_EQ(removing_indexes.IndexAfterRemoval(7), WebStateList::kInvalidIndex);
   EXPECT_EQ(removing_indexes.IndexAfterRemoval(8), 5);  // three removals before
-}
-
-// Tests that WebStateListRemovingIndexes correctly find a child index after
-// removal.
-TEST_F(WebStateListRemovingIndexesTest,
-       FindIndexOfNextNonRemovedWebStateOpenedBy) {
-  // Create a WebStateList with 6 WebStates, 5 of them children of the
-  // WebState at index 2 (so the WebState at index 2 has two children
-  // before itself and three children after).
-  web::WebState* opener = InsertNewWebState(0, WebStateOpener());
-  InsertNewWebState(0, WebStateOpener(opener));
-  InsertNewWebState(0, WebStateOpener(opener));
-  InsertNewWebState(3, WebStateOpener(opener));
-  InsertNewWebState(4, WebStateOpener(opener));
-  InsertNewWebState(5, WebStateOpener(opener));
-
-  // If no indexes are removed, FindIndexOfNextNonRemovedWebStateOpenedBy()
-  // should behave as GetIndexOfNextWebStateOpenedBy().
-  WebStateListRemovingIndexes removing_no_children({});
-  EXPECT_EQ(removing_no_children.FindIndexOfNextNonRemovedWebStateOpenedBy(
-                web_state_list_, opener, 2),
-            3);
-  EXPECT_EQ(removing_no_children.FindIndexOfNextNonRemovedWebStateOpenedBy(
-                web_state_list_, opener, 3),
-            4);
-  EXPECT_EQ(removing_no_children.FindIndexOfNextNonRemovedWebStateOpenedBy(
-                web_state_list_, opener, 4),
-            5);
-  EXPECT_EQ(removing_no_children.FindIndexOfNextNonRemovedWebStateOpenedBy(
-                web_state_list_, opener, 5),
-            0);
-  EXPECT_EQ(removing_no_children.FindIndexOfNextNonRemovedWebStateOpenedBy(
-                web_state_list_, opener, 0),
-            1);
-  EXPECT_EQ(removing_no_children.FindIndexOfNextNonRemovedWebStateOpenedBy(
-                web_state_list_, opener, 1),
-            3);
-  EXPECT_EQ(removing_no_children.FindIndexOfNextNonRemovedWebStateOpenedBy(
-                web_state_list_, web_state_list_.GetWebStateAt(0), 0),
-            WebStateList::kInvalidIndex);
-
-  // If some child are removed, FindIndexOfNextNonRemovedWebStateOpenedBy()
-  // correctly skips them.
-  WebStateListRemovingIndexes removing_some_children({1, 3});
-  EXPECT_EQ(removing_some_children.FindIndexOfNextNonRemovedWebStateOpenedBy(
-                web_state_list_, opener, 2),
-            2);
-  EXPECT_EQ(removing_some_children.FindIndexOfNextNonRemovedWebStateOpenedBy(
-                web_state_list_, opener, 3),
-            2);
-  EXPECT_EQ(removing_some_children.FindIndexOfNextNonRemovedWebStateOpenedBy(
-                web_state_list_, opener, 4),
-            3);
-  EXPECT_EQ(removing_some_children.FindIndexOfNextNonRemovedWebStateOpenedBy(
-                web_state_list_, opener, 5),
-            0);
-  EXPECT_EQ(removing_some_children.FindIndexOfNextNonRemovedWebStateOpenedBy(
-                web_state_list_, opener, 0),
-            2);
-  EXPECT_EQ(removing_some_children.FindIndexOfNextNonRemovedWebStateOpenedBy(
-                web_state_list_, opener, 1),
-            2);
-  EXPECT_EQ(removing_some_children.FindIndexOfNextNonRemovedWebStateOpenedBy(
-                web_state_list_, web_state_list_.GetWebStateAt(0), 0),
-            WebStateList::kInvalidIndex);
-
-  // If some child are removed, FindIndexOfNextNonRemovedWebStateOpenedBy()
-  // correctly reports there is no possible index.
-  WebStateListRemovingIndexes removing_all_children({0, 1, 3, 4, 5});
-  EXPECT_EQ(removing_all_children.FindIndexOfNextNonRemovedWebStateOpenedBy(
-                web_state_list_, opener, 2),
-            WebStateList::kInvalidIndex);
 }

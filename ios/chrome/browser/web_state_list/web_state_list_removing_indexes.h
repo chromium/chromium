@@ -43,13 +43,6 @@ class WebStateListRemovingIndexes {
   // scheduled to be removed, will return WebStateList::kInvalidIndex.
   int IndexAfterRemoval(int index) const;
 
-  // Find the index of next non-removed WebState opened by |web_state|. It
-  // may return WebStateList::kInvalidIndex if there is no such indexes.
-  int FindIndexOfNextNonRemovedWebStateOpenedBy(
-      const WebStateList& web_state_list,
-      const web::WebState* web_state,
-      int starting_index);
-
   // Represents an empty WebStateListRemovingIndexes.
   struct Empty {};
 

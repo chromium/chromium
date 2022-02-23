@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/web_state_list/web_state_list_order_controller.h"
 
 #include <cstdint>
+#include <set>
 
 #include "base/check_op.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
@@ -14,6 +15,45 @@
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
+
+namespace {
+
+// Find the index of next non-removed WebState opened by |web_state|. It
+// may return WebStateList::kInvalidIndex if there is no such indexes.
+int FindIndexOfNextNonRemovedWebStateOpenedBy(
+    const WebStateListRemovingIndexes& removing_indexes,
+    const WebStateList& web_state_list,
+    const web::WebState* web_state,
+    int starting_index) {
+  std::set<int> children;
+  for (;;) {
+    const int child_index = web_state_list.GetIndexOfNextWebStateOpenedBy(
+        web_state, starting_index, false);
+
+    // The active WebState has no child, fall back to the next heuristic.
+    if (child_index == WebStateList::kInvalidIndex)
+      break;
+
+    // All children are going to be removed, fallback to the next heuristic.
+    if (children.find(child_index) != children.end())
+      break;
+
+    // Found a child that is not removed, select it as the next active
+    // WebState.
+    const int child_index_after_removal =
+        removing_indexes.IndexAfterRemoval(child_index);
+
+    if (child_index_after_removal != WebStateList::kInvalidIndex)
+      return child_index_after_removal;
+
+    children.insert(child_index);
+    starting_index = child_index;
+  }
+
+  return WebStateList::kInvalidIndex;
+}
+
+}  // anonymous namespace
 
 WebStateListOrderController::WebStateListOrderController(
     const WebStateList& web_state_list)
@@ -69,9 +109,9 @@ int WebStateListOrderController::DetermineNewActiveIndex(
   // the new active element. Prefer childs located after the active element,
   // but this may end up selecting an element before it.
   const int child_index_after_removal =
-      removing_indexes.FindIndexOfNextNonRemovedWebStateOpenedBy(
-          web_state_list_, web_state_list_.GetWebStateAt(active_index),
-          active_index);
+      FindIndexOfNextNonRemovedWebStateOpenedBy(
+          removing_indexes, web_state_list_,
+          web_state_list_.GetWebStateAt(active_index), active_index);
   if (child_index_after_removal != WebStateList::kInvalidIndex)
     return child_index_after_removal;
 
@@ -82,8 +122,8 @@ int WebStateListOrderController::DetermineNewActiveIndex(
     // to be the new active element. Prefer siblings located after the active
     // element, but this may end up selecting an element before it.
     const int sibling_index_after_removal =
-        removing_indexes.FindIndexOfNextNonRemovedWebStateOpenedBy(
-            web_state_list_, opener.opener, active_index);
+        FindIndexOfNextNonRemovedWebStateOpenedBy(
+            removing_indexes, web_state_list_, opener.opener, active_index);
     if (sibling_index_after_removal != WebStateList::kInvalidIndex)
       return sibling_index_after_removal;
 
