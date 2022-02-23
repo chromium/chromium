@@ -307,18 +307,6 @@ WebView* RenderViewImpl::CreateView(
   mojom::CreateNewWindowReplyPtr reply;
   auto* frame_host = creator_frame->GetFrameHost();
   bool err = !frame_host->CreateNewWindow(std::move(params), &status, &reply);
-
-  // If creation of the window was blocked, return before consuming user
-  // activation. A frame that isn't itself activated shouldn't be able to
-  // consume the activation for the rest of the frame tree.
-  if (status == mojom::CreateNewWindowStatus::kBlocked)
-    return nullptr;
-
-  consumed_user_gesture = creator->ConsumeTransientUserActivation(
-      blink::UserActivationUpdateSource::kBrowser);
-
-  // If there was an error or we should ignore the new window (e.g. because of
-  // `noopener`), return now that user activation was consumed.
   if (err || status == mojom::CreateNewWindowStatus::kIgnore)
     return nullptr;
 
@@ -338,6 +326,11 @@ WebView* RenderViewImpl::CreateView(
   DCHECK_NE(MSG_ROUTING_NONE, reply->route_id);
   DCHECK_NE(MSG_ROUTING_NONE, reply->main_frame_route_id);
   DCHECK_NE(MSG_ROUTING_NONE, reply->widget_params->routing_id);
+
+  // The browser allowed creation of a new window and consumed the user
+  // activation.
+  consumed_user_gesture = creator->ConsumeTransientUserActivation(
+      blink::UserActivationUpdateSource::kBrowser);
 
   // While this view may be a background extension page, it can spawn a visible
   // render view. So we just assume that the new one is not another background
