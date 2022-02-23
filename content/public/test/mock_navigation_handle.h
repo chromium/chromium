@@ -207,6 +207,10 @@ class MockNavigationHandle : public NavigationHandle {
               ());
 #endif
 
+  base::SafeRef<NavigationHandle> GetSafeRef() override {
+    return weak_factory_.GetSafeRef();
+  }
+
   void set_url(const GURL& url) { url_ = url; }
   void set_previous_main_frame_url(const GURL& previous_main_frame_url) {
     previous_main_frame_url_ = previous_main_frame_url;
@@ -316,6 +320,8 @@ class MockNavigationHandle : public NavigationHandle {
   absl::optional<blink::LocalFrameToken> initiator_frame_token_;
   int initiator_process_id_ = ChildProcessHost::kInvalidUniqueID;
   bool was_started_from_context_menu_ = false;
+
+  base::WeakPtrFactory<MockNavigationHandle> weak_factory_{this};
 };
 
 }  // namespace content

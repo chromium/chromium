@@ -14,6 +14,7 @@
 #include "base/debug/crash_logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/safe_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
@@ -377,6 +378,7 @@ class CONTENT_EXPORT NavigationRequest
 #if BUILDFLAG(IS_ANDROID)
   const base::android::JavaRef<jobject>& GetJavaNavigationHandle() override;
 #endif
+  base::SafeRef<NavigationHandle> GetSafeRef() override;
 
   void RegisterCommitDeferringConditionForTesting(
       std::unique_ptr<CommitDeferringCondition> condition);

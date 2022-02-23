@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/safe_ref.h"
 #include "base/supports_user_data.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/frame_type.h"
@@ -533,6 +534,9 @@ class CONTENT_EXPORT NavigationHandle : public base::SupportsUserData {
   // Used for metrics.
   virtual PrerenderTriggerType GetPrerenderTriggerType() = 0;
   virtual std::string GetPrerenderEmbedderHistogramSuffix() = 0;
+
+  // Returns a SafeRef to this handle.
+  virtual base::SafeRef<NavigationHandle> GetSafeRef() = 0;
 
   // Testing methods ----------------------------------------------------------
   //

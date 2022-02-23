@@ -7,6 +7,7 @@
 
 #include "base/callback.h"
 
+#include "base/memory/safe_ref.h"
 #include "content/common/content_export.h"
 
 namespace content {
@@ -48,11 +49,10 @@ class CONTENT_EXPORT CommitDeferringCondition {
   // indicate completion.
   virtual Result WillCommitNavigation(base::OnceClosure resume) = 0;
 
-  NavigationHandle& GetNavigationHandle() const { return navigation_handle_; }
+  NavigationHandle& GetNavigationHandle() const { return *navigation_handle_; }
 
  private:
-  // TODO(bokan): Make this a base::SafeRef.
-  NavigationHandle& navigation_handle_;
+  base::SafeRef<NavigationHandle> navigation_handle_;
 };
 
 }  // namespace content

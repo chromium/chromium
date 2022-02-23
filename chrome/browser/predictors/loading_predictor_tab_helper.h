@@ -143,7 +143,7 @@ class LoadingPredictorTabHelper
     NAVIGATION_HANDLE_USER_DATA_KEY_DECL();
 
     scoped_refptr<PageData> page_data_;
-    content::NavigationHandle& navigation_handle_;
+    base::SafeRef<content::NavigationHandle> navigation_handle_;
     base::WeakPtrFactory<NavigationPageDataHolder> weak_factory_{this};
   };
 

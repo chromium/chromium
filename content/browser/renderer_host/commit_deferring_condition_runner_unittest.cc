@@ -49,14 +49,11 @@ class CommitDeferringConditionRunnerTest
 // CommitDeferringCondition always need a NavigationHandle. Since we don't have
 // a navigation here, this class is just used to provide it with a
 // MockNavigationHandle.
-class MockHandleConditionWrapper : public MockCommitDeferringConditionWrapper {
+class MockHandleConditionWrapper : public MockNavigationHandle,
+                                   public MockCommitDeferringConditionWrapper {
  public:
   explicit MockHandleConditionWrapper(bool is_ready_to_commit)
-      : MockCommitDeferringConditionWrapper(navigation_handle_,
-                                            is_ready_to_commit) {}
-
- private:
-  MockNavigationHandle navigation_handle_;
+      : MockCommitDeferringConditionWrapper(*this, is_ready_to_commit) {}
 };
 
 // Check that the runner notifies the delegate synchronously when there are no

@@ -2640,6 +2640,10 @@ base::WeakPtr<NavigationRequest> NavigationRequest::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }
 
+base::SafeRef<NavigationHandle> NavigationRequest::GetSafeRef() {
+  return weak_factory_.GetSafeRef();
+}
+
 void NavigationRequest::CheckForIsolationOptIn(const GURL& url) {
   if (!IsOptInIsolationRequested())
     return;

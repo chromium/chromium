@@ -212,7 +212,7 @@ LoadingPredictorTabHelper::DocumentPageDataHolder::~DocumentPageDataHolder() =
 LoadingPredictorTabHelper::NavigationPageDataHolder::NavigationPageDataHolder(
     content::NavigationHandle& navigation_handle)
     : page_data_(base::MakeRefCounted<PageData>()),
-      navigation_handle_(navigation_handle) {}
+      navigation_handle_(navigation_handle.GetSafeRef()) {}
 LoadingPredictorTabHelper::NavigationPageDataHolder::
     ~NavigationPageDataHolder() = default;
 
@@ -444,7 +444,7 @@ void LoadingPredictorTabHelper::OnOptimizationGuideDecision(
 
   if (!page_data->has_committed_) {
     if (!page_data->navigation_page_data_holder_ ||
-        page_data->navigation_page_data_holder_->navigation_handle_.GetURL() !=
+        page_data->navigation_page_data_holder_->navigation_handle_->GetURL() !=
             main_frame_url) {
       // The current navigation has either redirected or a new one has started,
       // so return.
