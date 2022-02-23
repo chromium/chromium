@@ -7604,3 +7604,6 @@ crbug.com/1299903 [ Win7 ] virtual/prerender/external/wpt/speculation-rules/prer
 crbug.com/1299946 [ Mac ] external/wpt/css/css-sizing/min-content-negative-margin-crash.html [ Pass Timeout ]
 crbug.com/1299948 [ Mac ] external/wpt/css/css-tables/crashtests/textarea-intrinsic-size-crash.html [ Pass Timeout ]
 crbug.com/1299972 [ Linux ] screen_orientation/screenorientation-unsupported-no-crash.html [ Failure Pass Timeout ]
+
+# Sheriff 2022-02-23
+crbug.com/1300256 [ Mac ] virtual/fenced-frame-mparch/wpt_internal/fenced_frame/navigate-ancestor.https.html [ Skip ]
