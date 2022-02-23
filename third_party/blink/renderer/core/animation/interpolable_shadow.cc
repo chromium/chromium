@@ -139,8 +139,10 @@ ShadowData InterpolableShadow::CreateShadowData(
       blur_->CreateLength(conversion_data, Length::ValueRange::kNonNegative);
   Length shadow_spread =
       spread_->CreateLength(conversion_data, Length::ValueRange::kAll);
-  DCHECK(shadow_x.IsFixed() && shadow_y.IsFixed() && shadow_blur.IsFixed() &&
-         shadow_spread.IsFixed());
+  DCHECK(shadow_x.IsFixed());
+  DCHECK(shadow_y.IsFixed());
+  DCHECK(shadow_blur.IsFixed());
+  DCHECK(shadow_spread.IsFixed());
   return ShadowData(
       gfx::PointF(shadow_x.Value(), shadow_y.Value()), shadow_blur.Value(),
       shadow_spread.Value(), shadow_style_,

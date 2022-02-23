@@ -206,11 +206,17 @@ static UnitType IndexToUnitType(wtf_size_t index) {
 Length InterpolableLength::CreateLength(
     const CSSToLengthConversionData& conversion_data,
     Length::ValueRange range) const {
-  // Passing true for ToCalcValue is a dirty hack to ensure that we don't create
-  // a degenerate value when animating 'background-position', while we know it
-  // may cause some minor animation glitches for the other properties.
-  if (IsExpression())
+  if (IsExpression()) {
+    if (expression_->Category() == kCalcLength) {
+      double pixels = expression_->ComputeLengthPx(conversion_data);
+      return Length::Fixed(CSSPrimitiveValue::ClampToCSSLengthRange(
+          ClampToRange(pixels, range)));
+    }
+    // Passing true for ToCalcValue is a dirty hack to ensure that we don't
+    // create a degenerate value when animating 'background-position', while we
+    // know it may cause some minor animation glitches for the other properties.
     return Length(expression_->ToCalcValue(conversion_data, range, true));
+  }
 
   DCHECK(IsLengthArray());
   bool has_percentage = HasPercentage();
