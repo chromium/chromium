@@ -201,8 +201,6 @@ class BASE_EXPORT Histogram : public HistogramBase {
   // function on non-dcheck builds without crashing.
   // Note. Currently it allow some bad input, e.g. 0 as minimum, but silently
   // converts it to good input: 1.
-  // TODO(bcwhite): Use false returns to create "sink" histograms so that bad
-  // data doesn't create confusion on the servers.
   static bool InspectConstructionArguments(StringPiece name,
                                            Sample* minimum,
                                            Sample* maximum,
