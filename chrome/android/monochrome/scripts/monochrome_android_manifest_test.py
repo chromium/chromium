@@ -17,5 +17,5 @@ class MonochromeAndroidManifestCheckerTest(typ.TestCase):
     status, manifest = cmd_helper.GetCmdStatusAndOutput(cmd)
     self.assertEquals(status, 0)
     # Check that AndroidManifest.xml does not have any <uses-library> tags.
-    # crbug.com/115604
+    # crbug.com/1115604
     self.assertNotIn('uses-library', manifest)
