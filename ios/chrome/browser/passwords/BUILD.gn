@@ -231,6 +231,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/web:web_internal",
     "//ios/testing:ocmock_support",
     "//ios/web",
+    "//ios/web/public/deprecated:deprecated",
     "//ios/web/public/js_messaging",
     "//ios/web/public/test",
     "//ios/web/public/test/fakes",
