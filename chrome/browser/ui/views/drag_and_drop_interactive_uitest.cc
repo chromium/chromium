@@ -1165,17 +1165,10 @@ IN_PROC_BROWSER_TEST_P(DragAndDropBrowserTest, DropFileFromOutside) {
   EXPECT_TRUE(ui_test_utils::IsViewFocused(browser(), VIEW_ID_TAB_CONTAINER));
 }
 
-#if defined(THREAD_SANITIZER)
-// TSAN Race condition: crbug.com/1005095
-#define MAYBE_DropForbiddenUrlFromOutside DISABLED_DropForbiddenUrlFromOutside
-#else
-#define MAYBE_DropForbiddenUrlFromOutside DropForbiddenUrlFromOutside
-#endif
 // Scenario: drag URL from outside the browser and drop to the right frame.
 // Mostly focuses on covering the navigation path (the dragover and/or drop DOM
 // events are already covered via the DropTextFromOutside test above).
-IN_PROC_BROWSER_TEST_P(DragAndDropBrowserTest,
-                       MAYBE_DropForbiddenUrlFromOutside) {
+IN_PROC_BROWSER_TEST_P(DragAndDropBrowserTest, DropForbiddenUrlFromOutside) {
   std::string frame_site = use_cross_site_subframe() ? "b.com" : "a.com";
   ASSERT_TRUE(NavigateToTestPage("a.com"));
   ASSERT_TRUE(NavigateRightFrame(frame_site, "title1.html"));
