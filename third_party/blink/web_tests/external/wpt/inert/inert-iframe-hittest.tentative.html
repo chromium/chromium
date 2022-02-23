@@ -15,6 +15,10 @@
 </div>
 
 <script>
+const events = [
+  "mousedown", "mouseenter", "mousemove", "mouseover",
+  "pointerdown", "pointerenter", "pointermove", "pointerover",
+];
 const iframe = document.getElementById("iframe");
 let iframeDoc;
 let target;
@@ -34,57 +38,64 @@ promise_setup(async () => {
   });
 });
 
-promise_test(async function() {
-  let reachedTarget = false;
-  target.addEventListener("mousedown", () => {
-    reachedTarget = true;
-  }, { once: true });
-
-  let reachedWrapper = false;
-  wrapper.addEventListener("mousedown", () => {
-    reachedWrapper = true;
-  }, { once: true });
+async function mouseDownAndGetEvents(test) {
+  const receivedEvents = {
+    target: [],
+    wrapper: [],
+  };
+  for (let event of events) {
+    target.addEventListener(event, () => {
+      receivedEvents.target.push(event);
+    }, { once: true, capture: true });
+    wrapper.addEventListener(event, () => {
+      receivedEvents.wrapper.push(event);
+    }, { once: true, capture: true });
+  }
 
   await new test_driver.Actions()
      .pointerMove(0, 0, { origin: wrapper })
      .pointerDown()
      .send();
-  this.add_cleanup(() => test_driver.click(document.body));
+  test.add_cleanup(() => test_driver.click(document.body));
+
+  // Exact order of events is not interoperable.
+  receivedEvents.target.sort();
+  receivedEvents.wrapper.sort();
+  return receivedEvents;
+}
+
+promise_test(async function() {
+  const receivedEvents = await mouseDownAndGetEvents(this);
+  assert_array_equals(receivedEvents.target, [], "target got no event");
+  assert_array_equals(receivedEvents.wrapper, events, "wrapper got all events");
 
   assert_false(target.matches(":focus"), "target is not focused");
   assert_false(target.matches(":active"), "target is not active");
   assert_false(target.matches(":hover"), "target is not hovered");
-  assert_false(reachedTarget, "target didn't get event");
-
   assert_true(wrapper.matches(":hover"), "wrapper is hovered");
-  assert_true(reachedWrapper, "wrapper got event");
 }, "Hit-testing doesn't reach contents of an inert iframe");
 
 promise_test(async function() {
   iframe.inert = false;
 
-  let reachedTarget = false;
-  target.addEventListener("mousedown", () => {
-    reachedTarget = true;
-  }, { once: true });
-
-  let reachedWrapper = false;
-  wrapper.addEventListener("mousedown", () => {
-    reachedWrapper = true;
-  }, { once: true });
-
-  await new test_driver.Actions()
-     .pointerMove(0, 0, { origin: wrapper })
-     .pointerDown()
-     .send();
-  this.add_cleanup(() => test_driver.click(document.body));
+  const receivedEvents = await mouseDownAndGetEvents(this);
+  assert_array_equals(receivedEvents.target, events, "target got all events");
+  if (receivedEvents.wrapper.length === 2) {
+    // Firefox is unstable, sometimes missing the mouse events.
+    assert_array_equals(
+      receivedEvents.wrapper,
+      ["pointerenter", "pointerover"],
+      "wrapper got enter and over pointer events");
+  } else {
+    assert_array_equals(
+      receivedEvents.wrapper,
+      ["mouseenter", "mouseover", "pointerenter", "pointerover"],
+      "wrapper got enter and over events");
+  }
 
   assert_true(target.matches(":focus"), "target is focused");
   assert_true(target.matches(":active"), "target is active");
   assert_true(target.matches(":hover"), "target is hovered");
-  assert_true(reachedTarget, "target got event");
-
   assert_true(wrapper.matches(":hover"), "wrapper is hovered");
-  assert_false(reachedWrapper, "wrapper didn't get event");
 }, "Hit-testing can reach contents of a no longer inert iframe");
 </script>
