@@ -493,6 +493,8 @@ H265Parser::Result H265Parser::ParseSPS(int* sps_id) {
   READ_BOOL_OR_RETURN(&sps->scaling_list_enabled_flag);
   if (sps->scaling_list_enabled_flag) {
     READ_BOOL_OR_RETURN(&sps->sps_scaling_list_data_present_flag);
+  }
+  if (sps->sps_scaling_list_data_present_flag) {
     res = ParseScalingListData(&sps->scaling_list_data);
     if (res != kOk)
       return res;
