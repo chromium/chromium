@@ -107,14 +107,16 @@ const GpuFeatureData GetGpuFeatureData(
     {"canvas_oop_rasterization",
      SafeGetFeatureStatus(gpu_feature_info,
                           gpu::GPU_FEATURE_TYPE_CANVAS_OOP_RASTERIZATION),
-     !base::FeatureList::IsEnabled(features::kCanvasOopRasterization),
+     !base::FeatureList::IsEnabled(features::kCanvasOopRasterization) ||
+         command_line.HasSwitch(switches::kDisableAccelerated2dCanvas),
 #if 0
      // TODO(crbug.com/1240756): Remove the "#if 0" once OOPR-Canvas is fully
      // launched.
      DisableInfo::Problem(
          "Canvas out-of-process rasterization has been disabled, either via "
-         "blocklist, the command line, about:flags, or because out-of-process "
-         "rasterization is disabled."
+         "blocklist, the command line, about:flags, because out-of-process "
+         "rasterization is disabled, or because 2D canvas is not GPU-"
+         "accelerated."
      ),
 #else
      // As long as the Finch experiment is running, having the feature disabled
