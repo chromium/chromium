@@ -890,6 +890,17 @@
       "v8_enable_sandbox_future": true
     }
   },
+  "linux-chromeos-annotator-rel": {
+    "gn_args": {
+      "dcheck_always_on": false,
+      "ffmpeg_branding": "ChromeOS",
+      "is_component_build": false,
+      "is_debug": false,
+      "proprietary_codecs": true,
+      "target_os": "chromeos",
+      "use_goma": true
+    }
+  },
   "linux-chromeos-code-coverage": {
     "gn_args": {
       "dcheck_always_on": false,

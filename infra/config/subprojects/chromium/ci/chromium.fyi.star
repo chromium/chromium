@@ -283,6 +283,19 @@ ci.builder(
 )
 
 ci.builder(
+    name = "linux-chromeos-annotator-rel",
+    builderless = True,
+    branch_selector = branches.STANDARD_MILESTONE,
+    console_view_entry = consoles.console_view_entry(
+        category = "release",
+        short_name = "rel",
+    ),
+    execution_timeout = 3 * time.hour,
+    os = os.LINUX_BIONIC_SWITCH_TO_DEFAULT,
+    goma_enable_ats = True,
+)
+
+ci.builder(
     name = "linux-ash-chromium-builder-fyi-rel",
     console_view_entry = consoles.console_view_entry(
         category = "default",
