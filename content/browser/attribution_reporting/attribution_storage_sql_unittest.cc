@@ -384,7 +384,7 @@ TEST_F(AttributionStorageSqlTest,
       source_id, /*trigger_time=*/base::Time::Now(),
       /*report_time=*/base::Time::Now() + base::Hours(2),
       /*contributions=*/
-      {AggregatableHistogramContribution(/*bucket=*/"1", /*value=*/2)});
+      {AggregatableHistogramContribution(/*key=*/1, /*value=*/2)});
   EXPECT_TRUE(storage()->AddAggregatableAttributionForTesting(
       aggregatable_attribution_1));
 
@@ -393,8 +393,8 @@ TEST_F(AttributionStorageSqlTest,
       source_id, /*trigger_time=*/base::Time::Now(),
       /*report_time=*/base::Time::Now() + base::Hours(2),
       /*contributions=*/
-      {AggregatableHistogramContribution(/*bucket=*/"3", /*value=*/4),
-       AggregatableHistogramContribution(/*bucket=*/"5", /*value=*/6)});
+      {AggregatableHistogramContribution(/*key=*/3, /*value=*/4),
+       AggregatableHistogramContribution(/*key=*/5, /*value=*/6)});
   EXPECT_TRUE(storage()->AddAggregatableAttributionForTesting(
       aggregatable_attribution_2));
 
@@ -403,7 +403,7 @@ TEST_F(AttributionStorageSqlTest,
       source_id, /*trigger_time=*/base::Time::Now(),
       /*report_time=*/base::Time::Now() + base::Hours(2),
       /*contributions=*/
-      {AggregatableHistogramContribution(/*bucket=*/"7", /*value=*/8)});
+      {AggregatableHistogramContribution(/*key=*/7, /*value=*/8)});
   EXPECT_TRUE(storage()->AddAggregatableAttributionForTesting(
       aggregatable_attribution_3));
 
@@ -440,7 +440,7 @@ TEST_F(AttributionStorageSqlTest,
       source_id, /*trigger_time=*/base::Time::Now(),
       /*report_time=*/base::Time::Now() + base::Hours(2),
       /*contributions=*/
-      {AggregatableHistogramContribution(/*bucket=*/"1", /*value=*/2)});
+      {AggregatableHistogramContribution(/*key=*/1, /*value=*/2)});
   EXPECT_TRUE(storage()->AddAggregatableAttributionForTesting(
       aggregatable_attribution_1));
 
@@ -449,8 +449,8 @@ TEST_F(AttributionStorageSqlTest,
       source_id, /*trigger_time=*/base::Time::Now(),
       /*report_time=*/base::Time::Now() + base::Hours(2),
       /*contributions=*/
-      {AggregatableHistogramContribution(/*bucket=*/"3", /*value=*/4),
-       AggregatableHistogramContribution(/*bucket=*/"5", /*value=*/6)});
+      {AggregatableHistogramContribution(/*key=*/3, /*value=*/4),
+       AggregatableHistogramContribution(/*key=*/5, /*value=*/6)});
   EXPECT_TRUE(storage()->AddAggregatableAttributionForTesting(
       aggregatable_attribution_2));
 
@@ -483,7 +483,7 @@ TEST_F(AttributionStorageSqlTest,
       source_id, /*trigger_time=*/base::Time::Now(),
       /*report_time=*/base::Time::Now() + base::Hours(2),
       /*contributions=*/
-      {AggregatableHistogramContribution(/*bucket=*/"1", /*value=*/2)});
+      {AggregatableHistogramContribution(/*key=*/1, /*value=*/2)});
   EXPECT_TRUE(storage()->AddAggregatableAttributionForTesting(
       aggregatable_attribution_1));
 
@@ -492,8 +492,8 @@ TEST_F(AttributionStorageSqlTest,
       source_id, /*trigger_time=*/base::Time::Now(),
       /*report_time=*/base::Time::Now() + base::Hours(2),
       /*contributions=*/
-      {AggregatableHistogramContribution(/*bucket=*/"3", /*value=*/4),
-       AggregatableHistogramContribution(/*bucket=*/"5", /*value=*/6)});
+      {AggregatableHistogramContribution(/*key=*/3, /*value=*/4),
+       AggregatableHistogramContribution(/*key=*/5, /*value=*/6)});
   EXPECT_TRUE(storage()->AddAggregatableAttributionForTesting(
       aggregatable_attribution_2));
 
@@ -527,8 +527,8 @@ TEST_F(AttributionStorageSqlTest, DeleteEverythingWithAggregatableAttribution) {
       source_id, /*trigger_time=*/base::Time::Now(),
       /*report_time=*/base::Time::Now() + base::Hours(2),
       /*contributions=*/
-      {AggregatableHistogramContribution(/*bucket=*/"1", /*value=*/2),
-       AggregatableHistogramContribution(/*bucket=*/"3", /*value=*/4)});
+      {AggregatableHistogramContribution(/*key=*/1, /*value=*/2),
+       AggregatableHistogramContribution(/*key=*/3, /*value=*/4)});
   EXPECT_TRUE(storage()->AddAggregatableAttributionForTesting(
       aggregatable_attribution_1));
 
@@ -537,7 +537,7 @@ TEST_F(AttributionStorageSqlTest, DeleteEverythingWithAggregatableAttribution) {
       source_id, /*trigger_time=*/base::Time::Now(),
       /*report_time=*/base::Time::Now() + base::Hours(2),
       /*contributions=*/
-      {AggregatableHistogramContribution(/*bucket=*/"5", /*value=*/6)});
+      {AggregatableHistogramContribution(/*key=*/5, /*value=*/6)});
   EXPECT_TRUE(storage()->AddAggregatableAttributionForTesting(
       aggregatable_attribution_2));
 
@@ -895,16 +895,14 @@ TEST_F(AttributionStorageSqlTest, DeleteAggregatableContributionReport) {
       StoredSource::Id(1), /*trigger_time=*/base::Time::Now(),
       /*report_time=*/base::Time::Now() + base::Hours(2),
       /*contributions=*/
-      {AggregatableHistogramContribution(/*bucket=*/"1", /*value=*/2),
-       AggregatableHistogramContribution(/*bucket=*/"3", /*value=*/4)});
+      {AggregatableHistogramContribution(/*key=*/1, /*value=*/2),
+       AggregatableHistogramContribution(/*key=*/3, /*value=*/4)});
   EXPECT_TRUE(storage()->AddAggregatableAttributionForTesting(
       aggregatable_attribution));
 
   EXPECT_TRUE(storage()->DeleteReport(
       AttributionReport::AggregatableContributionData::Id(1)));
 
-  const AggregatableHistogramContribution& contribution =
-      aggregatable_attribution.contributions[1];
   EXPECT_THAT(
       storage()->GetAggregatableContributionReportsForTesting(
           base::Time::Max()),
@@ -914,8 +912,7 @@ TEST_F(AttributionStorageSqlTest, DeleteAggregatableContributionReport) {
                           /*debug_key=*/absl::nullopt),
           aggregatable_attribution.report_time, DefaultExternalReportID(),
           AttributionReport::AggregatableContributionData(
-              AggregatableHistogramContribution(contribution.bucket(),
-                                                contribution.value()),
+              aggregatable_attribution.contributions[1],
               AttributionReport::AggregatableContributionData::Id(2)))));
 
   EXPECT_TRUE(storage()->DeleteReport(
@@ -940,7 +937,7 @@ TEST_F(AttributionStorageSqlTest,
       StoredSource::Id(1), /*trigger_time=*/base::Time::Now(),
       /*report_time=*/base::Time::Now() + base::Hours(2),
       /*contributions=*/
-      {AggregatableHistogramContribution(/*bucket=*/"1", /*value=*/2)});
+      {AggregatableHistogramContribution(/*key=*/1, /*value=*/2)});
   EXPECT_TRUE(storage()->AddAggregatableAttributionForTesting(
       aggregatable_attribution));
 
@@ -964,7 +961,7 @@ TEST_F(AttributionStorageSqlTest,
       StoredSource::Id(1), /*trigger_time=*/base::Time::Now(),
       /*report_time=*/base::Time::Now() + base::Hours(2),
       /*contributions=*/
-      {AggregatableHistogramContribution(/*bucket=*/"1", /*value=*/2)});
+      {AggregatableHistogramContribution(/*key=*/1, /*value=*/2)});
   EXPECT_TRUE(storage()->AddAggregatableAttributionForTesting(
       aggregatable_attribution));
 

@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include <string>
 #include <vector>
 
 #include "base/numerics/checked_math.h"
@@ -15,12 +14,13 @@
 #include "base/types/strong_alias.h"
 #include "content/browser/attribution_reporting/stored_source.h"
 #include "content/common/content_export.h"
+#include "third_party/abseil-cpp/absl/numeric/int128.h"
 
 namespace content {
 
 class CONTENT_EXPORT AggregatableHistogramContribution {
  public:
-  AggregatableHistogramContribution(std::string bucket, uint32_t value);
+  AggregatableHistogramContribution(absl::uint128 key, uint32_t value);
   AggregatableHistogramContribution(
       const AggregatableHistogramContribution& other) = default;
   AggregatableHistogramContribution& operator=(
@@ -31,12 +31,12 @@ class CONTENT_EXPORT AggregatableHistogramContribution {
       AggregatableHistogramContribution&& other) = default;
   ~AggregatableHistogramContribution() = default;
 
-  const std::string& bucket() const { return bucket_; }
+  absl::uint128 key() const { return key_; }
 
   uint32_t value() const { return value_; }
 
  private:
-  std::string bucket_;
+  absl::uint128 key_;
   uint32_t value_;
 };
 

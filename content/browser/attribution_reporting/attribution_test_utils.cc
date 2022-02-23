@@ -501,7 +501,7 @@ bool operator==(const StoredSource& a, const StoredSource& b) {
 bool operator==(const AggregatableHistogramContribution& a,
                 const AggregatableHistogramContribution& b) {
   const auto tie = [](const AggregatableHistogramContribution& contribution) {
-    return std::make_tuple(contribution.bucket(), contribution.value());
+    return std::make_tuple(contribution.key(), contribution.value());
   };
   return tie(a) == tie(b);
 }
@@ -722,7 +722,7 @@ std::ostream& operator<<(std::ostream& out, const StoredSource& source) {
 std::ostream& operator<<(
     std::ostream& out,
     const AggregatableHistogramContribution& contribution) {
-  return out << "{bucket=" << contribution.bucket()
+  return out << "{key=" << contribution.key()
              << ",value=" << contribution.value() << "}";
 }
 

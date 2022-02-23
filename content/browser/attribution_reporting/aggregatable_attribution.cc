@@ -8,16 +8,16 @@
 
 #include <utility>
 
-#include "base/check.h"
+#include "base/check_op.h"
 #include "base/numerics/checked_math.h"
 
 namespace content {
 
 AggregatableHistogramContribution::AggregatableHistogramContribution(
-    std::string bucket,
+    absl::uint128 key,
     uint32_t value)
-    : bucket_(std::move(bucket)), value_(value) {
-  DCHECK(!bucket_.empty());
+    : key_(key), value_(value) {
+  DCHECK_GT(value, 0u);
 }
 
 AggregatableAttribution::AggregatableAttribution(
