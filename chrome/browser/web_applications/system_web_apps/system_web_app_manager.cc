@@ -597,7 +597,7 @@ void SystemWebAppManager::OnAppsSynchronized(
   for (const auto& it : system_app_delegates_) {
     absl::optional<SystemAppBackgroundTaskInfo> background_info =
         it.second->GetTimerInfo();
-    if (background_info) {
+    if (background_info && it.second->IsAppEnabled()) {
       tasks_.push_back(std::make_unique<SystemAppBackgroundTask>(
           profile_, background_info.value()));
     }

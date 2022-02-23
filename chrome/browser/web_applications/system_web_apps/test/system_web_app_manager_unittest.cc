@@ -1088,6 +1088,36 @@ class SystemWebAppManagerTimerTest : public SystemWebAppManagerTest {
   }
 };
 
+TEST_F(SystemWebAppManagerTimerTest, BackgroundTaskDisabled) {
+  InitEmptyRegistrar();
+
+  // 1) Disabled app should not push to background tasks.
+  SystemAppMapType system_apps;
+  std::unique_ptr<TimerSystemAppDelegate> sys_app_delegate =
+      std::make_unique<TimerSystemAppDelegate>(
+          SystemAppType::SETTINGS, kSettingsAppInternalName, AppUrl1(),
+          GetApp1WebAppInfoFactory(), base::Seconds(60), false);
+
+  sys_app_delegate->SetIsAppEnabled(false);
+
+  system_apps.emplace(SystemAppType::SETTINGS, std::move(sys_app_delegate));
+  system_web_app_manager().SetSystemAppsForTesting(std::move(system_apps));
+  StartAndWaitForAppsToSynchronize();
+
+  EXPECT_EQ(0u, system_web_app_manager().GetBackgroundTasksForTesting().size());
+
+  // 2) Enabled app should push to background tasks.
+  sys_app_delegate = std::make_unique<TimerSystemAppDelegate>(
+      SystemAppType::SETTINGS, kSettingsAppInternalName, AppUrl1(),
+      GetApp1WebAppInfoFactory(), base::Seconds(60), false);
+
+  system_apps.emplace(SystemAppType::SETTINGS, std::move(sys_app_delegate));
+  system_web_app_manager().SetSystemAppsForTesting(std::move(system_apps));
+  StartAndWaitForAppsToSynchronize();
+
+  EXPECT_EQ(1u, system_web_app_manager().GetBackgroundTasksForTesting().size());
+}
+
 TEST_F(SystemWebAppManagerTimerTest, TestTimer) {
   ui::ScopedSetIdleState idle(ui::IDLE_STATE_IDLE);
   SetupTimer(base::Seconds(60), false);

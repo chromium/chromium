@@ -74,6 +74,7 @@ class UnittestingSystemAppDelegate : public SystemWebAppDelegate {
   void SetShouldAllowScriptsToCloseWindows(bool);
   void SetTimerInfo(const SystemAppBackgroundTaskInfo&);
   void SetDefaultBounds(base::RepeatingCallback<gfx::Rect(Browser*)>);
+  void SetIsAppEnabled(bool);
   void SetUrlInSystemAppScope(const GURL& url);
   void SetPreferManifestBackgroundColor(bool);
 #if BUILDFLAG(IS_CHROMEOS)
@@ -98,6 +99,7 @@ class UnittestingSystemAppDelegate : public SystemWebAppDelegate {
   bool has_tab_strip_ = false;
   bool should_have_reload_button_in_minimal_ui_ = true;
   bool allow_scripts_to_close_windows_ = false;
+  bool is_app_enabled = true;
   GURL url_in_system_app_scope_;
   bool prefer_manifest_background_color_ = false;
 #if BUILDFLAG(IS_CHROMEOS)

@@ -167,7 +167,7 @@ gfx::Rect UnittestingSystemAppDelegate::GetDefaultBounds(
   return gfx::Rect();
 }
 bool UnittestingSystemAppDelegate::IsAppEnabled() const {
-  return true;
+  return is_app_enabled;
 }
 bool UnittestingSystemAppDelegate::IsUrlInSystemAppScope(
     const GURL& url) const {
@@ -243,6 +243,9 @@ void UnittestingSystemAppDelegate::SetTimerInfo(
 void UnittestingSystemAppDelegate::SetDefaultBounds(
     base::RepeatingCallback<gfx::Rect(Browser*)> lambda) {
   get_default_bounds_ = std::move(lambda);
+}
+void UnittestingSystemAppDelegate::SetIsAppEnabled(bool value) {
+  is_app_enabled = value;
 }
 void UnittestingSystemAppDelegate::SetUrlInSystemAppScope(const GURL& url) {
   url_in_system_app_scope_ = url;
