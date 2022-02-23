@@ -151,6 +151,13 @@ class ThreatDetailsWrap : public ThreatDetails {
     run_loop_ = nullptr;
   }
 
+  void OnRedirectionCollectionReady() override {
+    ThreatDetails::OnRedirectionCollectionReady();
+    if (should_stop_after_redirect_collection_ && run_loop_) {
+      run_loop_->Quit();
+    }
+  }
+
   // Used to synchronize ThreatDetailsDone() with WaitForThreatDetailsDone().
   // RunLoop::RunUntilIdle() is not sufficient because the MessageLoop task
   // queue completely drains at some point between the send and the wait.
@@ -163,9 +170,14 @@ class ThreatDetailsWrap : public ThreatDetails {
 
   void StartCollection() { ThreatDetails::StartCollection(); }
 
+  void SetShouldStopAfterRedirectCollection(bool should_stop) {
+    should_stop_after_redirect_collection_ = should_stop;
+  }
+
  private:
   raw_ptr<base::RunLoop> run_loop_;
   size_t done_callback_count_;
+  bool should_stop_after_redirect_collection_ = false;
 };
 
 class MockSafeBrowsingUIManager : public SafeBrowsingUIManager {
@@ -1975,6 +1987,47 @@ TEST_F(ThreatDetailsTest, HistoryServiceUrls) {
   pb_resource->set_url(kFirstRedirectURL);
 
   VerifyResults(actual, expected);
+}
+
+TEST_F(ThreatDetailsTest, CanCancelDuringCollection) {
+  content::WebContentsTester::For(web_contents())
+      ->NavigateAndCommit(GURL(kLandingURL));
+
+  UnsafeResource resource;
+  InitResource(SB_THREAT_TYPE_URL_CLIENT_SIDE_PHISHING,
+               ThreatSource::CLIENT_SIDE_DETECTION, true /* is_subresource */,
+               GURL(kThreatURL), &resource);
+
+  auto report = std::make_unique<ThreatDetailsWrap>(
+      ui_manager_.get(), web_contents(), resource, test_shared_loader_factory_,
+      history_service(), user_population_callback(),
+      referrer_chain_provider_.get());
+  report->StartCollection();
+
+  SimulateFillCache(kThreatURL);
+
+  // The cache collection starts after the IPC from the DOM is fired.
+  std::vector<mojom::ThreatDOMDetailsNodePtr> params;
+  report->OnReceivedThreatDOMDetails(mojo::Remote<mojom::ThreatReporter>(),
+                                     main_rfh()->GetGlobalId(),
+                                     std::move(params));
+
+  // Let the cache callbacks complete.
+  base::RunLoop().RunUntilIdle();
+
+  // Let the cache collection start
+  {
+    base::RunLoop run_loop;
+    report->SetShouldStopAfterRedirectCollection(true);
+    report->SetRunLoopToQuit(&run_loop);
+    report->FinishCollection(/*did_proceed=*/true, /*num_visits=*/-1);
+    run_loop.Run();
+  }
+
+  // Cancel the collection
+  report.reset();
+
+  base::RunLoop().RunUntilIdle();
 }
 
 }  // namespace safe_browsing

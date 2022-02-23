@@ -22,12 +22,11 @@ namespace safe_browsing {
 
 typedef std::vector<GURL> RedirectChain;
 
-class ThreatDetailsRedirectsCollector
-    : public base::RefCounted<ThreatDetailsRedirectsCollector>,
-      public history::HistoryServiceObserver {
+class ThreatDetailsRedirectsCollector : public history::HistoryServiceObserver {
  public:
   explicit ThreatDetailsRedirectsCollector(
       const base::WeakPtr<history::HistoryService>& history_service);
+  ~ThreatDetailsRedirectsCollector() override;
 
   ThreatDetailsRedirectsCollector(const ThreatDetailsRedirectsCollector&) =
       delete;
@@ -51,8 +50,6 @@ class ThreatDetailsRedirectsCollector
 
  private:
   friend class base::RefCounted<ThreatDetailsRedirectsCollector>;
-
-  ~ThreatDetailsRedirectsCollector() override;
 
   void StartGetRedirects(const std::vector<GURL>& urls);
   void GetRedirects(const GURL& url);
@@ -82,6 +79,8 @@ class ThreatDetailsRedirectsCollector
   base::ScopedObservation<history::HistoryService,
                           history::HistoryServiceObserver>
       history_service_observation_{this};
+
+  base::WeakPtrFactory<ThreatDetailsRedirectsCollector> weak_factory_{this};
 };
 
 }  // namespace safe_browsing
