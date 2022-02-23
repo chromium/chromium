@@ -26,10 +26,6 @@
 namespace cc {
 namespace {
 
-// TODO(https://crbug.com/1286076): Plumb the true parameters in here.
-constexpr float kTempMaxLuminanceNits = 100.f;
-constexpr float kTempHDRMaxLuminanceRelative = 1.f;
-
 struct Context {
   const std::vector<sk_sp<SkImage>> sk_planes_;
 };
@@ -130,6 +126,23 @@ sk_sp<SkImage> MakeTextureImage(
   return uploaded_image;
 }
 
+size_t TargetColorParamsSize(
+    const absl::optional<TargetColorParams>& target_color_params) {
+  // uint32 for whether or not there are going to be parameters.
+  size_t target_color_params_size = sizeof(uint32_t);
+  if (target_color_params) {
+    // The target color space.
+    target_color_params_size +=
+        sizeof(uint64_t) +
+        target_color_params->color_space.ToSkColorSpace()->writeToMemory(
+            nullptr);
+    // floats for the SDR and HDR maximum luminance.
+    target_color_params_size += sizeof(float);
+    target_color_params_size += sizeof(float);
+  }
+  return target_color_params_size;
+}
+
 }  // namespace
 
 size_t NumberOfPlanesForYUVDecodeFormat(YUVDecodeFormat format) {
@@ -148,18 +161,19 @@ size_t NumberOfPlanesForYUVDecodeFormat(YUVDecodeFormat format) {
 
 ClientImageTransferCacheEntry::ClientImageTransferCacheEntry(
     const SkPixmap* pixmap,
-    const SkColorSpace* target_color_space,
+    absl::optional<TargetColorParams> target_color_params,
     bool needs_mips)
     : needs_mips_(needs_mips),
+      target_color_params_(target_color_params),
       id_(GetNextId()),
       pixmap_(pixmap),
-      target_color_space_(target_color_space),
       decoded_color_space_(nullptr) {
-  size_t target_color_space_size =
-      target_color_space ? target_color_space->writeToMemory(nullptr) : 0u;
-  size_t pixmap_color_space_size =
-      pixmap_->colorSpace() ? pixmap_->colorSpace()->writeToMemory(nullptr)
-                            : 0u;
+  const size_t target_color_params_size =
+      TargetColorParamsSize(target_color_params_);
+  const size_t pixmap_color_space_size =
+      sizeof(uint64_t) + (pixmap_->colorSpace()
+                              ? pixmap_->colorSpace()->writeToMemory(nullptr)
+                              : 0);
 
   // x64 has 8-byte alignment for uint64_t even though x86 has 4-byte
   // alignment.  Always use 8 byte alignment.
@@ -175,8 +189,8 @@ ClientImageTransferCacheEntry::ClientImageTransferCacheEntry(
   safe_size += sizeof(uint32_t);  // has mips
   safe_size += sizeof(uint64_t) + align;  // pixels size + alignment
   safe_size += sizeof(uint64_t) + align;  // row bytes + alignment
-  safe_size += target_color_space_size + sizeof(uint64_t) + align;
-  safe_size += pixmap_color_space_size + sizeof(uint64_t) + align;
+  safe_size += target_color_params_size + align;
+  safe_size += pixmap_color_space_size + align;
   // Include 4 bytes of padding so we can always align our data pointer to a
   // 4-byte boundary.
   safe_size += 4;
@@ -190,12 +204,13 @@ ClientImageTransferCacheEntry::ClientImageTransferCacheEntry(
     SkYUVAInfo::Subsampling subsampling,
     const SkColorSpace* decoded_color_space,
     SkYUVColorSpace yuv_color_space,
+    absl::optional<TargetColorParams> target_color_params,
     bool needs_mips)
     : needs_mips_(needs_mips),
       plane_config_(plane_config),
+      target_color_params_(target_color_params),
       id_(GetNextId()),
       pixmap_(nullptr),
-      target_color_space_(nullptr),
       decoded_color_space_(decoded_color_space),
       subsampling_(subsampling),
       yuv_color_space_(yuv_color_space) {
@@ -208,8 +223,13 @@ ClientImageTransferCacheEntry::ClientImageTransferCacheEntry(
     yuv_pixmaps_->at(i) = &yuva_pixmaps[i];
   }
   DCHECK(IsYuv());
-  size_t decoded_color_space_size =
-      decoded_color_space ? decoded_color_space->writeToMemory(nullptr) : 0u;
+
+  const size_t target_color_params_size =
+      TargetColorParamsSize(target_color_params_);
+  const size_t decoded_color_space_size =
+      sizeof(uint64_t) + (decoded_color_space_
+                              ? decoded_color_space_->writeToMemory(nullptr)
+                              : 0u);
 
   // x64 has 8-byte alignment for uint64_t even though x86 has 4-byte
   // alignment.  Always use 8 byte alignment.
@@ -223,6 +243,7 @@ ClientImageTransferCacheEntry::ClientImageTransferCacheEntry(
   safe_size += sizeof(uint32_t);  // has mips
   safe_size += sizeof(uint32_t);  // yuv_color_space
   safe_size += sizeof(uint32_t);  // yuv_color_type
+  safe_size += target_color_params_size + align;
   safe_size += decoded_color_space_size + align;
   safe_size += num_yuva_pixmaps * sizeof(uint64_t);  // plane widths
   safe_size += num_yuva_pixmaps * sizeof(uint64_t);  // plane heights
@@ -274,6 +295,17 @@ bool ClientImageTransferCacheEntry::Serialize(base::span<uint8_t> data) const {
   PaintOpWriter writer(data.data(), data.size(), options);
   writer.Write(plane_config_);
 
+  if (target_color_params_) {
+    const uint32_t has_target_color_params = 1;
+    writer.Write(has_target_color_params);
+    writer.Write(target_color_params_->color_space.ToSkColorSpace().get());
+    writer.Write(target_color_params_->sdr_max_luminance_nits);
+    writer.Write(target_color_params_->hdr_max_luminance_relative);
+  } else {
+    const uint32_t has_target_color_params = 0;
+    writer.Write(has_target_color_params);
+  }
+
   if (plane_config_ != SkYUVAInfo::PlaneConfig::kUnknown) {
     ValidateYUVDataBeforeSerializing();
     writer.Write(subsampling_);
@@ -317,7 +349,6 @@ bool ClientImageTransferCacheEntry::Serialize(base::span<uint8_t> data) const {
   writer.WriteSize(pixmap_size);
   writer.WriteSize(pixmap_->rowBytes());
   writer.Write(pixmap_->colorSpace());
-  writer.Write(target_color_space_);
   writer.AlignMemory(4);
   writer.WriteData(pixmap_size, pixmap_->addr());
 
@@ -403,6 +434,21 @@ bool ServiceImageTransferCacheEntry::Deserialize(
   PaintOpReader reader(data.data(), data.size(), options);
   plane_config_ = SkYUVAInfo::PlaneConfig::kUnknown;
   reader.Read(&plane_config_);
+
+  uint32_t has_target_color_params;
+  reader.Read(&has_target_color_params);
+  absl::optional<TargetColorParams> target_color_params;
+  if (has_target_color_params) {
+    sk_sp<SkColorSpace> target_color_space;
+    reader.Read(&target_color_space);
+    if (!target_color_space)
+      return false;
+    target_color_params = TargetColorParams();
+    target_color_params->color_space = gfx::ColorSpace(*target_color_space);
+    reader.Read(&target_color_params->sdr_max_luminance_nits);
+    reader.Read(&target_color_params->hdr_max_luminance_relative);
+  }
+
   if (plane_config_ != SkYUVAInfo::PlaneConfig::kUnknown) {
     SkYUVAInfo::Subsampling subsampling = SkYUVAInfo::Subsampling::kUnknown;
     reader.Read(&subsampling);
@@ -510,17 +556,6 @@ bool ServiceImageTransferCacheEntry::Deserialize(
   reader.ReadSize(&row_bytes);
   sk_sp<SkColorSpace> pixmap_color_space;
   reader.Read(&pixmap_color_space);
-  sk_sp<SkColorSpace> target_color_space;
-  reader.Read(&target_color_space);
-
-  absl::optional<TargetColorParams> target_color_params;
-  if (target_color_space) {
-    target_color_params = TargetColorParams();
-    target_color_params->color_space = gfx::ColorSpace(*target_color_space);
-    target_color_params->sdr_max_luminance_nits = kTempMaxLuminanceNits;
-    target_color_params->hdr_max_luminance_relative =
-        kTempHDRMaxLuminanceRelative;
-  }
 
   if (!reader.valid())
     return false;
