@@ -703,6 +703,14 @@ inline bool CacheMatchedElementsAndReturnMatchedResultForDirectRelation(
   return selector_matched;
 }
 
+inline void SetAffectedByHasFlag(Element* element,
+                                 bool is_sibling_of_has_scope) {
+  if (is_sibling_of_has_scope)
+    element->SetSiblingsAffectedByHas();
+  else
+    element->SetAncestorsOrAncestorSiblingsAffectedByHas();
+}
+
 }  // namespace
 
 bool SelectorChecker::CheckPseudoHas(const SelectorCheckingContext& context,
@@ -726,6 +734,9 @@ bool SelectorChecker::CheckPseudoHas(const SelectorCheckingContext& context,
        selector; selector = CSSSelectorList::Next(*selector)) {
     ElementHasMatchedMap& map =
         HasMatchedCacheScope::GetCacheForSelector(&document, selector);
+    HasArgumentMatchContext has_argument_match_context(selector);
+    CSSSelector::RelationType leftmost_relation =
+        has_argument_match_context.LeftmostRelation();
 
     // Get the cache item of matching ':has(<selector>)' on the element
     // to skip argument matching on the subtree elements
@@ -737,6 +748,35 @@ bool SelectorChecker::CheckPseudoHas(const SelectorCheckingContext& context,
       auto cache_result =
           map.insert(has_scope_element, false);  // Mark as checked
       if (!cache_result.is_new_entry) {        // Was already marked as checked
+
+        // The SiblingsAffectedByHas flag is set only when an element is a
+        // sibling of the :has() scope element during the subselector matching.
+        // But during the matching, the matching status of some elements are
+        // cached and those element cannot be a sibling of the :has() scope
+        // element in case that the subselector starts with adjacent combinator.
+        // 1. MatchSelector() gives some possibly matched elements, and those
+        //    are cached as matched.
+        // 2. If an element is not matched, then it is cached as not matched.
+        // We need to set missing SiblingAffectedByHas flags for the cached
+        // elements before returning early.
+        switch (leftmost_relation) {
+          case CSSSelector::kRelativeDirectAdjacent:
+            if (Element* next_sibling =
+                    ElementTraversal::NextSibling(*has_scope_element))
+              next_sibling->SetSiblingsAffectedByHas();
+            break;
+          case CSSSelector::kRelativeIndirectAdjacent:
+            for (Element* next_sibling =
+                     ElementTraversal::NextSibling(*has_scope_element);
+                 next_sibling && !next_sibling->SiblingsAffectedByHas();
+                 next_sibling = ElementTraversal::NextSibling(*next_sibling)) {
+              next_sibling->SetSiblingsAffectedByHas();
+            }
+            break;
+          default:
+            break;
+        }
+
         if (cache_result.stored_value->value)  // Was already marked as matched
           return true;
         continue;
@@ -744,7 +784,6 @@ bool SelectorChecker::CheckPseudoHas(const SelectorCheckingContext& context,
     }
 
     sub_context.selector = selector;
-    HasArgumentMatchContext has_argument_match_context(selector);
 
     bool depth_fixed = has_argument_match_context.DepthFixed();
 
@@ -802,8 +841,22 @@ bool SelectorChecker::CheckPseudoHas(const SelectorCheckingContext& context,
     for (HasArgumentSubtreeIterator iterator(*has_scope_element,
                                              has_argument_match_context);
          !iterator.AtEnd(); ++iterator) {
-      if (depth_fixed && !iterator.AtFixedDepth())
+      if (depth_fixed && !iterator.AtFixedDepth()) {
+        // We can skip subselector matching on some elements at a certain depth
+        // when the subselector doesn't have descendant combinator. (e.g. For
+        // the style rule '.a:has(> .b > .c) {}', we don't need to match the
+        // subselector '> .b > .c' on the child of '.a' or the great-grand-child
+        // of '.a'.)
+        // But this can break the upward tree walk because the 'affected-by'
+        // flags of the skipped elements will not set.
+        // To prevent this, marks the flags of skipped elements if those are
+        // under the depth limit.
+        if (iterator.UnderDepthLimit()) {
+          SetAffectedByHasFlag(iterator.CurrentElement(),
+                               iterator.AtSiblingOfHasScope());
+        }
         continue;
+      }
       sub_context.element = iterator.CurrentElement();
       HeapVector<Member<Element>> has_argument_leftmost_compound_matches;
       MatchResult sub_result;
@@ -812,7 +865,7 @@ bool SelectorChecker::CheckPseudoHas(const SelectorCheckingContext& context,
 
       MatchSelector(sub_context, sub_result);
 
-      switch (has_argument_match_context.LeftmostRelation()) {
+      switch (leftmost_relation) {
         case CSSSelector::kRelativeDescendant:
           selector_matched =
               CacheMatchedElementsAndReturnMatchedResultForIndirectRelation(
@@ -843,38 +896,36 @@ bool SelectorChecker::CheckPseudoHas(const SelectorCheckingContext& context,
       }
 
       if (selector_matched) {
-        // Need to walk up ancestors to set 'AncestorsAffectedByHas' flag so
-        // that the StyleEngine can walk up to find the elements affected by
-        // subject or non-subject :has().
+        // Need to walk up to set 'AncestorsOrAncestorSiblingsAffectedByHas'
+        // or 'SiblingsAffectedByHas' flag so that the StyleEngine can walk up
+        // to find the elements affected by subject or non-subject :has().
         //
         // StyleEngine tries to find elements affected by :has() by walking up
-        // ancestors of a mutated element only when an element marked as
-        // 'AncestorsAffectedByHas'. If an ancestor of the mutated element
-        // is not 'AncestorsAffectedByHas' element, then StyleEngine will stop
-        // the upward tree walk at the element.
+        // siblings or ancestors a mutated element only when an element has the
+        // flags set. If an element doesn't have those flags set, then the
+        // StyleEngine will stop the upward tree walk at the element.
         //
         // HasArgumentSubtreeIterator traverses the sub-tree in the reversed
         // DOM tree walk order for preventing O(n^2) matching problem of
         // multiple elements affected by :has(). Due to this traversal order,
-        // this early returning can break the upward tree walk. To prevent the
-        // problem, marks all ancestors as 'AncestorsAffectedByHas' before
-        // returning.
+        // this early returning can break the upward tree walk.
         //
-        // Similar to the DynamicRestyleFlags in the ContainerNode, this flag
+        // To prevent the problem, walks up until reach to the scope element
+        // and marks elements as 'AncestorsOrAncestorSiblingsAffectedByHas' or
+        // 'SiblingsAffectedByHas' before returning.
+        //
+        // Similar to the DynamicRestyleFlags in the ContainerNode, these flags
         // will never be reset.
-        //
-        // TODO(blee@igalia.com) Need to traverse to siblings and siblings of
-        // ancestors to support sibling combinator and complex selector in
-        // :has() argument.
-        for (Element* parent = iterator.CurrentElement();
-             parent && parent != has_scope_element;
-             parent = parent->parentElement()) {
-          parent->SetAncestorsAffectedByHas();
+        for (AffectedByHasIterator affected_by_has_iterator(iterator);
+             !affected_by_has_iterator.AtEnd(); ++affected_by_has_iterator) {
+          SetAffectedByHasFlag(affected_by_has_iterator.CurrentElement(),
+                               affected_by_has_iterator.AtSiblingOfHasScope());
         }
         return true;
-      } else {
-        iterator.CurrentElement()->SetAncestorsAffectedByHas();
       }
+
+      SetAffectedByHasFlag(iterator.CurrentElement(),
+                           iterator.AtSiblingOfHasScope());
     }
   }
   return false;

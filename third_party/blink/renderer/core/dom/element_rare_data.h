@@ -346,8 +346,14 @@ class ElementRareData final : public NodeRareData {
   }
   bool AffectedByNonSubjectHas() const { return affected_by_non_subject_has_; }
   void SetAffectedByNonSubjectHas() { affected_by_non_subject_has_ = true; }
-  bool AncestorsAffectedByHas() const { return ancestors_affected_by_has_; }
-  void SetAncestorsAffectedByHas() { ancestors_affected_by_has_ = true; }
+  bool AncestorsOrAncestorSiblingsAffectedByHas() const {
+    return ancestors_or_ancestor_siblings_affected_by_has_;
+  }
+  void SetAncestorsOrAncestorSiblingsAffectedByHas() {
+    ancestors_or_ancestor_siblings_affected_by_has_ = true;
+  }
+  bool SiblingsAffectedByHas() const { return siblings_affected_by_has_; }
+  void SetSiblingsAffectedByHas() { siblings_affected_by_has_ = true; }
 
   AccessibleNode* GetAccessibleNode() const {
     if (super_rare_data_)
@@ -468,26 +474,36 @@ class ElementRareData final : public NodeRareData {
   unsigned scrollbar_pseudo_element_styles_depend_on_font_metrics_ : 1;
 
   // Flags for :has() invalidation.
-  // - affected_by_non_subject_has_ : Indicates that this element may match a
-  //                                  non-subject :has() selector, which means
-  //                                  we need to schedule descendant and sibling
-  //                                  invalidation sets on this element when
-  //                                  the :has() state changes.
-  // - ancestors_affected_by_has_ : Indicates that this element possibly matches
-  //                                any of the :has() subselectors, so we need
-  //                                to walk ancestors to find the elements
-  //                                affected by subject or non-subject :has()
-  //                                state change. Please refer the comments in
-  //                                SelectorChecker::CheckPseudoHas() for more
-  //                                details.
   //
-  // Example 1) Subject :has()
+  // - affected_by_non_subject_has_ :
+  //     Indicates that this element may match a non-subject :has() selector,
+  //     which means we need to schedule descendant and sibling invalidation
+  //     sets on this element when the :has() state changes.
+  //
+  // - ancestors_or_ancestor_siblings_affected_by_has_
+  //     Indicates that this element possibly matches any of the :has()
+  //     subselectors, and we need to walk ancestors or siblings of ancestors to
+  //     find the elements affected by subject or non-subject :has() state
+  //     change. Please refer the comments in SelectorChecker::CheckPseudoHas()
+  //     for more details.
+  //
+  // - siblings_affected_by_has_
+  //     Indicates that this element possibly matches any of the :has()
+  //     subselectors, and we need to walk siblings to find the elements
+  //     affected by subject or non-subject :has() state change.
+  //
+  // Please refer the comments in WalkUpAndSetDynamicRestyleFlagForHas() in
+  // selector_checker.cc and HasArgumentSubtreeIterator::operator++() for more
+  // details.
+  //
+  //
+  // Example 1) Subject :has() (has only descendant relationship)
   //  <style> .a:has(.b) {...} </style>
   //  <div>
   //    <div class=a>  <!-- AffectedBySubjectHas (computed style extra flag) -->
-  //      <div>           <!-- AncestorsAffectedByHas -->
-  //        <div></div>   <!-- AncestorsAffectedByHas -->
-  //        <div></div>   <!-- AncestorsAffectedByHas -->
+  //      <div>           <!-- AncestorsOrAncestorSiblingsAffectedByHas -->
+  //        <div></div>   <!-- AncestorsOrAncestorSiblingsAffectedByHas -->
+  //        <div></div>   <!-- AncestorsOrAncestorSiblingsAffectedByHas -->
   //      </div>
   //    </div>
   //  </div>
@@ -496,16 +512,42 @@ class ElementRareData final : public NodeRareData {
   // Example 2) Non-subject :has()
   //  <style> .a:has(.b) .c {...} </style>
   //  <div>
-  //    <div class=a>             <!-- AffectedByNonSubjectHas -->
-  //      <div>                   <!-- AncestorsAffectedByHas -->
-  //        <div></div>           <!-- AncestorsAffectedByHas -->
-  //        <div class=c></div>   <!-- AncestorsAffectedByHas -->
+  //    <div class=a>          <!-- AffectedByNonSubjectHas -->
+  //      <div>                <!-- AncestorsOrAncestorSiblingsAffectedByHas -->
+  //        <div></div>        <!-- AncestorsOrAncestorSiblingsAffectedByHas -->
+  //        <div class=c></div><!-- AncestorsOrAncestorSiblingsAffectedByHas -->
   //      </div>
   //    </div>
   //  </div>
   //
+  //
+  // Example 3) Subject :has() (has only sibling relationship)
+  //  <style> .a:has(~ .b) {...} </style>
+  //  <div>
+  //    <div></div>
+  //    <div class=a>  <!-- AffectedBySubjectHas (computed style extra flag) -->
+  //      <div></div>
+  //    </div>
+  //    <div></div>    <!-- SiblingsAffectedByHas -->
+  //    <div></div>    <!-- SiblingsAffectedByHas -->
+  //  </div>
+  //
+  //
+  // Example 4) Subject :has() (has both sibling and descendant relationship)
+  //  <style> .a:has(~ .b .c) {...} </style>
+  //  <div>
+  //    <div></div>
+  //    <div class=a>  <!-- AffectedBySubjectHas (computed style extra flag) -->
+  //    </div>
+  //    <div>          <!-- SiblingsAffectedByHas -->
+  //      <div></div>  <!-- AncestorsOrAncestorSiblingsAffectedByHas -->
+  //      <div></div>  <!-- AncestorsOrAncestorSiblingsAffectedByHas -->
+  //    </div>
+  //  </div>
+  //
   unsigned affected_by_non_subject_has_ : 1;
-  unsigned ancestors_affected_by_has_ : 1;
+  unsigned ancestors_or_ancestor_siblings_affected_by_has_ : 1;
+  unsigned siblings_affected_by_has_ : 1;
 };
 
 inline LayoutSize DefaultMinimumSizeForResizing() {

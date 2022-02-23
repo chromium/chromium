@@ -390,8 +390,12 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
                                         InvalidationScope =
                                             kInvalidateCurrentScope);
   void ScheduleCustomElementInvalidations(HashSet<AtomicString> tag_names);
-  void ElementInsertedOrRemoved(Element* parent, Element& element);
-  void SubtreeInsertedOrRemoved(Element* parent, Element& subtree_root);
+  void ElementInsertedOrRemoved(Element* parent,
+                                Node* node_before_change,
+                                Element& element);
+  void SubtreeInsertedOrRemoved(Element* parent,
+                                Node* node_before_change,
+                                Element& subtree_root);
 
   void NodeWillBeRemoved(Node&);
   void ChildrenRemoved(ContainerNode& parent);
@@ -695,11 +699,20 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   // container.
   void RebuildFieldSetContainer(HTMLFieldSetElement& fieldset);
 
-  // Walk-up to invalidate elements affected by :has() state change
-  void InvalidateAncestorsAffectedByHasInternal(Element*,
-                                                bool for_pseudo_change);
-  void InvalidateAncestorsAffectedByHas(Element*);
-  void InvalidateAncestorsAffectedByHasForPseudoChange(Element*);
+  // Invalidate ancestors or siblings affected by :has() state change
+  void InvalidateAncestorsOrSiblingsAffectedByHasInternal(
+      Element* parent,
+      Element* previous_sibling,
+      bool for_pseudo_change);
+  inline void InvalidateAncestorsOrSiblingsAffectedByHas(
+      Element& changed_element);
+  void InvalidateAncestorsOrSiblingsAffectedByHas(Element* parent,
+                                                  Element* previous_sibling);
+  inline void InvalidateAncestorsOrSiblingsAffectedByHasForPseudoChange(
+      Element& changed_element);
+  void InvalidateAncestorsOrSiblingsAffectedByHasForPseudoChange(
+      Element* parent,
+      Element* previous_sibling);
 
   Member<Document> document_;
 

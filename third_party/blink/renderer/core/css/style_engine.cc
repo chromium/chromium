@@ -941,12 +941,39 @@ bool StyleEngine::IsSubtreeAndSiblingsStyleDirty(const Element& element) const {
   return element.parentNode()->GetStyleChangeType() == kSubtreeStyleChange;
 }
 
-void StyleEngine::InvalidateAncestorsAffectedByHasInternal(
-    Element* element,
+namespace {
+
+bool PossiblyAffectingHasState(Element& element) {
+  return element.AncestorsOrAncestorSiblingsAffectedByHas() ||
+         element.SiblingsAffectedByHas();
+}
+
+inline Element* SelfOrPreviousSibling(Node* node) {
+  if (!node)
+    return nullptr;
+  if (Element* element = DynamicTo<Element>(node))
+    return element;
+  return ElementTraversal::PreviousSibling(*node);
+}
+
+}  // namespace
+
+void StyleEngine::InvalidateAncestorsOrSiblingsAffectedByHasInternal(
+    Element* parent,
+    Element* previous_sibling,
     bool for_pseudo_change) {
   const RuleFeatureSet& features = GetRuleFeatureSet();
 
+  bool traverse_ancestors = false;
+  bool traverse_siblings = false;
+  Element* element = previous_sibling ? previous_sibling : parent;
+
+  DCHECK(element);
+
   while (element) {
+    traverse_ancestors |= element->AncestorsOrAncestorSiblingsAffectedByHas();
+    traverse_siblings = element->SiblingsAffectedByHas();
+
     const ComputedStyle* style = element->GetComputedStyle();
 
     if (style && style->AffectedBySubjectHas() &&
@@ -970,23 +997,56 @@ void StyleEngine::InvalidateAncestorsAffectedByHasInternal(
                                                              *element);
     }
 
-    // Stop walk up when the 'AncestorsAffectedByHas' flag is false.
-    if (!element->AncestorsAffectedByHas())
+    if (traverse_siblings) {
+      previous_sibling = ElementTraversal::PreviousSibling(*element);
+      if (previous_sibling) {
+        element = previous_sibling;
+        continue;
+      }
+    }
+
+    if (!traverse_ancestors)
       return;
 
     element = element->parentElement();
+    traverse_ancestors = false;
   }
 }
 
-void StyleEngine::InvalidateAncestorsAffectedByHasForPseudoChange(
-    Element* element) {
-  InvalidateAncestorsAffectedByHasInternal(element,
-                                           true /* for_pseudo_change */);
+void StyleEngine::InvalidateAncestorsOrSiblingsAffectedByHasForPseudoChange(
+    Element& changed_element) {
+  InvalidateAncestorsOrSiblingsAffectedByHasForPseudoChange(
+      changed_element.AncestorsOrAncestorSiblingsAffectedByHas()
+          ? changed_element.parentElement()
+          : nullptr,
+      changed_element.SiblingsAffectedByHas()
+          ? ElementTraversal::PreviousSibling(changed_element)
+          : nullptr);
 }
 
-void StyleEngine::InvalidateAncestorsAffectedByHas(Element* element) {
-  InvalidateAncestorsAffectedByHasInternal(element,
-                                           false /* for_pseudo_change */);
+void StyleEngine::InvalidateAncestorsOrSiblingsAffectedByHasForPseudoChange(
+    Element* parent,
+    Element* previous_sibling) {
+  InvalidateAncestorsOrSiblingsAffectedByHasInternal(
+      parent, previous_sibling, true /* for_pseudo_change */);
+}
+
+void StyleEngine::InvalidateAncestorsOrSiblingsAffectedByHas(
+    Element& changed_element) {
+  InvalidateAncestorsOrSiblingsAffectedByHas(
+      changed_element.AncestorsOrAncestorSiblingsAffectedByHas()
+          ? changed_element.parentElement()
+          : nullptr,
+      changed_element.SiblingsAffectedByHas()
+          ? ElementTraversal::PreviousSibling(changed_element)
+          : nullptr);
+}
+
+void StyleEngine::InvalidateAncestorsOrSiblingsAffectedByHas(
+    Element* parent,
+    Element* previous_sibling) {
+  InvalidateAncestorsOrSiblingsAffectedByHasInternal(
+      parent, previous_sibling, false /* for_pseudo_change */);
 }
 
 void StyleEngine::ClassChangedForElement(
@@ -998,11 +1058,11 @@ void StyleEngine::ClassChangedForElement(
   const RuleFeatureSet& features = GetRuleFeatureSet();
 
   if (RuntimeEnabledFeatures::CSSPseudoHasEnabled() &&
-      element.AncestorsAffectedByHas()) {
+      PossiblyAffectingHasState(element)) {
     unsigned changed_size = changed_classes.size();
     for (unsigned i = 0; i < changed_size; ++i) {
       if (features.NeedsHasInvalidationForClass(changed_classes[i])) {
-        InvalidateAncestorsAffectedByHas(element.parentElement());
+        InvalidateAncestorsOrSiblingsAffectedByHas(element);
         break;
       }
     }
@@ -1035,7 +1095,7 @@ void StyleEngine::ClassChangedForElement(const SpaceSplitString& old_classes,
   bool needs_schedule_invalidation = !IsSubtreeAndSiblingsStyleDirty(element);
   bool possibly_affecting_has_state =
       RuntimeEnabledFeatures::CSSPseudoHasEnabled() &&
-      element.AncestorsAffectedByHas();
+      PossiblyAffectingHasState(element);
   if (!needs_schedule_invalidation && !possibly_affecting_has_state)
     return;
 
@@ -1094,7 +1154,7 @@ void StyleEngine::ClassChangedForElement(const SpaceSplitString& old_classes,
   }
 
   if (affecting_has_state)
-    InvalidateAncestorsAffectedByHas(element.parentElement());
+    InvalidateAncestorsOrSiblingsAffectedByHas(element);
 }
 
 namespace {
@@ -1124,9 +1184,9 @@ void StyleEngine::AttributeChangedForElement(
   const RuleFeatureSet& features = GetRuleFeatureSet();
 
   if (RuntimeEnabledFeatures::CSSPseudoHasEnabled() &&
-      element.AncestorsAffectedByHas()) {
+      PossiblyAffectingHasState(element)) {
     if (features.NeedsHasInvalidationForAttribute(attribute_name))
-      InvalidateAncestorsAffectedByHas(element.parentElement());
+      InvalidateAncestorsOrSiblingsAffectedByHas(element);
   }
 
   if (IsSubtreeAndSiblingsStyleDirty(element))
@@ -1155,10 +1215,10 @@ void StyleEngine::IdChangedForElement(const AtomicString& old_id,
   const RuleFeatureSet& features = GetRuleFeatureSet();
 
   if (RuntimeEnabledFeatures::CSSPseudoHasEnabled() &&
-      element.AncestorsAffectedByHas()) {
+      PossiblyAffectingHasState(element)) {
     if ((!old_id.IsEmpty() && features.NeedsHasInvalidationForId(old_id)) ||
         (!new_id.IsEmpty() && features.NeedsHasInvalidationForId(new_id))) {
-      InvalidateAncestorsAffectedByHas(element.parentElement());
+      InvalidateAncestorsOrSiblingsAffectedByHas(element);
     }
   }
 
@@ -1188,9 +1248,9 @@ void StyleEngine::PseudoStateChangedForElement(
   const RuleFeatureSet& features = GetRuleFeatureSet();
 
   if (invalidate_ancestors && RuntimeEnabledFeatures::CSSPseudoHasEnabled() &&
-      element.AncestorsAffectedByHas()) {
+      PossiblyAffectingHasState(element)) {
     if (features.NeedsHasInvalidationForPseudoClass(pseudo_type))
-      InvalidateAncestorsAffectedByHasForPseudoChange(element.parentElement());
+      InvalidateAncestorsOrSiblingsAffectedByHasForPseudoChange(element);
   }
 
   if (!invalidate_descendants_or_siblings ||
@@ -1401,7 +1461,9 @@ void StyleEngine::ScheduleCustomElementInvalidations(
                                                          *document_);
 }
 
-void StyleEngine::ElementInsertedOrRemoved(Element* parent, Element& element) {
+void StyleEngine::ElementInsertedOrRemoved(Element* parent,
+                                           Node* node_before_change,
+                                           Element& element) {
   if (!RuntimeEnabledFeatures::CSSPseudoHasEnabled() || !parent)
     return;
 
@@ -1410,13 +1472,17 @@ void StyleEngine::ElementInsertedOrRemoved(Element* parent, Element& element) {
 
   const RuleFeatureSet& features = GetRuleFeatureSet();
 
-  if (features.NeedsHasInvalidationForElement(element))
-    InvalidateAncestorsAffectedByHas(parent);
-  else if (features.NeedsHasInvalidationForPseudoStateChange())
-    InvalidateAncestorsAffectedByHasForPseudoChange(parent);
+  if (features.NeedsHasInvalidationForElement(element)) {
+    InvalidateAncestorsOrSiblingsAffectedByHas(
+        parent, SelfOrPreviousSibling(node_before_change));
+  } else if (features.NeedsHasInvalidationForPseudoStateChange()) {
+    InvalidateAncestorsOrSiblingsAffectedByHasForPseudoChange(
+        parent, SelfOrPreviousSibling(node_before_change));
+  }
 }
 
 void StyleEngine::SubtreeInsertedOrRemoved(Element* parent,
+                                           Node* node_before_change,
                                            Element& subtree_root) {
   if (!RuntimeEnabledFeatures::CSSPseudoHasEnabled() || !parent)
     return;
@@ -1428,13 +1494,16 @@ void StyleEngine::SubtreeInsertedOrRemoved(Element* parent,
   for (Element& element :
        ElementTraversal::InclusiveDescendantsOf(subtree_root)) {
     if (features.NeedsHasInvalidationForElement(element)) {
-      InvalidateAncestorsAffectedByHas(parent);
+      InvalidateAncestorsOrSiblingsAffectedByHas(
+          parent, SelfOrPreviousSibling(node_before_change));
       return;
     }
   }
 
-  if (features.NeedsHasInvalidationForPseudoStateChange())
-    InvalidateAncestorsAffectedByHasForPseudoChange(parent);
+  if (features.NeedsHasInvalidationForPseudoStateChange()) {
+    InvalidateAncestorsOrSiblingsAffectedByHasForPseudoChange(
+        parent, SelfOrPreviousSibling(node_before_change));
+  }
 }
 
 void StyleEngine::InvalidateStyle() {

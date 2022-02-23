@@ -27,6 +27,13 @@ class HasArgumentMatchContext {
     return leftmost_relation_;
   }
 
+  inline bool SiblingCombinatorAtRightmost() const {
+    return sibling_combinator_at_rightmost_;
+  }
+  inline bool SiblingCombinatorBetweenChildOrDescendantCombinator() const {
+    return sibling_combinator_between_child_or_descendant_combinator_;
+  }
+
  private:
   const static int kInfiniteDepth = std::numeric_limits<int>::max();
   const static int kInfiniteAdjacentDistance = std::numeric_limits<int>::max();
@@ -151,6 +158,11 @@ class HasArgumentMatchContext {
   CSSSelector::RelationType leftmost_relation_;
   int adjacent_distance_limit_;
   int depth_limit_;
+
+  // Indicates the selector's combinator information which can be used for
+  // sibling traversal after subselector matched.
+  bool sibling_combinator_at_rightmost_{false};
+  bool sibling_combinator_between_child_or_descendant_combinator_{false};
 };
 
 // Subtree traversal iterator class for ':has' argument matching. To
@@ -202,8 +214,11 @@ class HasArgumentSubtreeIterator {
   Element* CurrentElement() const { return current_; }
   bool AtEnd() const { return !current_; }
   bool AtFixedDepth() const { return depth_ == context_.DepthLimit(); }
+  bool UnderDepthLimit() const { return depth_ <= context_.DepthLimit(); }
   bool AtSiblingOfHasScope() const { return depth_ == 0; }
-  int Depth() const { return depth_; }
+  inline int Depth() const { return depth_; }
+  inline Element* ScopeElement() const { return has_scope_element_; }
+  inline const HasArgumentMatchContext& Context() const { return context_; }
 
  private:
   inline Element* LastWithin(Element*);
@@ -213,6 +228,30 @@ class HasArgumentSubtreeIterator {
   int depth_{0};
   Element* current_{nullptr};
   Element* traversal_end_{nullptr};
+};
+
+// Iterator class to traverse siblings, ancestors and ancestor siblings of the
+// HasArgumentSubtreeIterator's current element until reach to the scope
+// element.
+// This iterator is used to set the 'AncestorsOrAncestorSiblingsAffectedByHas'
+// or 'SiblingsAffectedByHas' flags of those elements before returning early
+// from the ':has()' argument subtree traversal.
+class AffectedByHasIterator {
+  STACK_ALLOCATED();
+
+ public:
+  explicit AffectedByHasIterator(HasArgumentSubtreeIterator&);
+  void operator++();
+  Element* CurrentElement() const { return current_; }
+  bool AtEnd() const;
+  bool AtSiblingOfHasScope() const { return depth_ == 0; }
+
+ private:
+  inline bool NeedsTraverseSiblings();
+
+  const HasArgumentSubtreeIterator& iterator_at_matched_;
+  int depth_;
+  Element* current_;
 };
 
 }  // namespace blink

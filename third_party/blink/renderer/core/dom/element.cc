@@ -4200,8 +4200,8 @@ void Element::ChildrenChanged(const ChildrenChange& change) {
             : kSiblingElementInserted,
         changed_element, change.sibling_before_change,
         change.sibling_after_change);
-    GetDocument().GetStyleEngine().SubtreeInsertedOrRemoved(this,
-                                                            *changed_element);
+    GetDocument().GetStyleEngine().SubtreeInsertedOrRemoved(
+        this, change.sibling_before_change, *changed_element);
   }
 
   if (ShadowRoot* shadow_root = GetShadowRoot())
@@ -4214,7 +4214,7 @@ void Element::FinishParsingChildren() {
   CheckForSiblingStyleChanges(kFinishedParsingChildren, nullptr, lastChild(),
                               nullptr);
   GetDocument().GetStyleEngine().ElementInsertedOrRemoved(parentElement(),
-                                                          *this);
+                                                          lastChild(), *this);
 }
 
 AttrNodeList* Element::GetAttrNodeList() {
@@ -4846,14 +4846,24 @@ void Element::SetAffectedByNonSubjectHas() {
   EnsureElementRareData().SetAffectedByNonSubjectHas();
 }
 
-bool Element::AncestorsAffectedByHas() const {
+bool Element::AncestorsOrAncestorSiblingsAffectedByHas() const {
   if (HasRareData())
-    return GetElementRareData()->AncestorsAffectedByHas();
+    return GetElementRareData()->AncestorsOrAncestorSiblingsAffectedByHas();
   return false;
 }
 
-void Element::SetAncestorsAffectedByHas() {
-  EnsureElementRareData().SetAncestorsAffectedByHas();
+void Element::SetAncestorsOrAncestorSiblingsAffectedByHas() {
+  EnsureElementRareData().SetAncestorsOrAncestorSiblingsAffectedByHas();
+}
+
+bool Element::SiblingsAffectedByHas() const {
+  if (HasRareData())
+    return GetElementRareData()->SiblingsAffectedByHas();
+  return false;
+}
+
+void Element::SetSiblingsAffectedByHas() {
+  EnsureElementRareData().SetSiblingsAffectedByHas();
 }
 
 bool Element::UpdateForceLegacyLayout(const ComputedStyle& new_style,

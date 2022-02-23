@@ -1042,8 +1042,10 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
 
   bool AffectedByNonSubjectHas() const;
   void SetAffectedByNonSubjectHas();
-  bool AncestorsAffectedByHas() const;
-  void SetAncestorsAffectedByHas();
+  bool AncestorsOrAncestorSiblingsAffectedByHas() const;
+  void SetAncestorsOrAncestorSiblingsAffectedByHas();
+  bool SiblingsAffectedByHas() const;
+  void SetSiblingsAffectedByHas();
 
   void SaveIntrinsicSize(ResizeObserverSize* size);
   const ResizeObserverSize* LastIntrinsicSize() const;
