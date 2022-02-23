@@ -1293,23 +1293,6 @@ TEST_P(SQLDatabaseTest, AttachDatabaseWithOpenTransaction) {
   EXPECT_FALSE(db_->IsSQLValid("SELECT count(*) from other.bar"));
 }
 
-TEST_P(SQLDatabaseTest, Basic_QuickIntegrityCheck) {
-  const char* kCreateSql = "CREATE TABLE foo (id INTEGER PRIMARY KEY, value)";
-  ASSERT_TRUE(db_->Execute(kCreateSql));
-  EXPECT_TRUE(db_->QuickIntegrityCheck());
-  db_->Close();
-
-  ASSERT_TRUE(sql::test::CorruptSizeInHeader(db_path_));
-
-  {
-    sql::test::ScopedErrorExpecter expecter;
-    expecter.ExpectError(SQLITE_CORRUPT);
-    ASSERT_TRUE(db_->Open(db_path_));
-    EXPECT_FALSE(db_->QuickIntegrityCheck());
-    ASSERT_TRUE(expecter.SawExpectedErrors());
-  }
-}
-
 TEST_P(SQLDatabaseTest, Basic_FullIntegrityCheck) {
   const std::string kOk("ok");
   std::vector<std::string> messages;

@@ -243,11 +243,6 @@ class COMPONENT_EXPORT(SQL) Database {
   // call should succeed, and a single value "ok" should be in messages.
   bool FullIntegrityCheck(std::vector<std::string>* messages);
 
-  // Runs "PRAGMA quick_check" and, unlike the FullIntegrityCheck method,
-  // interprets the results returning true if the the statement executes
-  // without error and results in a single "ok" value.
-  [[nodiscard]] bool QuickIntegrityCheck();
-
   // Meant to be called from a client error callback so that it's able to
   // get diagnostic information about the database.
   std::string GetDiagnosticInfo(int extended_error, Statement* statement);

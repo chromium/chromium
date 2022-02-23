@@ -1803,13 +1803,6 @@ bool Database::FullIntegrityCheck(std::vector<std::string>* messages) {
   return IntegrityCheckHelper("PRAGMA integrity_check", messages);
 }
 
-bool Database::QuickIntegrityCheck() {
-  std::vector<std::string> messages;
-  if (!IntegrityCheckHelper("PRAGMA quick_check", &messages))
-    return false;
-  return messages.size() == 1 && messages[0] == "ok";
-}
-
 std::string Database::GetDiagnosticInfo(int extended_error,
                                         Statement* statement) {
   // Prevent reentrant calls to the error callback.
