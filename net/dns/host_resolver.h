@@ -131,7 +131,7 @@ class NET_EXPORT HostResolver {
     // Result of an experimental query. Meaning depends on the specific query
     // type, but each boolean value generally refers to a valid or invalid
     // record of the experimental type.
-    NET_EXPORT virtual const absl::optional<std::vector<bool>>&
+    NET_EXPORT virtual const std::vector<bool>*
     GetExperimentalResultsForTesting() const;
 
     // Error info for the request.

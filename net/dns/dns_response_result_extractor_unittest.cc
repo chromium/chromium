@@ -658,8 +658,8 @@ TEST(DnsResponseResultExtractorTest, ExtractsExperimentalHttpsResponses) {
       DnsResponseResultExtractor::ExtractionError::kOk);
 
   EXPECT_THAT(results.error(), test::IsOk());
-  EXPECT_THAT(results.experimental_results(),
-              testing::Optional(testing::ElementsAre(true)));
+  EXPECT_THAT(results.https_record_compatibility(),
+              testing::Pointee(testing::ElementsAre(true)));
 
   ASSERT_TRUE(results.has_ttl());
   EXPECT_EQ(results.ttl(), kTtl);
@@ -683,8 +683,8 @@ TEST(DnsResponseResultExtractorTest,
       DnsResponseResultExtractor::ExtractionError::kOk);
 
   EXPECT_THAT(results.error(), test::IsError(ERR_NAME_NOT_RESOLVED));
-  EXPECT_THAT(results.experimental_results(),
-              testing::Optional(testing::IsEmpty()));
+  EXPECT_THAT(results.https_record_compatibility(),
+              testing::Pointee(testing::IsEmpty()));
 
   ASSERT_TRUE(results.has_ttl());
   EXPECT_EQ(results.ttl(), kTtl);
@@ -706,8 +706,8 @@ TEST(DnsResponseResultExtractorTest, ExtractsNodataExperimentalHttpsResponses) {
       DnsResponseResultExtractor::ExtractionError::kOk);
 
   EXPECT_THAT(results.error(), test::IsError(ERR_NAME_NOT_RESOLVED));
-  EXPECT_THAT(results.experimental_results(),
-              testing::Optional(testing::IsEmpty()));
+  EXPECT_THAT(results.https_record_compatibility(),
+              testing::Pointee(testing::IsEmpty()));
 
   ASSERT_TRUE(results.has_ttl());
   EXPECT_EQ(results.ttl(), kTtl);
@@ -757,8 +757,8 @@ TEST(DnsResponseResultExtractorTest,
       DnsResponseResultExtractor::ExtractionError::kOk);
 
   EXPECT_THAT(results.error(), test::IsError(ERR_NAME_NOT_RESOLVED));
-  EXPECT_THAT(results.experimental_results(),
-              testing::Optional(testing::IsEmpty()));
+  EXPECT_THAT(results.https_record_compatibility(),
+              testing::Pointee(testing::IsEmpty()));
   EXPECT_FALSE(results.has_ttl());
 }
 
@@ -783,8 +783,8 @@ TEST(DnsResponseResultExtractorTest,
       DnsResponseResultExtractor::ExtractionError::kOk);
 
   EXPECT_THAT(results.error(), test::IsOk());
-  EXPECT_THAT(results.experimental_results(),
-              testing::Optional(testing::ElementsAre(true)));
+  EXPECT_THAT(results.https_record_compatibility(),
+              testing::Pointee(testing::ElementsAre(true)));
 
   ASSERT_TRUE(results.has_ttl());
   EXPECT_EQ(results.ttl(), kTtl);
@@ -804,8 +804,60 @@ TEST(DnsResponseResultExtractorTest, ExtractsHttpsResponses) {
             DnsResponseResultExtractor::ExtractionError::kOk);
 
   EXPECT_THAT(results.error(), test::IsOk());
-  EXPECT_THAT(results.experimental_results(),
-              testing::Optional(testing::ElementsAre(true)));
+  EXPECT_THAT(results.https_record_compatibility(),
+              testing::Pointee(testing::ElementsAre(true)));
+
+  ASSERT_TRUE(results.has_ttl());
+  EXPECT_EQ(results.ttl(), kTtl);
+}
+
+TEST(DnsResponseResultExtractorTest, ExtractsCompatibleHttpsServiceResponses) {
+  constexpr uint16_t kMadeUpParamKey = 65411;  // From the private-use block.
+  constexpr auto kTtl = base::Hours(11);
+
+  DnsResponse response = BuildTestDnsResponse(
+      "https.test", dns_protocol::kTypeHttps,
+      /*answers=*/
+      {BuildTestHttpsServiceRecord(
+          "https.test", /*priority=*/2, /*service_name=*/".",
+          /*params=*/{{kMadeUpParamKey, "foo"}}, kTtl)});
+  DnsResponseResultExtractor extractor(&response);
+
+  HostCache::Entry results(ERR_FAILED, HostCache::Entry::SOURCE_UNKNOWN);
+  EXPECT_EQ(extractor.ExtractDnsResults(DnsQueryType::HTTPS, &results),
+            DnsResponseResultExtractor::ExtractionError::kOk);
+
+  EXPECT_THAT(results.error(), test::IsOk());
+  EXPECT_THAT(results.https_record_compatibility(),
+              testing::Pointee(testing::ElementsAre(true)));
+
+  ASSERT_TRUE(results.has_ttl());
+  EXPECT_EQ(results.ttl(), kTtl);
+}
+
+TEST(DnsResponseResultExtractorTest,
+     ExtractsIncompatibleHttpsServiceResponses) {
+  constexpr uint16_t kMadeUpParamKey = 65411;  // From the private-use block.
+  constexpr auto kTtl = base::Hours(40);
+
+  DnsResponse response = BuildTestDnsResponse(
+      "https.test", dns_protocol::kTypeHttps,
+      /*answers=*/
+      {BuildTestHttpsServiceRecord(
+          "https.test", /*priority=*/2, /*service_name=*/".",
+          /*params=*/
+          {BuildTestHttpsServiceMandatoryParam({kMadeUpParamKey}),
+           {kMadeUpParamKey, "foo"}},
+          kTtl)});
+  DnsResponseResultExtractor extractor(&response);
+
+  HostCache::Entry results(ERR_FAILED, HostCache::Entry::SOURCE_UNKNOWN);
+  EXPECT_EQ(extractor.ExtractDnsResults(DnsQueryType::HTTPS, &results),
+            DnsResponseResultExtractor::ExtractionError::kOk);
+
+  EXPECT_THAT(results.error(), test::IsOk());
+  EXPECT_THAT(results.https_record_compatibility(),
+              testing::Pointee(testing::ElementsAre(false)));
 
   ASSERT_TRUE(results.has_ttl());
   EXPECT_EQ(results.ttl(), kTtl);
@@ -827,8 +879,8 @@ TEST(DnsResponseResultExtractorTest, ExtractsNxdomainHttpsResponses) {
             DnsResponseResultExtractor::ExtractionError::kOk);
 
   EXPECT_THAT(results.error(), test::IsError(ERR_NAME_NOT_RESOLVED));
-  EXPECT_THAT(results.experimental_results(),
-              testing::Optional(testing::IsEmpty()));
+  EXPECT_THAT(results.https_record_compatibility(),
+              testing::Pointee(testing::IsEmpty()));
 
   ASSERT_TRUE(results.has_ttl());
   EXPECT_EQ(results.ttl(), kTtl);
@@ -849,8 +901,8 @@ TEST(DnsResponseResultExtractorTest, ExtractsNodataHttpsResponses) {
             DnsResponseResultExtractor::ExtractionError::kOk);
 
   EXPECT_THAT(results.error(), test::IsError(ERR_NAME_NOT_RESOLVED));
-  EXPECT_THAT(results.experimental_results(),
-              testing::Optional(testing::IsEmpty()));
+  EXPECT_THAT(results.https_record_compatibility(),
+              testing::Pointee(testing::IsEmpty()));
 
   ASSERT_TRUE(results.has_ttl());
   EXPECT_EQ(results.ttl(), kTtl);
@@ -896,8 +948,8 @@ TEST(DnsResponseResultExtractorTest, IgnoresWrongTypeHttpsResponses) {
             DnsResponseResultExtractor::ExtractionError::kOk);
 
   EXPECT_THAT(results.error(), test::IsError(ERR_NAME_NOT_RESOLVED));
-  EXPECT_THAT(results.experimental_results(),
-              testing::Optional(testing::IsEmpty()));
+  EXPECT_THAT(results.https_record_compatibility(),
+              testing::Pointee(testing::IsEmpty()));
 }
 
 TEST(DnsResponseResultExtractorTest, IgnoresAdditionalHttpsRecords) {
@@ -919,8 +971,8 @@ TEST(DnsResponseResultExtractorTest, IgnoresAdditionalHttpsRecords) {
             DnsResponseResultExtractor::ExtractionError::kOk);
 
   EXPECT_THAT(results.error(), test::IsOk());
-  EXPECT_THAT(results.experimental_results(),
-              testing::Optional(testing::ElementsAre(true)));
+  EXPECT_THAT(results.https_record_compatibility(),
+              testing::Pointee(testing::ElementsAre(true)));
 
   ASSERT_TRUE(results.has_ttl());
   EXPECT_EQ(results.ttl(), kTtl);

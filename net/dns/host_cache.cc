@@ -328,7 +328,8 @@ HostCache::Entry HostCache::Entry::MergeEntries(Entry front, Entry back) {
   front.MergeAddressesFrom(back);
   MergeLists(&front.text_records_, back.text_records());
   MergeLists(&front.hostnames_, back.hostnames());
-  MergeLists(&front.experimental_results_, back.experimental_results());
+  MergeLists(&front.https_record_compatibility_,
+             back.https_record_compatibility_);
 
   // The DNS aliases include the canonical name(s), if any, each as the
   // first entry in the field, which is an optional vector. If |front| has
@@ -397,7 +398,7 @@ HostCache::Entry::Entry(const HostCache::Entry& entry,
       legacy_addresses_(entry.legacy_addresses()),
       text_records_(entry.text_records()),
       hostnames_(entry.hostnames()),
-      experimental_results_(entry.experimental_results()),
+      https_record_compatibility_(entry.https_record_compatibility_),
       source_(entry.source()),
       pinning_(entry.pinning()),
       ttl_(entry.ttl()),
@@ -414,7 +415,7 @@ HostCache::Entry::Entry(
     const absl::optional<AddressList>& legacy_addresses,
     absl::optional<std::vector<std::string>>&& text_records,
     absl::optional<std::vector<HostPortPair>>&& hostnames,
-    absl::optional<std::vector<bool>>&& experimental_results,
+    absl::optional<std::vector<bool>>&& https_record_compatibility,
     Source source,
     base::TimeTicks expires,
     int network_changes)
@@ -425,13 +426,13 @@ HostCache::Entry::Entry(
       legacy_addresses_(legacy_addresses),
       text_records_(std::move(text_records)),
       hostnames_(std::move(hostnames)),
-      experimental_results_(std::move(experimental_results)),
+      https_record_compatibility_(std::move(https_record_compatibility)),
       source_(source),
       expires_(expires),
       network_changes_(network_changes) {}
 
 void HostCache::Entry::PrepareForCacheInsertion() {
-  experimental_results_.reset();
+  https_record_compatibility_.reset();
 }
 
 bool HostCache::Entry::IsStale(base::TimeTicks now, int network_changes) const {

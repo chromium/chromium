@@ -218,6 +218,9 @@ DnsResourceRecord BuildTestHttpsAliasRecord(
     base::StringPiece alias_name,
     base::TimeDelta ttl = base::Days(1));
 
+std::pair<uint16_t, std::string> BuildTestHttpsServiceMandatoryParam(
+    std::vector<uint16_t> param_key_list);
+
 // `params` is a mapping from service param keys to a string containing the
 // encoded bytes of a service param value (without the value length prefix which
 // this method will automatically add).

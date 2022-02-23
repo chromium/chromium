@@ -28,6 +28,7 @@
 #include "base/containers/linked_list.h"
 #include "base/debug/debugger.h"
 #include "base/feature_list.h"
+#include "base/functional/identity.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
@@ -761,12 +762,9 @@ class HostResolverManager::RequestImpl
     return base::OptionalOrNullptr(fixed_up_dns_alias_results_);
   }
 
-  const absl::optional<std::vector<bool>>& GetExperimentalResultsForTesting()
-      const override {
+  const std::vector<bool>* GetExperimentalResultsForTesting() const override {
     DCHECK(complete_);
-    static const base::NoDestructor<absl::optional<std::vector<bool>>>
-        nullopt_result;
-    return results_ ? results_.value().experimental_results() : *nullopt_result;
+    return results_ ? results_.value().https_record_compatibility() : nullptr;
   }
 
   net::ResolveErrorInfo GetResolveErrorInfo() const override {
@@ -1617,20 +1615,21 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
 
     if (httpssvc_metrics_) {
       if (dns_query_type == DnsQueryType::INTEGRITY) {
-        const absl::optional<std::vector<bool>>& condensed =
-            results.experimental_results();
-        CHECK(condensed.has_value());
+        const std::vector<bool>* experimental_results =
+            results.https_record_compatibility();
+        CHECK(experimental_results);
         // INTEGRITY queries can time out the normal way (here), or when the
         // experimental query timer runs out (OnExperimentalQueryTimeout).
         httpssvc_metrics_->SaveForIntegrity(doh_provider_id, rcode_for_httpssvc,
-                                            *condensed, elapsed_time);
+                                            *experimental_results,
+                                            elapsed_time);
       } else if (dns_query_type == DnsQueryType::HTTPS ||
                  dns_query_type == DnsQueryType::HTTPS_EXPERIMENTAL) {
-        const absl::optional<std::vector<bool>>& condensed =
-            results.experimental_results();
-        CHECK(condensed.has_value());
+        const std::vector<bool>* record_compatibility =
+            results.https_record_compatibility();
+        CHECK(record_compatibility);
         httpssvc_metrics_->SaveForHttps(doh_provider_id, rcode_for_httpssvc,
-                                        *condensed, elapsed_time);
+                                        *record_compatibility, elapsed_time);
       } else {
         httpssvc_metrics_->SaveForAddressQuery(doh_provider_id, elapsed_time,
                                                rcode_for_httpssvc);
@@ -1921,7 +1920,9 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
       kMaxValue = kUpgradeDisabled
     } upgrade_result;
 
-    if (results.error() != OK) {
+    if (!results.https_record_compatibility() ||
+        base::ranges::none_of(*results.https_record_compatibility(),
+                              base::identity())) {
       upgrade_result = UpgradeResult::kNoHttpsRecord;
     } else if (GetScheme(host_) == url::kHttpsScheme ||
                GetScheme(host_) == url::kWssScheme) {

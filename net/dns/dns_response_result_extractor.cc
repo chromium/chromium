@@ -472,17 +472,19 @@ ExtractionError ExtractHttpsResults(const DnsResponse& response,
     return extraction_error;
   }
 
-  // Record experimental result bools for each record.
-  std::vector<bool> condensed_results;
+  // Record record compatibility (draft-ietf-dnsop-svcb-https-08#section-8) for
+  // each record.
+  std::vector<bool> record_compatibility;
   for (const auto& record : records) {
     const HttpsRecordRdata* rdata = record->rdata<HttpsRecordRdata>();
     DCHECK(rdata);
-    condensed_results.push_back(true);
+    record_compatibility.push_back(rdata->IsAlias() ||
+                                   rdata->AsServiceForm()->IsCompatible());
   }
 
   // TODO(crbug.com/1225776): Output a non-experimental result representation.
   *out_results = HostCache::Entry(records.empty() ? ERR_NAME_NOT_RESOLVED : OK,
-                                  std::move(condensed_results),
+                                  std::move(record_compatibility),
                                   HostCache::Entry::SOURCE_DNS, response_ttl);
   DCHECK_EQ(extraction_error, ExtractionError::kOk);
   return extraction_error;

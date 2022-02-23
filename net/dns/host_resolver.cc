@@ -91,7 +91,7 @@ bool EndpointResultIsNonProtocol(const HostResolverEndpointResult& result) {
 
 }  // namespace
 
-const absl::optional<std::vector<bool>>&
+const std::vector<bool>*
 HostResolver::ResolveHostRequest::GetExperimentalResultsForTesting() const {
   IMMEDIATE_CRASH();
 }

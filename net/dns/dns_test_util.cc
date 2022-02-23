@@ -159,6 +159,21 @@ DnsResourceRecord BuildTestHttpsAliasRecord(std::string name,
                             std::move(rdata), ttl);
 }
 
+std::pair<uint16_t, std::string> BuildTestHttpsServiceMandatoryParam(
+    std::vector<uint16_t> param_key_list) {
+  base::ranges::sort(param_key_list);
+
+  std::string value;
+  for (uint16_t param_key : param_key_list) {
+    char num_buffer[2];
+    base::WriteBigEndian(num_buffer, param_key);
+    value.append(num_buffer, 2);
+  }
+
+  return std::make_pair(dns_protocol::kHttpsServiceParamKeyMandatory,
+                        std::move(value));
+}
+
 DnsResourceRecord BuildTestHttpsServiceRecord(
     std::string name,
     uint16_t priority,
