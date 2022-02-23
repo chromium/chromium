@@ -26,9 +26,10 @@
 // unit_tests, and the Android builders complain about multiply
 // defined symbols (likely they don't do name decoration as well as
 // the Mac and Linux linkers).  Therefore these tests are only built
-// and run on Mac and Linux, which should provide plenty of coverage
+// and run on Mac, Linux and Fuchsia, which should provide plenty of coverage
 // since there are no platform-specific bits in this code.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_APPLE)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_APPLE) || \
+    BUILDFLAG(IS_FUCHSIA)
 
 // We need to include everything included by google_api_keys.cc once
 // at global scope so that things like STL and classes from base don't
@@ -587,3 +588,4 @@ TEST_F(GoogleAPIKeysTest, OverrideAllKeysUsingConfig) {
 }
 
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_APPLE)
+        // || BUILDFLAG(IS_FUCHSIA)
