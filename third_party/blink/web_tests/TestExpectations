@@ -7598,3 +7598,5 @@ crbug.com/1299858 [ Win ] http/tests/fetch/workers/thorough/cookie-nocors-base-h
 crbug.com/1299903 [ Win7 ] virtual/prerender/external/wpt/speculation-rules/prerender/restriction-window-move.html [ Failure Pass ]
 crbug.com/1299946 [ Mac ] external/wpt/css/css-sizing/min-content-negative-margin-crash.html [ Timeout Pass ]
 crbug.com/1299948 [ Mac ] external/wpt/css/css-tables/crashtests/textarea-intrinsic-size-crash.html [ Timeout Pass ]
+crbug.com/1299972 [ Linux ] screen_orientation/screenorientation-unsupported-no-crash.html [ Failure Timeout Pass ]
+crbug.com/1299972 [ Linux ] fast/forms/select/menulist-popup-mutation-crash.html [ Failure Timeout Pass ]
