@@ -2900,38 +2900,6 @@
           'skia_gold_test',
         ],
       },
-      'gl_renderer_screenshot_sync_tests': {
-        'telemetry_test_name': 'screenshot_sync',
-        'args': [
-          '--dont-restore-color-profile-after-test',
-          '--extra-browser-args=--disable-features=UseSkiaRenderer',
-        ],
-        'chromeos_args': [
-          '$$MAGIC_SUBSTITUTION_ChromeOSTelemetryRemote',
-        ],
-        'mixins': [
-          'has_native_resultdb_integration',
-        ],
-      },
-    },
-
-    # Very small set of test that exercise GLRenderer and produce pixels for CQ.
-    # For use where SkiaRenderer is enabled by field trial or default.
-    'gpu_gl_renderer_small_telemetry_tests': {
-      'gl_renderer_screenshot_sync': {
-        'args': [
-          '--dont-restore-color-profile-after-test',
-          '--extra-browser-args=--disable-features=UseSkiaRenderer',
-        ],
-        'android_args': [
-          # TODO(crbug.com/1093085): Remove this once we fix the tests.
-          '--extra-browser-args=--force-online-connection-state-for-indicator',
-        ],
-        'telemetry_test_name': 'screenshot_sync',
-        'mixins': [
-          'has_native_resultdb_integration',
-        ],
-      },
     },
 
     'gpu_gles2_conform_gtests': {
@@ -6058,7 +6026,6 @@
       'gpu_common_and_optional_telemetry_tests',
       'gpu_passthrough_telemetry_tests',
       'gpu_webgl_conformance_telemetry_tests',
-      'gpu_gl_renderer_small_telemetry_tests',
     ],
 
     'gpu_common_telemetry_tests': [

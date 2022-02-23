@@ -320,7 +320,6 @@ of all suites and resulting step names as of April 15th 2021:
 * `power`
   * `power_measurement_test`
 * `screenshot_sync`
-  * `gl_renderer_screenshot_sync_tests`
   * `screenshot_sync_passthrough_tests`
   * `screenshot_sync_tests`
   * `screenshot_sync_validating_tests`

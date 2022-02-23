@@ -1669,12 +1669,6 @@
       'Lacros FYI x64 Release (Intel)',
     ],
   },
-  'gl_renderer_screenshot_sync_tests': {
-    'remove_from': [
-      'ChromeOS FYI Release (kevin)',
-      'Lacros FYI x64 Release (Intel)',
-    ],
-  },
   'gl_tests_passthrough': {
     'remove_from': [
       'CFI Linux ToT',
