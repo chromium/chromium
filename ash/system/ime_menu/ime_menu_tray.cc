@@ -18,6 +18,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/style/icon_button.h"
+#include "ash/style/system_shadow.h"
 #include "ash/system/ime_menu/ime_list_view.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/tray/detailed_view_delegate.h"
@@ -378,6 +379,12 @@ void ImeMenuTray::ShowImeMenuBubbleInternal() {
 
   bubble_ = std::make_unique<TrayBubbleWrapper>(this, bubble_view);
   SetIsActive(true);
+
+  // Create a system shadow for the tray bubble.
+  shadow_ = SystemShadow::CreateShadowForWidget(
+      bubble_->GetBubbleWidget(), SystemShadow::Type::kElevation12);
+  shadow_->SetRoundedCornerRadius(kTrayItemCornerRadius);
+  shadow_->SetContentBounds(gfx::Rect(bubble_view->GetBoundsInScreen().size()));
 }
 
 void ImeMenuTray::ShowKeyboardWithKeyset(input_method::ImeKeyset keyset) {
@@ -457,6 +464,7 @@ bool ImeMenuTray::PerformAction(const ui::Event& event) {
 
 void ImeMenuTray::CloseBubble() {
   bubble_.reset();
+  shadow_.reset();
   ime_list_view_ = nullptr;
   SetIsActive(false);
   shelf()->UpdateAutoHideState();

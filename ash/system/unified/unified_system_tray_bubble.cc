@@ -68,7 +68,8 @@ UnifiedSystemTrayBubble::UnifiedSystemTrayBubble(UnifiedSystemTray* tray)
   bubble_widget_->AddObserver(this);
 
   // Add a system shadow.
-  shadow_ = std::make_unique<SystemShadow>(SystemShadow::Type::kElevation12);
+  shadow_ = SystemShadow::CreateShadowForWidget(
+      bubble_widget_, SystemShadow::Type::kElevation12);
   shadow_->SetRoundedCornerRadius(kBubbleCornerRadius);
 
   gfx::Rect shadow_bounds = gfx::Rect(GetBoundsInScreen().size());
@@ -76,11 +77,6 @@ UnifiedSystemTrayBubble::UnifiedSystemTrayBubble(UnifiedSystemTray* tray)
   gfx::Insets insets = bubble_view_->GetBorderInsets();
   shadow_bounds.Offset(gfx::Vector2d(insets.left(), insets.top()));
   shadow_->SetContentBounds(shadow_bounds);
-
-  // Add shadow layer at the bottom of window layer.
-  auto* window = bubble_widget_->GetNativeView();
-  window->layer()->Add(shadow_->layer());
-  window->layer()->StackAtBottom(shadow_->layer());
 
   TrayBackgroundView::InitializeBubbleAnimations(bubble_widget_);
   bubble_view_->InitializeAndShowBubble();

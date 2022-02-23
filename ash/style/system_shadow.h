@@ -8,6 +8,14 @@
 #include "ash/ash_export.h"
 #include "ui/compositor_extra/shadow.h"
 
+namespace views {
+class Widget;
+}  // namespace views
+
+namespace aura {
+class Window;
+}  // namespace aura
+
 namespace ash {
 
 // Shadow for Chrome OS System UI component.
@@ -28,6 +36,12 @@ class ASH_EXPORT SystemShadow : public ui::Shadow {
   SystemShadow& operator=(const SystemShadow&) = delete;
   ~SystemShadow() override;
 
+  static std::unique_ptr<SystemShadow> CreateShadowForWidget(
+      views::Widget* widget,
+      Type shadow_type);
+  static std::unique_ptr<SystemShadow> CreateShadowForWindow(
+      aura::Window* window,
+      Type shadow_type);
   // Get shadow elevation according to the given type.
   static int GetElevationFromType(Type type);
 

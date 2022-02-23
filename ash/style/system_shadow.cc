@@ -5,8 +5,34 @@
 #include "ash/style/system_shadow.h"
 #include "base/logging.h"
 #include "base/notreached.h"
+#include "ui/aura/window.h"
+#include "ui/compositor/layer.h"
+#include "ui/views/widget/widget.h"
 
 namespace ash {
+
+// static
+std::unique_ptr<SystemShadow> SystemShadow::CreateShadowForWidget(
+    views::Widget* widget,
+    Type shadow_type) {
+  DCHECK(widget);
+  return CreateShadowForWindow(widget->GetNativeWindow(), shadow_type);
+}
+
+// static
+std::unique_ptr<SystemShadow> SystemShadow::CreateShadowForWindow(
+    aura::Window* window,
+    Type shadow_type) {
+  DCHECK(window);
+  auto shadow = std::make_unique<SystemShadow>(shadow_type);
+  auto* shadow_layer = shadow->layer();
+  auto* window_layer = window->layer();
+
+  // Add shadow layer to window layer and stack at the bottom.
+  window_layer->Add(shadow_layer);
+  window_layer->StackAtBottom(shadow_layer);
+  return shadow;
+}
 
 SystemShadow::SystemShadow(Type type) : type_(type) {
   // Note: Init function should be called before SetShadowStyle.

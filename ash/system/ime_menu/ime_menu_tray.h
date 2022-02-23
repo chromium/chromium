@@ -23,6 +23,7 @@ class Label;
 namespace ash {
 class ImeControllerImpl;
 class ImeListView;
+class SystemShadow;
 
 // A button in the tray which displays the short name of the currently-activated
 // IME (e.g., 'GB', 'US'). Clicking this button opens the opt-in IME menu,
@@ -106,6 +107,8 @@ class ASH_EXPORT ImeMenuTray : public TrayBackgroundView,
   bool is_emoji_enabled_;
   bool is_handwriting_enabled_;
   bool is_voice_enabled_;
+
+  std::unique_ptr<SystemShadow> shadow_;
 
   base::WeakPtrFactory<ImeMenuTray> weak_ptr_factory_{this};
 };
