@@ -1017,11 +1017,6 @@
     "expiry_milestone": 100
   },
   {
-    "name": "crostini-use-lxd-4",
-    "owners": [ "sidereal", "davidmunro@google.com", "nverne" ],
-    "expiry_milestone": 110
-  },
-  {
     "name": "crostini-virtual-keyboard-support",
     "owners": [ "timloh", "davidmunro@google.com" ],
     "expiry_milestone": 104
