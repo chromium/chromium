@@ -212,17 +212,10 @@ class ThemeServiceTest : public extensions::ExtensionServiceTestBase {
 
     scoped_refptr<extensions::UnpackedInstaller> installer(
         extensions::UnpackedInstaller::Create(service_));
-    if (service_->IsExtensionEnabled(extension_id)) {
-      extensions::TestExtensionRegistryObserver observer(registry_);
-      installer->Load(path);
-      observer.WaitForExtensionLoaded();
-    } else {
-      content::WindowedNotificationObserver observer(
-          extensions::NOTIFICATION_EXTENSION_UPDATE_DISABLED,
-          content::Source<Profile>(profile()));
-      installer->Load(path);
-      observer.Wait();
-    }
+
+    extensions::TestExtensionRegistryObserver observer(registry_);
+    installer->Load(path);
+    observer.WaitForExtensionInstalled();
 
     // Let the ThemeService finish creating the theme pack.
     base::RunLoop().RunUntilIdle();
