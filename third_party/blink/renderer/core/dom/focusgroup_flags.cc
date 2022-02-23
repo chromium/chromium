@@ -27,7 +27,6 @@ FocusgroupFlags ParseFocusgroup(const Element* element,
   bool has_vertical = false;
   bool has_wrap = false;
   bool has_grid = false;
-  bool has_none = false;
   StringBuilder invalid_tokens;
 
   SpaceSplitString tokens(input);
@@ -43,8 +42,6 @@ FocusgroupFlags ParseFocusgroup(const Element* element,
       has_wrap = true;
     } else if (lowercase_token == "grid") {
       has_grid = true;
-    } else if (lowercase_token == "none") {
-      has_none = true;
     } else {
       if (!invalid_tokens.IsEmpty())
         invalid_tokens.Append(", ");
@@ -63,11 +60,6 @@ FocusgroupFlags ParseFocusgroup(const Element* element,
             WebString::FromUTF8("Unrecognized focusgroup attribute values: " +
                                 invalid_tokens.ToString().Ascii())));
   }
-
-  // 2. When the focusgroup is explicitly set to none, we should ignore any
-  // other flag and only return that value.
-  if (has_none)
-    return FocusgroupFlags::kExplicitlyNone;
 
   FocusgroupFlags flags = FocusgroupFlags::kNone;
 
@@ -101,16 +93,10 @@ FocusgroupFlags ParseFocusgroup(const Element* element,
     while (ancestor) {
       ancestor_flags = ancestor->GetFocusgroupFlags();
       // When this is true, we found the focusgroup to extend.
-      if (focusgroup::IsFocusgroup(ancestor_flags)) {
+      if (ancestor_flags != FocusgroupFlags::kNone) {
         flags |= FocusgroupFlags::kExtend;
         break;
       }
-
-      // When this is true, it means that the current focusgroup can't extend,
-      // because its closest ancestor is one that forbids itself and its subtree
-      // from being part of an ancestor's focusgroup.
-      if (ancestor_flags & FocusgroupFlags::kExplicitlyNone)
-        break;
 
       ancestor = Traversal<Element>::FirstAncestor(*ancestor);
     }
@@ -203,7 +189,7 @@ FocusgroupFlags ParseFocusgroup(const Element* element,
   // When a focusgroup extends another one, inherit the ancestor's wrap behavior
   // for the descendant's supported axes.
   if (flags & FocusgroupFlags::kExtend) {
-    DCHECK(focusgroup::IsFocusgroup(ancestor_flags));
+    DCHECK(ancestor_flags != FocusgroupFlags::kNone);
     if ((flags & FocusgroupFlags::kWrapHorizontally) ==
             (ancestor_flags & FocusgroupFlags::kWrapHorizontally) &&
         (flags & FocusgroupFlags::kWrapVertically) ==

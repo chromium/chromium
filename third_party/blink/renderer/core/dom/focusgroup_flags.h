@@ -19,7 +19,6 @@ enum FocusgroupFlags : int8_t {
   kWrapHorizontally = 1 << 3,
   kWrapVertically = 1 << 4,
   kGrid = 1 << 5,
-  kExplicitlyNone = 1 << 6,
 };
 
 inline constexpr FocusgroupFlags operator&(FocusgroupFlags a,
@@ -47,11 +46,6 @@ inline constexpr FocusgroupFlags operator~(FocusgroupFlags flags) {
 }
 
 namespace focusgroup {
-inline bool IsFocusgroup(FocusgroupFlags flags) {
-  return flags != FocusgroupFlags::kNone &&
-         !(flags & FocusgroupFlags::kExplicitlyNone);
-}
-
 // Implemented based on this explainer:
 // https://github.com/MicrosoftEdge/MSEdgeExplainers/blob/main/Focusgroup/explainer.md
 FocusgroupFlags ParseFocusgroup(const Element* element,
