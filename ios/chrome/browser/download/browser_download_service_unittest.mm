@@ -308,3 +308,16 @@ TEST_F(BrowserDownloadServiceTest, ApkMimeType) {
           DownloadMimeTypeResult::AndroidPackageArchive),
       1);
 }
+
+// Tests that the code doesn't crash if the download manager tab helper hasn't
+// been created for this webstate.
+TEST_F(BrowserDownloadServiceTest, NoDownloadManager) {
+  web::FakeWebState fake_web_state;
+  fake_web_state.SetBrowserState(browser_state_.get());
+
+  ASSERT_TRUE(download_controller()->GetDelegate());
+  auto task = std::make_unique<web::FakeDownloadTask>(GURL(kUrl), "test/test");
+  download_controller()->GetDelegate()->OnDownloadCreated(
+      download_controller(), &fake_web_state, std::move(task));
+  ASSERT_EQ(0U, download_manager_tab_helper()->tasks().size());
+}
