@@ -48,6 +48,7 @@ class ScrollableArea;
 class ScrollbarTheme;
 class WebGestureEvent;
 class WebMouseEvent;
+class WebPointerEvent;
 
 class CORE_EXPORT Scrollbar : public GarbageCollected<Scrollbar>,
                               public DisplayItemClient {
@@ -137,6 +138,8 @@ class CORE_EXPORT Scrollbar : public GarbageCollected<Scrollbar>,
   // will be set to true if the handler should update the capture
   // state for this scrollbar.
   bool GestureEvent(const WebGestureEvent&, bool* should_update_capture);
+
+  bool HandlePointerEvent(const WebPointerEvent&);
 
   // These methods are used for platform scrollbars to give :hover feedback.
   // They will not get called when the mouse went down in a scrollbar, since it

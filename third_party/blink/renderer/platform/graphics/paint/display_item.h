@@ -143,8 +143,9 @@ class PLATFORM_EXPORT DisplayItem {
     kResizerScrollHitTest,
     // Used to prevent composited scrolling on plugins with wheel handlers.
     kPluginScrollHitTest,
-    // Used to prevent composited scrolling on custom scrollbars.
-    kCustomScrollbarHitTest,
+    // Used to prevent composited scrolling and set touch action region, on
+    // custom scrollbars and non-composited native scrollbars.
+    kScrollbarHitTest,
 
     // These are for paint chunks that are forced for layers.
     kLayerChunk,

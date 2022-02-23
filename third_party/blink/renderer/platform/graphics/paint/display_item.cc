@@ -192,7 +192,7 @@ WTF::String DisplayItem::TypeAsDebugString(Type type) {
     DEBUG_STRING_CASE(ScrollHitTest);
     DEBUG_STRING_CASE(ResizerScrollHitTest);
     DEBUG_STRING_CASE(PluginScrollHitTest);
-    DEBUG_STRING_CASE(CustomScrollbarHitTest);
+    DEBUG_STRING_CASE(ScrollbarHitTest);
     DEBUG_STRING_CASE(LayerChunk);
     DEBUG_STRING_CASE(LayerChunkForeground);
     DEBUG_STRING_CASE(ScrollbarHorizontal);

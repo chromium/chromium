@@ -257,24 +257,41 @@ void ScrollableAreaPainter::PaintScrollbar(GraphicsContext& context,
                              type);
   }
 
-  if (scrollbar.IsCustomScrollbar()) {
+  if (scrollbar.IsCustomScrollbar())
     scrollbar.Paint(context, paint_offset);
+  else
+    PaintNativeScrollbar(context, scrollbar, visual_rect);
 
-    // Prevent composited scroll hit test on the custom scrollbar which always
-    // need main thread scrolling.
+  // cc::ScrollbarController can only handle interactions with composited native
+  // scrollbars. For any other scrollbar, prevent the composited-scroll hit test
+  // from succeeding, and send touch events to the main thread for thumb drags.
+  if (!GetScrollableArea().ShouldDirectlyCompositeScrollbar(scrollbar)) {
     context.GetPaintController().RecordScrollHitTestData(
-        scrollbar, DisplayItem::kCustomScrollbarHitTest, nullptr, visual_rect);
-    return;
+        scrollbar, DisplayItem::kScrollbarHitTest, nullptr, visual_rect);
   }
+}
+
+void ScrollableAreaPainter::PaintNativeScrollbar(GraphicsContext& context,
+                                                 Scrollbar& scrollbar,
+                                                 gfx::Rect visual_rect) {
+  auto type = scrollbar.Orientation() == kHorizontalScrollbar
+                  ? DisplayItem::kScrollbarHorizontal
+                  : DisplayItem::kScrollbarVertical;
 
   if (context.GetPaintController().UseCachedItemIfPossible(scrollbar, type))
     return;
 
+  const auto* properties =
+      GetScrollableArea().GetLayoutBox()->FirstFragment().PaintProperties();
+  DCHECK(properties);
+
   const TransformPaintPropertyNode* scroll_translation = nullptr;
   if (scrollable_area_->ShouldDirectlyCompositeScrollbar(scrollbar))
     scroll_translation = properties->ScrollTranslation();
+
   auto delegate = base::MakeRefCounted<ScrollbarLayerDelegate>(
       scrollbar, context.DeviceScaleFactor());
+
   ScrollbarDisplayItem::Record(context, scrollbar, type, delegate, visual_rect,
                                scroll_translation, scrollbar.GetElementId());
 }

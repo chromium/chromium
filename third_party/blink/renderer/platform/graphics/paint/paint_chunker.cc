@@ -241,9 +241,9 @@ void PaintChunker::CreateScrollHitTestChunk(
 #if DCHECK_IS_ON()
   if (id.type == DisplayItem::Type::kResizerScrollHitTest ||
       id.type == DisplayItem::Type::kPluginScrollHitTest ||
-      id.type == DisplayItem::Type::kCustomScrollbarHitTest) {
-    // Resizer and plugin scroll hit tests are only used to prevent composited
-    // scrolling and should not have a scroll offset node.
+      id.type == DisplayItem::Type::kScrollbarHitTest) {
+    // Resizer, plugin, and scrollbar hit tests are only used to prevent
+    // composited scrolling and should not have a scroll offset node.
     DCHECK(!scroll_translation);
   } else if (id.type == DisplayItem::Type::kScrollHitTest) {
     DCHECK(scroll_translation);
@@ -263,6 +263,10 @@ void PaintChunker::CreateScrollHitTestChunk(
   auto& hit_test_data = chunk.EnsureHitTestData();
   hit_test_data.scroll_translation = scroll_translation;
   hit_test_data.scroll_hit_test_rect = rect;
+  if (id.type == DisplayItem::Type::kScrollbarHitTest) {
+    hit_test_data.touch_action_rects.push_back(
+        TouchActionRect{rect, TouchAction::kNone});
+  }
   SetWillForceNewChunk(true);
 }
 
