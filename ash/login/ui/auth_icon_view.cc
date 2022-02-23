@@ -16,7 +16,8 @@
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/views/border.h"
-#include "ui/views/layout/fill_layout.h"
+#include "ui/views/layout/box_layout.h"
+#include "ui/views/view_class_properties.h"
 
 namespace ash {
 
@@ -28,8 +29,8 @@ struct ShakeAnimationStep {
 };
 
 constexpr int kAuthIconSizeDp = 32;
-constexpr int kIconBorderDp = 10;
-constexpr int kAuthIconViewDp = kAuthIconSizeDp + 2 * kIconBorderDp;
+constexpr int kIconMarginDp = 10;
+constexpr int kAuthIconViewDp = kAuthIconSizeDp + 2 * kIconMarginDp;
 constexpr int kProgressAnimationStrokeWidth = 3;
 
 // This determines how frequently we paint the progress spinner.
@@ -78,12 +79,12 @@ SkColor GetColor(AuthIconView::Color color) {
 }  // namespace
 
 AuthIconView::AuthIconView() {
-  SetLayoutManager(std::make_unique<views::FillLayout>());
+  SetLayoutManager(std::make_unique<views::BoxLayout>());
 
   icon_ = AddChildView(std::make_unique<AnimatedRoundedImageView>(
       gfx::Size(kAuthIconSizeDp, kAuthIconSizeDp),
       /*corner_radius=*/0));
-  icon_->SetBorder(views::CreateEmptyBorder(gfx::Insets(kIconBorderDp)));
+  icon_->SetProperty(views::kMarginsKey, gfx::Insets(kIconMarginDp));
 
   // Set up layer to allow for animation.
   icon_->SetPaintToLayer();
@@ -159,8 +160,9 @@ void AuthIconView::RunNudgeAnimation() {
 
   // Every time it scales, translate by |center_offset| so that the view scales
   // outward from center point.
-  auto center_offset = gfx::Vector2d(CalculatePreferredSize().width() / 2.0,
-                                     CalculatePreferredSize().height() / 2.0);
+  int half_icon_size = kAuthIconSizeDp / 2;
+  auto center_offset = gfx::Vector2d(half_icon_size, half_icon_size);
+
   gfx::Transform transform;
   transform.Translate(center_offset);
   // Make view larger.
