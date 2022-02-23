@@ -1607,7 +1607,7 @@ if (enable_js_type_check) {
       "chrome/test:closure_compile",
       "components/flags_ui/resources:closure_compile",
       "components/neterror/resources:closure_compile",
-      "components/security_interstitials/core/common/resources:closure_compile",
+      "components/security_interstitials:closure_compile",
       "components/sync/driver/resources:closure_compile",
       "components/ukm/debug:closure_compile",
       "content/browser/resources:closure_compile",
