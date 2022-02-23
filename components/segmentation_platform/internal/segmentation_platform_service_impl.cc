@@ -230,7 +230,7 @@ void SegmentationPlatformServiceImpl::MaybeRunPostInitializationRoutines() {
       signal_database_.get(), std::make_unique<FeatureAggregatorImpl>());
 
   training_data_collector_ = std::make_unique<TrainingDataCollector>(
-      feature_list_query_processor_.get());
+      feature_list_query_processor_.get(), histogram_signal_handler_.get());
 
   model_execution_manager_ = CreateModelExecutionManager(
       model_provider_, task_runner_, all_segment_ids_, clock_,

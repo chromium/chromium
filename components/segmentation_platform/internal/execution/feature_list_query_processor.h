@@ -44,7 +44,7 @@ class FeatureListQueryProcessor {
   // |segment_id| is only used for recording performance metrics. This class
   // does not need to know about the segment itself. |prediction_time| is the
   // time at which we predict the model execution should happen.
-  void ProcessFeatureList(
+  virtual void ProcessFeatureList(
       const proto::SegmentationModelMetadata& model_metadata,
       OptimizationTarget segment_id,
       base::Time prediction_time,

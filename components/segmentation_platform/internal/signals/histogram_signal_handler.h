@@ -27,12 +27,15 @@ class SignalDatabase;
 // persisting them to the internal database for future processing.
 class HistogramSignalHandler {
  public:
+  using RelevantHistograms =
+      std::set<std::pair<std::string, proto::SignalType>>;
+
   class Observer : public base::CheckedObserver {
    public:
     // Called when a histogram signal tracked by segmentation platform is
     // updated and written to database.
-    virtual void OnHistogramSignalUpdated(
-        const std::string& histogram_name) = 0;
+    virtual void OnHistogramSignalUpdated(const std::string& histogram_name,
+                                          base::HistogramBase::Sample) = 0;
     ~Observer() override = default;
 
    protected:
@@ -48,8 +51,7 @@ class HistogramSignalHandler {
 
   // Called to notify about a set of histograms which the segmentation models
   // care about.
-  virtual void SetRelevantHistograms(
-      const std::set<std::pair<std::string, proto::SignalType>>& histograms);
+  virtual void SetRelevantHistograms(const RelevantHistograms& histograms);
 
   // Called to enable or disable metrics collection for segmentation platform.
   virtual void EnableMetrics(bool enable_metrics);
@@ -64,7 +66,9 @@ class HistogramSignalHandler {
                          uint64_t name_hash,
                          base::HistogramBase::Sample sample);
 
-  void OnSampleWritten(const std::string& histogram_name, bool success);
+  void OnSampleWritten(const std::string& histogram_name,
+                       base::HistogramBase::Sample sample,
+                       bool success);
 
   // The database storing relevant histogram samples.
   raw_ptr<SignalDatabase> db_;

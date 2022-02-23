@@ -13,6 +13,7 @@
 #include "components/segmentation_platform/internal/proto/aggregation.pb.h"
 #include "components/segmentation_platform/internal/proto/types.pb.h"
 #include "components/segmentation_platform/internal/signals/histogram_signal_handler.h"
+#include "components/segmentation_platform/internal/signals/mock_histogram_signal_handler.h"
 #include "components/segmentation_platform/internal/signals/user_action_signal_handler.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -38,15 +39,6 @@ class MockUserActionSignalHandler : public UserActionSignalHandler {
  public:
   MockUserActionSignalHandler() : UserActionSignalHandler(nullptr) {}
   MOCK_METHOD(void, SetRelevantUserActions, (std::set<uint64_t>));
-  MOCK_METHOD(void, EnableMetrics, (bool));
-};
-
-class MockHistogramSignalHandler : public HistogramSignalHandler {
- public:
-  MockHistogramSignalHandler() : HistogramSignalHandler(nullptr) {}
-  using HistogramAndSignalTypeSet =
-      const std::set<std::pair<std::string, proto::SignalType>>&;
-  MOCK_METHOD(void, SetRelevantHistograms, (HistogramAndSignalTypeSet));
   MOCK_METHOD(void, EnableMetrics, (bool));
 };
 

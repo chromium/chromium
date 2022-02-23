@@ -10,16 +10,32 @@
 namespace segmentation_platform {
 
 TrainingDataCollector::TrainingDataCollector(
-    FeatureListQueryProcessor* processor)
-    : feature_list_query_processor_(processor) {}
+    FeatureListQueryProcessor* processor,
+    HistogramSignalHandler* histogram_signal_handler)
+    : feature_list_query_processor_(processor),
+      histogram_signal_handler_(histogram_signal_handler) {
+  DCHECK(histogram_signal_handler_);
+  histogram_signal_handler_->AddObserver(this);
+}
 
-TrainingDataCollector::~TrainingDataCollector() = default;
+TrainingDataCollector::~TrainingDataCollector() {
+  DCHECK(histogram_signal_handler_);
+  histogram_signal_handler_->RemoveObserver(this);
+}
 
 void TrainingDataCollector::OnModelMetadataUpdated() {
   NOTIMPLEMENTED();
 }
 
 void TrainingDataCollector::OnServiceInitialized() {
+  NOTIMPLEMENTED();
+}
+
+void TrainingDataCollector::OnHistogramSignalUpdated(
+    const std::string& histogram_name,
+    base::HistogramBase::Sample) {
+  // TODO(xingliu): Check whether the histogram needs to trigger a data
+  // collection, and report to UKM.
   NOTIMPLEMENTED();
 }
 

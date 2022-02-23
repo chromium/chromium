@@ -28,7 +28,10 @@ class MockObserver : public HistogramSignalHandler::Observer {
  public:
   MockObserver() = default;
   ~MockObserver() override = default;
-  MOCK_METHOD(void, OnHistogramSignalUpdated, (const std::string&), (override));
+  MOCK_METHOD(void,
+              OnHistogramSignalUpdated,
+              (const std::string&, base::HistogramBase::Sample),
+              (override));
 };
 
 class HistogramSignalHandlerTest : public testing::Test {
@@ -124,7 +127,7 @@ TEST_F(HistogramSignalHandlerTest, ObserversNotified) {
             std::move(callback).Run(true);
           })));
   EXPECT_CALL(observer_,
-              OnHistogramSignalUpdated(std::string(kExpectedHistogram)));
+              OnHistogramSignalUpdated(std::string(kExpectedHistogram), Eq(1)));
 
   // Record a registered histogram sample. |observer_| should be notified.
   UMA_HISTOGRAM_BOOLEAN(kExpectedHistogram, true);
