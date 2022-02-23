@@ -8,7 +8,6 @@
 #include <stdint.h>
 
 #include "base/files/file_path.h"
-#include "base/memory/unsafe_shared_memory_region.h"
 #include "base/time/time.h"
 #include "ipc/ipc_channel_handle.h"
 #include "ipc/ipc_message_start.h"
@@ -40,16 +39,6 @@ IPC_MESSAGE_CONTROL(ChromotingDaemonMsg_Crash,
 
 //-----------------------------------------------------------------------------
 // Chromoting messages sent from the desktop to the network process.
-
-// Notifies the network process that a shared buffer has been created.
-IPC_MESSAGE_CONTROL(ChromotingDesktopNetworkMsg_CreateSharedBuffer,
-                    int /* id */,
-                    base::ReadOnlySharedMemoryRegion /* region */,
-                    uint32_t /* size */)
-
-// Request the network process to stop using a shared buffer.
-IPC_MESSAGE_CONTROL(ChromotingDesktopNetworkMsg_ReleaseSharedBuffer,
-                    int /* id */)
 
 // Serialized webrtc::DesktopFrame.
 IPC_STRUCT_BEGIN(SerializedDesktopFrame)

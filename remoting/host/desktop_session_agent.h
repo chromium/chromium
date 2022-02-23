@@ -13,6 +13,7 @@
 
 #include "base/callback.h"
 #include "base/compiler_specific.h"
+#include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -175,6 +176,14 @@ class DesktopSessionAgent
 
   // Handles keyboard layout changes.
   void OnKeyboardLayoutChange(const protocol::KeyboardLayout& layout);
+
+  // Notifies the network process when a new shared memory region is created.
+  void OnSharedMemoryRegionCreated(int id,
+                                   base::ReadOnlySharedMemoryRegion region,
+                                   uint32_t size);
+
+  // Notifies the network process when a shared memory region is released.
+  void OnSharedMemoryRegionReleased(int id);
 
   // Sends a message to the network process.
   void SendToNetwork(std::unique_ptr<IPC::Message> message);

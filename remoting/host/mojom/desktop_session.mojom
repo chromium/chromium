@@ -5,6 +5,7 @@
 module remoting.mojom;
 
 import "mojo/public/mojom/base/byte_string.mojom";
+import "mojo/public/mojom/base/shared_memory.mojom";
 import "remoting/host/mojom/webrtc_types.mojom";
 import "remoting/host/mojom/wrapped_primitives.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
@@ -353,6 +354,19 @@ interface DesktopSessionEventHandler {
 
   // Forwards an audio packet captured from the desktop session to the client.
   OnAudioPacket(AudioPacket audio_packet);
+
+  // Notifies the network process that a new shared memory region has been
+  // created to use for passing video frames between processes. |id| refers to
+  // the new shared memory region and is included in each capture result to
+  // indicate which region the frame data resides in.
+  // TODO(joedow): Look into refactoring our shared memory and capture impl
+  // to use a message pipe per shared memory region.
+  OnSharedMemoryRegionCreated(
+      int32 id, mojo_base.mojom.ReadOnlySharedMemoryRegion region, uint32 size);
+
+  // Notifies the network process that a shared memory region has been released
+  // and should no longer be used.
+  OnSharedMemoryRegionReleased(int32 id);
 };
 
 // This enum mirrors the remoting::protocol::ErrorCode enum.

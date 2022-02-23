@@ -182,6 +182,10 @@ class DesktopSessionProxy
   void OnClipboardEvent(const protocol::ClipboardEvent& event) override;
   void OnUrlForwarderStateChange(mojom::UrlForwarderState state) override;
   void OnAudioPacket(std::unique_ptr<AudioPacket> audio_packet) override;
+  void OnSharedMemoryRegionCreated(int id,
+                                   base::ReadOnlySharedMemoryRegion region,
+                                   uint32_t size) override;
+  void OnSharedMemoryRegionReleased(int id) override;
 
   // mojom::DesktopSessionStateHandler implementation.
   void DisconnectSession(protocol::ErrorCode error) override;
@@ -212,14 +216,6 @@ class DesktopSessionProxy
   void OnDesktopSessionAgentStarted(
       mojo::PendingAssociatedRemote<mojom::DesktopSessionControl>
           pending_remote);
-
-  // Registers a new shared buffer created by the desktop process.
-  void OnCreateSharedBuffer(int id,
-                            base::ReadOnlySharedMemoryRegion region,
-                            uint32_t size);
-
-  // Drops a cached reference to the shared buffer.
-  void OnReleaseSharedBuffer(int id);
 
   // Handles DesktopDisplayChange notification from the desktop session agent.
   void OnDesktopDisplayChanged(const protocol::VideoLayout& layout);

@@ -236,12 +236,7 @@ bool DesktopSessionProxy::OnMessageReceived(const IPC::Message& message) {
                         OnCaptureResult)
     IPC_MESSAGE_HANDLER(ChromotingDesktopNetworkMsg_DisplayChanged,
                         OnDesktopDisplayChanged)
-    IPC_MESSAGE_HANDLER(ChromotingDesktopNetworkMsg_MouseCursor,
-                        OnMouseCursor)
-    IPC_MESSAGE_HANDLER(ChromotingDesktopNetworkMsg_CreateSharedBuffer,
-                        OnCreateSharedBuffer)
-    IPC_MESSAGE_HANDLER(ChromotingDesktopNetworkMsg_ReleaseSharedBuffer,
-                        OnReleaseSharedBuffer)
+    IPC_MESSAGE_HANDLER(ChromotingDesktopNetworkMsg_MouseCursor, OnMouseCursor)
     IPC_MESSAGE_HANDLER(ChromotingDesktopNetworkMsg_KeyboardChanged,
                         OnKeyboardChanged)
     IPC_MESSAGE_FORWARD(ChromotingDesktopNetworkMsg_FileResult,
@@ -683,7 +678,7 @@ void DesktopSessionProxy::OnAudioPacket(
                                 audio_capturer_, std::move(audio_packet)));
 }
 
-void DesktopSessionProxy::OnCreateSharedBuffer(
+void DesktopSessionProxy::OnSharedMemoryRegionCreated(
     int id,
     base::ReadOnlySharedMemoryRegion region,
     uint32_t size) {
@@ -698,7 +693,7 @@ void DesktopSessionProxy::OnCreateSharedBuffer(
   }
 }
 
-void DesktopSessionProxy::OnReleaseSharedBuffer(int id) {
+void DesktopSessionProxy::OnSharedMemoryRegionReleased(int id) {
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
 
   // Drop the cached reference to the buffer.
