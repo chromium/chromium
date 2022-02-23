@@ -3319,6 +3319,11 @@ crbug.com/626703 [ Linux ] external/wpt/url/failure.html [ Failure ]
 crbug.com/626703 virtual/prerender/external/wpt/speculation-rules/prerender/workers.html [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 external/wpt/geolocation-API/enabled-by-feature-policy-attribute-redirect-on-load.https.sub.html [ Timeout ]
+crbug.com/626703 external/wpt/geolocation-API/enabled-by-feature-policy-attribute.https.sub.html [ Timeout ]
+crbug.com/626703 external/wpt/geolocation-API/enabled-by-feature-policy.https.sub.html [ Timeout ]
+crbug.com/626703 external/wpt/geolocation-API/enabled-on-self-origin-by-feature-policy.https.sub.html [ Timeout ]
+crbug.com/626703 [ Mac10.15 ] virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/registered-property-interpolation-005.https.html [ Failure ]
 crbug.com/626703 external/wpt/html/semantics/interactive-elements/the-dialog-element/modal-dialog-in-replaced-renderer.html [ Failure ]
 crbug.com/626703 external/wpt/html/semantics/interactive-elements/the-dialog-element/modal-dialog-in-table-column.html [ Failure ]
 crbug.com/626703 virtual/dialogfocus-old-behavior/external/wpt/html/semantics/interactive-elements/the-dialog-element/modal-dialog-in-replaced-renderer.html [ Failure ]

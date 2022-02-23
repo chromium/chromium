@@ -44,6 +44,10 @@ crbug.com/1209223 external/wpt/html/browsers/browsing-the-web/navigating-across-
 crbug.com/1209223 external/wpt/html/browsers/browsing-the-web/navigating-across-documents/javascript-url-security-check-same-origin-domain.sub.html [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 external/wpt/geolocation-API/enabled-by-feature-policy-attribute-redirect-on-load.https.sub.html [ Timeout ]
+crbug.com/626703 external/wpt/geolocation-API/enabled-by-feature-policy-attribute.https.sub.html [ Timeout ]
+crbug.com/626703 external/wpt/geolocation-API/enabled-by-feature-policy.https.sub.html [ Timeout ]
+crbug.com/626703 external/wpt/geolocation-API/enabled-on-self-origin-by-feature-policy.https.sub.html [ Timeout ]
 crbug.com/626703 external/wpt/wasm/webapi/esm-integration/exported-names.tentative.html [ Timeout ]
 crbug.com/626703 external/wpt/wasm/webapi/esm-integration/js-wasm-cycle.tentative.html [ Timeout ]
 crbug.com/626703 external/wpt/wasm/webapi/esm-integration/wasm-import-wasm-export.tentative.html [ Timeout ]
