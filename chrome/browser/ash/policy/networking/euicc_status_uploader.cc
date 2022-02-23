@@ -12,6 +12,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chromeos/dbus/hermes/hermes_manager_client.h"
 #include "chromeos/network/managed_network_configuration_handler.h"
+#include "chromeos/network/network_event_log.h"
 #include "chromeos/network/network_handler.h"
 #include "chromeos/network/network_state_handler.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
@@ -170,11 +171,20 @@ base::Value EuiccStatusUploader::GetCurrentEuiccStatus() {
         network_handler_->managed_network_configuration_handler()
             ->FindPolicyByGUID(
                 /*userhash=*/std::string(), network->guid(), &onc_source);
-    DCHECK(policy);
+    if (!policy) {
+      NET_LOG(EVENT) << "No device policy found for network guid: "
+                     << network->guid();
+      continue;
+    }
 
     const base::Value* cellular_dict =
         policy->FindDictKey(::onc::network_config::kCellular);
-    DCHECK(cellular_dict);
+    if (!cellular_dict) {
+      NET_LOG(EVENT)
+          << "No Cellular properties found in device policy for network guid: "
+          << network->guid();
+      continue;
+    }
 
     const std::string* smdp_address =
         cellular_dict->FindStringKey(::onc::cellular::kSMDPAddress);

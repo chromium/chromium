@@ -167,7 +167,7 @@ class EuiccStatusUploaderTest : public testing::Test {
     status_uploader->FireRetryTimerIfExistsForTesting();
   }
 
-  void SetUpDeviceProfiles(const EuiccTestData& data) {
+  void SetUpDeviceProfiles(const EuiccTestData& data, bool add_to_onc = true) {
     // Create |data.euicc_count| fake EUICCs.
     chromeos::HermesManagerClient::Get()->GetTestInterface()->ClearEuiccs();
     for (int euicc_id = 0; euicc_id < data.euicc_count; euicc_id++) {
@@ -211,12 +211,14 @@ class EuiccStatusUploaderTest : public testing::Test {
       onc_config.Append(std::move(single_onc));
     }
 
-    // Set ONC values.
-    chromeos::NetworkHandler::Get()
-        ->managed_network_configuration_handler()
-        ->SetPolicy(::onc::ONC_SOURCE_DEVICE_POLICY,
-                    std::string() /* no username hash */, std::move(onc_config),
-                    base::DictionaryValue());
+    if (add_to_onc) {
+      // Set ONC values.
+      chromeos::NetworkHandler::Get()
+          ->managed_network_configuration_handler()
+          ->SetPolicy(::onc::ONC_SOURCE_DEVICE_POLICY,
+                      std::string() /* no username hash */,
+                      std::move(onc_config), base::DictionaryValue());
+    }
 
     // Wait for Shill device and service change notifications to propagate.
     base::RunLoop().RunUntilIdle();
@@ -418,6 +420,26 @@ TEST_F(EuiccStatusUploaderTest, UnexpectedNetworkHandlerShutdown) {
 
   // Need to reinitialize before exiting test.
   chromeos::NetworkHandler::Initialize();
+}
+
+// A regression test for b/220933904 to verify that there should be no crash
+// when the cellular policy is not found from the device ONC but the network
+// state still exists.
+TEST_F(EuiccStatusUploaderTest, ShouldNotCrashIfNoPolicyFound) {
+  SetUpDeviceProfiles(kSetupOneEsimProfile, /*add_to_onc=*/false);
+
+  auto status_uploader = CreateStatusUploader();
+  // Initial upload request.
+  EXPECT_EQ(GetRequestCount(), 1);
+  // No value is uploaded yet.
+  EXPECT_EQ("{}", GetStoredPrefString());
+  CheckHistogram(/*total_count=*/1, /*success_count=*/0, /*failed_count=*/1);
+
+  // Make server accept requests.
+  SetServerSuccessStatus(true);
+  UpdateUploader(status_uploader.get());
+  EXPECT_EQ(GetRequestCount(), 2);
+  CheckHistogram(/*total_count=*/2, /*success_count=*/1, /*failed_count=*/1);
 }
 
 }  // namespace policy
