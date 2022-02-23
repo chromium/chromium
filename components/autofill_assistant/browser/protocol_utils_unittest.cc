@@ -584,4 +584,22 @@ TEST_F(ProtocolUtilsTest, ParseFromStringCannotParse) {
   ASSERT_FALSE(ProtocolUtils::ParseFromString(11, "\xff\xff\xff", nullptr));
 }
 
+TEST_F(ProtocolUtilsTest, CreateGetUserDataRequest) {
+  CollectUserDataOptions options;
+  options.request_payer_name = true;
+  options.request_payer_email = true;
+  options.request_phone_number_separately = true;
+  options.request_shipping = true;
+  options.request_payment_method = true;
+
+  GetUserDataRequestProto request;
+  EXPECT_TRUE(request.ParseFromString(
+      ProtocolUtils::CreateGetUserDataRequest(options)));
+  EXPECT_TRUE(request.request_name());
+  EXPECT_TRUE(request.request_email());
+  EXPECT_TRUE(request.request_phone());
+  EXPECT_TRUE(request.request_addresses());
+  EXPECT_TRUE(request.request_payment_methods());
+}
+
 }  // namespace autofill_assistant

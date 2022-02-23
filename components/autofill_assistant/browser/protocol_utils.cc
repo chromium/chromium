@@ -911,4 +911,20 @@ bool ProtocolUtils::ValidateTriggerCondition(
   }
 }
 
+// static
+std::string ProtocolUtils::CreateGetUserDataRequest(
+    const CollectUserDataOptions& options) {
+  GetUserDataRequestProto request_proto;
+  request_proto.set_request_name(options.request_payer_name);
+  request_proto.set_request_email(options.request_payer_email);
+  request_proto.set_request_phone(options.request_phone_number_separately);
+  request_proto.set_request_addresses(options.request_shipping);
+  request_proto.set_request_payment_methods(options.request_payment_method);
+
+  std::string serialized_request_proto;
+  bool success = request_proto.SerializeToString(&serialized_request_proto);
+  DCHECK(success);
+  return serialized_request_proto;
+}
+
 }  // namespace autofill_assistant

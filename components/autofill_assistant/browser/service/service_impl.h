@@ -51,6 +51,7 @@ class ServiceImpl : public Service {
               std::unique_ptr<ServiceRequestSender> request_sender,
               const GURL& script_server_url,
               const GURL& action_server_url,
+              const GURL& user_data_url,
               std::unique_ptr<ClientContext> client_context);
   ServiceImpl(const ServiceImpl&) = delete;
   ServiceImpl& operator=(const ServiceImpl&) = delete;
@@ -82,6 +83,9 @@ class ServiceImpl : public Service {
   void SetScriptStoreConfig(
       const ScriptStoreConfig& script_store_config) override;
 
+  void GetUserData(const CollectUserDataOptions& options,
+                   ResponseCallback callback) override;
+
  private:
   void OnFetchPaymentsClientToken(
       const std::string& script_path,
@@ -106,6 +110,7 @@ class ServiceImpl : public Service {
   // The RPC endpoints to send requests to.
   GURL script_server_url_;
   GURL script_action_server_url_;
+  GURL user_data_url_;
 
   // The client context to send to the backend.
   std::unique_ptr<ClientContext> client_context_;

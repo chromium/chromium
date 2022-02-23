@@ -220,6 +220,56 @@ message GetCapabilitiesByHashPrefixResponseProto {
   repeated MatchInfoProto match_info = 1;
 }
 
+// Request to get user data.
+message GetUserDataRequestProto {
+  // For logging, to know which run this request has originated from.
+  optional uint64 run_id = 1;
+
+  optional bool request_name = 2;
+  optional bool request_email = 3;
+  optional bool request_phone = 4;
+  optional bool request_addresses = 5;
+  optional bool request_payment_methods = 6;
+}
+
+// Response with user data.
+message GetUserDataResponseProto {
+  // The locale to be used when creating this data. This can have influence
+  // on the potential processing by Autofill.
+  optional string locale = 3;
+
+  repeated ProfileProto available_contacts = 1;
+  // The identifier of the contact to select. If not specified, the client
+  // will use its own heuristics to select a default contact.
+  optional string selected_contact_identifier = 5;
+
+  // Available phone numbers to select.
+  repeated PhoneNumberProto available_phone_numbers = 10;
+  // The identifier of the phone number to select. If not specified,
+  // the client will use its own heuristics to select a default payment
+  // instrument.
+  optional string selected_phone_number_identifier = 11;
+
+  // Available (shipping) addresses to select.
+  repeated ProfileProto available_addresses = 4;
+  // The identifier of the shipping address to select. If not specified, the
+  // client will use its own heuristics to select a default shipping address.
+  optional string selected_shipping_address_identifier = 6;
+  // An opaque token to launch the GMS address editor for creating a new
+  // address.
+  optional bytes add_address_token = 8;
+
+  // Available payment instruments to select.
+  repeated PaymentInstrumentProto available_payment_instruments = 2;
+  // The identifier of the payment instrument to select. If not specified,
+  // the client will use its own heuristics to select a default payment
+  // instrument.
+  optional string selected_payment_instrument_identifier = 7;
+  // An opaque token returned by the |GetInstrumentListResponse| to launch
+  // the GMS card editor to create a new credit card.
+  optional bytes add_payment_instrument_token = 9;
+}
+
 // Overlay image to be drawn on top of full overlays.
 message OverlayImageProto {
   // TODO(b/170202574): Remove legacy |image_url|.
@@ -2594,38 +2644,9 @@ message CollectUserDataProto {
   repeated RequiredDataPiece required_credit_card_data_piece = 35;
   repeated RequiredDataPiece required_billing_address_data_piece = 36;
 
-  message UserDataProto {
-    // Available contacts to select.
-    repeated ProfileProto available_contacts = 1;
-    // The identifier of the contact to select. If not specified, the client
-    // will use its own heuristics to select a default contact.
-    optional string selected_contact_identifier = 5;
-
-    // Available (shipping) addresses to select.
-    repeated ProfileProto available_addresses = 4;
-    // The identifier of the shipping address to select. If not specified, the
-    // client will use its own heuristics to select a default shipping address.
-    optional string selected_shipping_address_identifier = 6;
-
-    // Available payment instruments to select.
-    repeated PaymentInstrumentProto available_payment_instruments = 2;
-    // The identifier of the payment instrument to select. If not specified,
-    // the client will use its own heuristics to select a default payment
-    // instrument.
-    optional string selected_payment_instrument_identifier = 7;
-
-    // Available phone numbers to select.
-    repeated PhoneNumberProto available_phone_numbers = 10;
-    // The identifier of the phone number to select. If not specified,
-    // the client will use its own heuristics to select a default payment
-    // instrument.
-    optional string selected_phone_number_identifier = 11;
-
-    // The locale to be used when creating this data. This can have influence
-    // on the potential processing by Autofill.
-    optional string locale = 3;
-  }
-  optional UserDataProto user_data = 37;
+  // TODO(b/218838411): This way of getting data is about to be deprecated. It
+  // is left in place until the backend has been adapted. Reserve after.
+  optional GetUserDataResponseProto user_data = 37;
 
   reserved 7, 10, 14, 15, 17, 26;
 }

@@ -87,4 +87,13 @@ void JavaService::GetNextActions(
   std::move(callback).Run(net::HTTP_OK, response);
 }
 
+void JavaService::GetUserData(const CollectUserDataOptions& options,
+                              ResponseCallback callback) {
+  // TODO(b/218838411): Mock.
+  GetUserDataResponseProto response;
+  std::string serialized_response;
+  response.SerializeToString(&serialized_response);
+  std::move(callback).Run(net::HTTP_OK, serialized_response);
+}
+
 }  // namespace autofill_assistant

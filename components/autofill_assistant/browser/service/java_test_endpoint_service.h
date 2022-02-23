@@ -9,6 +9,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "components/autofill_assistant/browser/service/service.h"
+#include "components/autofill_assistant/browser/user_data.h"
 
 namespace autofill_assistant {
 
@@ -43,6 +44,9 @@ class JavaTestEndpointService : public Service {
       const std::vector<ProcessedActionProto>& processed_actions,
       const RoundtripTimingStats& timing_stats,
       ResponseCallback callback) override;
+
+  void GetUserData(const CollectUserDataOptions& options,
+                   ResponseCallback callback) override;
 
  private:
   void OnGetScriptsForUrl(ResponseCallback callback,

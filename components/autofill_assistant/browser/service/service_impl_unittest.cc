@@ -29,6 +29,8 @@ namespace {
 
 const char kScriptServerUrl[] = "https://www.fake.backend.com/script_server";
 const char kActionServerUrl[] = "https://www.fake.backend.com/action_server";
+const char kUserDataServerUrl[] =
+    "https://www.fake.backend.com/user_data_server";
 
 // TODO(b/207744539): In all tests, check that protocol utils is called with
 // the correct parameters.
@@ -44,7 +46,8 @@ class ServiceImplTest : public testing::Test {
 
     service_ = std::make_unique<ServiceImpl>(
         &mock_client_, std::move(mock_request_sender), GURL(kScriptServerUrl),
-        GURL(kActionServerUrl), std::move(mock_client_context));
+        GURL(kActionServerUrl), GURL(kUserDataServerUrl),
+        std::move(mock_client_context));
   }
   ~ServiceImplTest() override = default;
 
@@ -176,6 +179,17 @@ TEST_F(ServiceImplTest, GetNextActions) {
       std::string("fake_previous_script_payload"), /* processed_actions = */ {},
       /* timing_stats = */ RoundtripTimingStats(),
       mock_response_callback_.Get());
+}
+
+TEST_F(ServiceImplTest, GetUserData) {
+  EXPECT_CALL(*mock_request_sender_, OnSendRequest(GURL(kUserDataServerUrl), _,
+                                                   _, RpcType::GET_USER_DATA))
+      .WillOnce(RunOnceCallback<2>(net::HTTP_OK, std::string("response")));
+  EXPECT_CALL(mock_response_callback_,
+              Run(net::HTTP_OK, std::string("response")));
+
+  service_->GetUserData(CollectUserDataOptions(),
+                        mock_response_callback_.Get());
 }
 
 }  // namespace

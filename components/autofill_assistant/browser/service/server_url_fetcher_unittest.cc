@@ -60,5 +60,11 @@ TEST(ServerUrlFetcherTest, GetCapabilitiesByHashEndpoint) {
               Eq(GURL("https://www.example.com/v1/capabilitiesByHashPrefix2")));
 }
 
+TEST(ServerUrlFetcherTest, GetUserDataEndpoint) {
+  EXPECT_THAT(
+      ServerUrlFetcher(GURL("https://www.example.com")).GetUserDataEndpoint(),
+      Eq(GURL("https://www.example.com/v1/userData")));
+}
+
 }  // namespace
 }  // namespace autofill_assistant

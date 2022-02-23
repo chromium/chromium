@@ -17,6 +17,7 @@ const char kScriptEndpoint[] = "/v1/supportsSite2";
 const char kActionEndpoint[] = "/v1/actions2";
 const char kTriggersEndpoint[] = "/v1/triggers";
 const char kCapabilitiesByHashEndpoint[] = "/v1/capabilitiesByHashPrefix2";
+const char kUserDataEndpoint[] = "/v1/userData";
 }  // namespace
 
 namespace autofill_assistant {
@@ -59,9 +60,15 @@ GURL ServerUrlFetcher::GetTriggerScriptsEndpoint() const {
 }
 
 GURL ServerUrlFetcher::GetCapabilitiesByHashEndpoint() const {
-  GURL::Replacements trigger_replacements;
-  trigger_replacements.SetPathStr(kCapabilitiesByHashEndpoint);
-  return server_url_.ReplaceComponents(trigger_replacements);
+  GURL::Replacements capabilities_replacements;
+  capabilities_replacements.SetPathStr(kCapabilitiesByHashEndpoint);
+  return server_url_.ReplaceComponents(capabilities_replacements);
+}
+
+GURL ServerUrlFetcher::GetUserDataEndpoint() const {
+  GURL::Replacements user_data_replacements;
+  user_data_replacements.SetPathStr(kUserDataEndpoint);
+  return server_url_.ReplaceComponents(user_data_replacements);
 }
 
 }  // namespace autofill_assistant

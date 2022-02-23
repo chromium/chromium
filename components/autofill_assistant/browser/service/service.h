@@ -10,6 +10,7 @@
 
 #include "base/callback.h"
 #include "components/autofill_assistant/browser/service.pb.h"
+#include "components/autofill_assistant/browser/user_data.h"
 #include "url/gurl.h"
 
 namespace autofill_assistant {
@@ -49,6 +50,10 @@ class Service {
 
   virtual void SetScriptStoreConfig(
       const ScriptStoreConfig& script_store_config) {}
+
+  // Get user data.
+  virtual void GetUserData(const CollectUserDataOptions& options,
+                           ResponseCallback callback) = 0;
 
  protected:
   Service() = default;

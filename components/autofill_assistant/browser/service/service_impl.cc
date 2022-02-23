@@ -56,7 +56,7 @@ std::unique_ptr<ServiceImpl> ServiceImpl::Create(
   return std::make_unique<ServiceImpl>(
       client, std::move(request_sender),
       url_fetcher.GetSupportsScriptEndpoint(),
-      url_fetcher.GetNextActionsEndpoint(),
+      url_fetcher.GetNextActionsEndpoint(), url_fetcher.GetUserDataEndpoint(),
       std::make_unique<ClientContextImpl>(client));
 }
 
@@ -64,14 +64,17 @@ ServiceImpl::ServiceImpl(Client* client,
                          std::unique_ptr<ServiceRequestSender> request_sender,
                          const GURL& script_server_url,
                          const GURL& action_server_url,
+                         const GURL& user_data_url,
                          std::unique_ptr<ClientContext> client_context)
     : client_(client),
       request_sender_(std::move(request_sender)),
       script_server_url_(script_server_url),
       script_action_server_url_(action_server_url),
+      user_data_url_(user_data_url),
       client_context_(std::move(client_context)) {
   DCHECK(script_server_url.is_valid());
   DCHECK(action_server_url.is_valid());
+  DCHECK(user_data_url_.is_valid());
 }
 
 ServiceImpl::~ServiceImpl() {}
@@ -158,6 +161,13 @@ void ServiceImpl::GetNextActions(
           previous_global_payload, previous_script_payload, processed_actions,
           timing_stats, client_context_->AsProto()),
       std::move(callback), RpcType::GET_ACTIONS);
+}
+
+void ServiceImpl::GetUserData(const CollectUserDataOptions& options,
+                              ResponseCallback callback) {
+  request_sender_->SendRequest(user_data_url_,
+                               ProtocolUtils::CreateGetUserDataRequest(options),
+                               std::move(callback), RpcType::GET_USER_DATA);
 }
 
 }  // namespace autofill_assistant

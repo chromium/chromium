@@ -12,6 +12,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "components/autofill_assistant/browser/service/service.h"
+#include "components/autofill_assistant/browser/user_data.h"
 #include "url/gurl.h"
 
 namespace autofill_assistant {
@@ -53,6 +54,10 @@ class JavaService : public Service {
       const std::vector<ProcessedActionProto>& processed_actions,
       const RoundtripTimingStats& timing_stats,
       ResponseCallback callback) override;
+
+  // Get user data.
+  void GetUserData(const CollectUserDataOptions& options,
+                   ResponseCallback callback) override;
 
  private:
   base::android::ScopedJavaGlobalRef<jobject> java_service_;

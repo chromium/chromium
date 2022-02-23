@@ -363,7 +363,7 @@ void MergePhoneNumberIntoSelectedContact(
     UserData* user_data,
     UserModel* user_model,
     const CollectUserDataOptions& options,
-    const CollectUserDataProto::UserDataProto& proto_data) {
+    const GetUserDataResponseProto& proto_data) {
   if (!user_data->selected_phone_number()) {
     return;
   }
@@ -1331,7 +1331,7 @@ void CollectUserDataAction::UpdateProfileAndCardUse(UserData* user_data) {
 }
 
 void CollectUserDataAction::UpdateUserDataFromProto(
-    const CollectUserDataProto::UserDataProto& proto_data,
+    const GetUserDataResponseProto& proto_data,
     UserData* user_data) {
   DCHECK(user_data != nullptr);
 

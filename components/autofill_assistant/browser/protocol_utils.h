@@ -16,6 +16,7 @@
 #include "components/autofill_assistant/browser/script_parameters.h"
 #include "components/autofill_assistant/browser/service.pb.h"
 #include "components/autofill_assistant/browser/trigger_scripts/trigger_script.h"
+#include "components/autofill_assistant/browser/user_data.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
@@ -71,6 +72,10 @@ class ProtocolUtils {
       const GURL& url,
       const ClientContextProto& client_context,
       const ScriptParameters& script_parameters);
+
+  // Create request to get user data.
+  static std::string CreateGetUserDataRequest(
+      const CollectUserDataOptions& options);
 
   // Create an action from the |action|.
   static std::unique_ptr<Action> CreateAction(ActionDelegate* delegate,
