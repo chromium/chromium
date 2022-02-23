@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "components/security_interstitials/content/security_interstitial_controller_client.h"
 #include "components/security_interstitials/content/security_interstitial_page.h"
@@ -16,11 +17,14 @@
 #include "components/security_interstitials/core/controller_client.h"
 #include "components/security_interstitials/core/metrics_helper.h"
 #include "content/public/browser/certificate_request_result_type.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/test/mock_navigation_handle.h"
+#include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
 #include "net/base/net_errors.h"
 #include "net/test/cert_test_util.h"
 #include "net/test/test_data_directory.h"
+#include "third_party/blink/public/common/features.h"
 #include "url/gurl.h"
 
 namespace security_interstitials {
@@ -213,6 +217,62 @@ TEST_F(SecurityInterstitialTabHelperTest, NavigationDoesNotCommit) {
       CreateHandle(true, false);
   helper->DidFinishNavigation(next_committed_handle.get());
   EXPECT_TRUE(committed_blocking_page_destroyed);
+}
+
+class SecurityInterstitialTabHelperFencedFrameTest
+    : public SecurityInterstitialTabHelperTest {
+ public:
+  SecurityInterstitialTabHelperFencedFrameTest() {
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        blink::features::kFencedFrames, {{"implementation_type", "mparch"}});
+  }
+  ~SecurityInterstitialTabHelperFencedFrameTest() override = default;
+
+  content::RenderFrameHost* CreateFencedFrame(
+      content::RenderFrameHost* parent) {
+    content::RenderFrameHost* fenced_frame =
+        content::RenderFrameHostTester::For(parent)->AppendFencedFrame();
+    return fenced_frame;
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Tests that a FencedFrame does not close the interstitial page.
+TEST_F(SecurityInterstitialTabHelperFencedFrameTest,
+       FencedFrameDoesNotCloseInterstitialPage) {
+  std::unique_ptr<content::NavigationHandle> blocking_page_handle =
+      CreateHandle(true, false);
+  bool blocking_page_destroyed = false;
+  CreateAssociatedBlockingPage(blocking_page_handle.get(),
+                               &blocking_page_destroyed);
+  SecurityInterstitialTabHelper* helper =
+      SecurityInterstitialTabHelper::FromWebContents(web_contents());
+  helper->DidFinishNavigation(blocking_page_handle.get());
+  EXPECT_FALSE(blocking_page_destroyed);
+  EXPECT_TRUE(helper->IsDisplayingInterstitial());
+
+  // Navigate a fenced frame and the interstitial page should be kept visible on
+  // the fenced frame.
+  GURL fenced_frame_url = GURL("https://fencedframe.com");
+  content::RenderFrameHostTester::For(main_rfh())
+      ->InitializeRenderFrameIfNeeded();
+  content::RenderFrameHost* fenced_frame_rfh = CreateFencedFrame(main_rfh());
+  std::unique_ptr<content::NavigationSimulator> navigation_simulator =
+      content::NavigationSimulator::CreateForFencedFrame(fenced_frame_url,
+                                                         fenced_frame_rfh);
+  navigation_simulator->Commit();
+  EXPECT_TRUE(fenced_frame_rfh->IsFencedFrameRoot());
+  EXPECT_FALSE(blocking_page_destroyed);
+  EXPECT_TRUE(helper->IsDisplayingInterstitial());
+
+  // When a navigation does commit, the fenced frame one should be cleaned up.
+  std::unique_ptr<content::NavigationHandle> next_committed_handle =
+      CreateHandle(true, false);
+  helper->DidFinishNavigation(next_committed_handle.get());
+  EXPECT_TRUE(blocking_page_destroyed);
+  EXPECT_FALSE(helper->IsDisplayingInterstitial());
 }
 
 }  // namespace security_interstitials
