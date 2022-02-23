@@ -21,11 +21,16 @@
 namespace {
 
 const char16_t kTestDeviceName[] = u"Pixel Buds";
+const char16_t kTestAppName[] = u"JBLTools";
 const char16_t kTestEmail[] = u"testemail@gmail.com";
 const char kFastPairErrorNotificationId[] =
     "cros_fast_pair_error_notification_id";
 const char kFastPairDiscoveryGuestNotificationId[] =
     "cros_fast_pair_discovery_guest_notification_id";
+const char kFastPairApplicationAvailableNotificationId[] =
+    "cros_fast_pair_application_available_notification_id";
+const char kFastPairApplicationInstalledNotificationId[] =
+    "cros_fast_pair_application_installed_notification_id";
 const char kFastPairDiscoveryUserNotificationId[] =
     "cros_fast_pair_discovery_user_notification_id";
 const char kFastPairPairingNotificationId[] =
@@ -361,6 +366,141 @@ TEST_F(FastPairNotificationControllerTest,
       kFastPairDiscoveryGuestNotificationId));
   test_message_center_.RemoveNotification(
       /*id=*/kFastPairDiscoveryGuestNotificationId, /*by_user=*/false);
+  base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(FastPairNotificationControllerTest,
+       ShowApplicationAvailableNotification_DownloadClicked) {
+  EXPECT_FALSE(test_message_center_.FindVisibleNotificationById(
+      kFastPairApplicationAvailableNotificationId));
+
+  base::MockCallback<base::OnceCallback<void(bool)>> on_close;
+  base::MockCallback<base::RepeatingClosure> on_download_clicked;
+  EXPECT_CALL(on_download_clicked, Run).Times(1);
+  EXPECT_CALL(on_close, Run).Times(0);
+
+  fast_pair_notification_controller_->ShowApplicationAvailableNotification(
+      kTestDeviceName,
+      /*device_image=*/gfx::Image(), on_download_clicked.Get(), on_close.Get());
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_TRUE(test_message_center_.FindVisibleNotificationById(
+      kFastPairApplicationAvailableNotificationId));
+  test_message_center_.ClickOnNotificationButton(
+      /*id=*/kFastPairApplicationAvailableNotificationId, /*button_index=*/0);
+  base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(FastPairNotificationControllerTest,
+       ShowApplicationAvailableNotification_RemovedByUser) {
+  EXPECT_FALSE(test_message_center_.FindVisibleNotificationById(
+      kFastPairApplicationAvailableNotificationId));
+
+  base::MockCallback<base::OnceCallback<void(bool)>> on_close;
+  base::MockCallback<base::RepeatingClosure> on_download_clicked;
+  EXPECT_CALL(on_download_clicked, Run).Times(0);
+  EXPECT_CALL(on_close, Run).Times(1);
+
+  fast_pair_notification_controller_->ShowApplicationAvailableNotification(
+      kTestDeviceName,
+      /*device_image=*/gfx::Image(), on_download_clicked.Get(), on_close.Get());
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_TRUE(test_message_center_.FindVisibleNotificationById(
+      kFastPairApplicationAvailableNotificationId));
+  test_message_center_.RemoveNotification(
+      /*id=*/kFastPairApplicationAvailableNotificationId, /*by_user=*/true);
+  base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(FastPairNotificationControllerTest,
+       ShowApplicationAvailableNotification_RemovedByOS) {
+  EXPECT_FALSE(test_message_center_.FindVisibleNotificationById(
+      kFastPairApplicationAvailableNotificationId));
+
+  base::MockCallback<base::OnceCallback<void(bool)>> on_close;
+  base::MockCallback<base::RepeatingClosure> on_download_clicked;
+  EXPECT_CALL(on_download_clicked, Run).Times(0);
+  EXPECT_CALL(on_close, Run).Times(1);
+
+  fast_pair_notification_controller_->ShowApplicationAvailableNotification(
+      kTestDeviceName,
+      /*device_image=*/gfx::Image(), on_download_clicked.Get(), on_close.Get());
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_TRUE(test_message_center_.FindVisibleNotificationById(
+      kFastPairApplicationAvailableNotificationId));
+  test_message_center_.RemoveNotification(
+      /*id=*/kFastPairApplicationAvailableNotificationId, /*by_user=*/false);
+  base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(FastPairNotificationControllerTest,
+       ShowApplicationInstalledNotification_SetupClicked) {
+  EXPECT_FALSE(test_message_center_.FindVisibleNotificationById(
+      kFastPairApplicationInstalledNotificationId));
+
+  base::MockCallback<base::OnceCallback<void(bool)>> on_close;
+  base::MockCallback<base::RepeatingClosure> on_setup_clicked;
+  EXPECT_CALL(on_setup_clicked, Run).Times(1);
+  EXPECT_CALL(on_close, Run).Times(0);
+
+  fast_pair_notification_controller_->ShowApplicationInstalledNotification(
+      kTestDeviceName,
+      /*device_image=*/gfx::Image(), kTestAppName, on_setup_clicked.Get(),
+      on_close.Get());
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_TRUE(test_message_center_.FindVisibleNotificationById(
+      kFastPairApplicationInstalledNotificationId));
+  test_message_center_.ClickOnNotificationButton(
+      /*id=*/kFastPairApplicationInstalledNotificationId, /*button_index=*/0);
+  base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(FastPairNotificationControllerTest,
+       ShowApplicationInstalledNotification_RemovedByUser) {
+  EXPECT_FALSE(test_message_center_.FindVisibleNotificationById(
+      kFastPairApplicationInstalledNotificationId));
+
+  base::MockCallback<base::OnceCallback<void(bool)>> on_close;
+  base::MockCallback<base::RepeatingClosure> on_setup_clicked;
+  EXPECT_CALL(on_setup_clicked, Run).Times(0);
+  EXPECT_CALL(on_close, Run).Times(1);
+
+  fast_pair_notification_controller_->ShowApplicationInstalledNotification(
+      kTestDeviceName,
+      /*device_image=*/gfx::Image(), kTestAppName, on_setup_clicked.Get(),
+      on_close.Get());
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_TRUE(test_message_center_.FindVisibleNotificationById(
+      kFastPairApplicationInstalledNotificationId));
+  test_message_center_.RemoveNotification(
+      /*id=*/kFastPairApplicationInstalledNotificationId, /*by_user=*/true);
+  base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(FastPairNotificationControllerTest,
+       ShowApplicationInstalledNotification_RemovedByOS) {
+  EXPECT_FALSE(test_message_center_.FindVisibleNotificationById(
+      kFastPairApplicationInstalledNotificationId));
+
+  base::MockCallback<base::OnceCallback<void(bool)>> on_close;
+  base::MockCallback<base::RepeatingClosure> on_setup_clicked;
+  EXPECT_CALL(on_setup_clicked, Run).Times(0);
+  EXPECT_CALL(on_close, Run).Times(1);
+
+  fast_pair_notification_controller_->ShowApplicationInstalledNotification(
+      kTestDeviceName,
+      /*device_image=*/gfx::Image(), kTestAppName, on_setup_clicked.Get(),
+      on_close.Get());
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_TRUE(test_message_center_.FindVisibleNotificationById(
+      kFastPairApplicationInstalledNotificationId));
+  test_message_center_.RemoveNotification(
+      /*id=*/kFastPairApplicationInstalledNotificationId, /*by_user=*/false);
   base::RunLoop().RunUntilIdle();
 }
 

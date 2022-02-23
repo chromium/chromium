@@ -27,6 +27,10 @@ const char kFastPairErrorNotificationId[] =
     "cros_fast_pair_error_notification_id";
 const char kFastPairDiscoveryGuestNotificationId[] =
     "cros_fast_pair_discovery_guest_notification_id";
+const char kFastPairApplicationAvailableNotificationId[] =
+    "cros_fast_pair_application_available_notification_id";
+const char kFastPairApplicationInstalledNotificationId[] =
+    "cros_fast_pair_application_installed_notification_id";
 const char kFastPairDiscoveryUserNotificationId[] =
     "cros_fast_pair_discovery_user_notification_id";
 const char kFastPairPairingNotificationId[] =
@@ -249,6 +253,69 @@ void FastPairNotificationController::ShowGuestDiscoveryNotification(
                      weak_ptr_factory_.GetWeakPtr()));
 
   message_center_->AddNotification(std::move(discovery_notification));
+}
+
+void FastPairNotificationController::ShowApplicationAvailableNotification(
+    const std::u16string& device_name,
+    gfx::Image device_image,
+    base::RepeatingClosure download_app_callback,
+    base::OnceCallback<void(bool)> on_close) {
+  std::unique_ptr<message_center::Notification>
+      application_available_notification = CreateNotification(
+          kFastPairApplicationAvailableNotificationId,
+          message_center::SystemNotificationWarningLevel::NORMAL,
+          message_center_);
+  application_available_notification->set_title(l10n_util::GetStringFUTF16(
+      IDS_FAST_PAIR_DOWNLOAD_NOTIFICATION_APP_TITLE, device_name));
+
+  message_center::ButtonInfo download_button(
+      l10n_util::GetStringUTF16(IDS_FAST_PAIR_DOWNLOAD_APP_BUTTON));
+  application_available_notification->set_buttons({download_button});
+
+  application_available_notification->set_delegate(
+      base::MakeRefCounted<NotificationDelegate>(
+          /*on_primary_click=*/download_app_callback,
+          /*on_close=*/std::move(on_close)));
+  application_available_notification->set_type(
+      message_center::NOTIFICATION_TYPE_PROGRESS);
+  application_available_notification->set_progress(
+      kInfiniteLoadingProgressValue);
+  application_available_notification->set_image(device_image);
+
+  message_center_->AddNotification(
+      std::move(application_available_notification));
+}
+
+void FastPairNotificationController::ShowApplicationInstalledNotification(
+    const std::u16string& device_name,
+    gfx::Image device_image,
+    const std::u16string& app_name,
+    base::RepeatingClosure launch_app_callback,
+    base::OnceCallback<void(bool)> on_close) {
+  std::unique_ptr<message_center::Notification>
+      application_installed_notification = CreateNotification(
+          kFastPairApplicationInstalledNotificationId,
+          message_center::SystemNotificationWarningLevel::NORMAL,
+          message_center_);
+  application_installed_notification->set_title(l10n_util::GetStringFUTF16(
+      IDS_FAST_PAIR_SETUP_APP_NOTIFICATION_TITLE, app_name));
+
+  message_center::ButtonInfo setup_button(
+      l10n_util::GetStringUTF16(IDS_FAST_PAIR_SETUP_APP_BUTTON));
+  application_installed_notification->set_buttons({setup_button});
+
+  application_installed_notification->set_delegate(
+      base::MakeRefCounted<NotificationDelegate>(
+          /*on_primary_click=*/launch_app_callback,
+          /*on_close=*/std::move(on_close)));
+  application_installed_notification->set_type(
+      message_center::NOTIFICATION_TYPE_PROGRESS);
+  application_installed_notification->set_progress(
+      kInfiniteLoadingProgressValue);
+  application_installed_notification->set_image(device_image);
+
+  message_center_->AddNotification(
+      std::move(application_installed_notification));
 }
 
 void FastPairNotificationController::ShowPairingNotification(

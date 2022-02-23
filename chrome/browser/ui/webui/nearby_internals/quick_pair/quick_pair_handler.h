@@ -53,11 +53,15 @@ class QuickPairHandler : public content::WebUIMessageHandler,
   void NotifyFastPairError(const base::ListValue* args);
   void NotifyFastPairDiscovery(const base::ListValue* args);
   void NotifyFastPairPairing(const base::ListValue* args);
+  void NotifyFastPairApplicationAvailable(const base::ListValue* args);
+  void NotifyFastPairApplicationInstalled(const base::ListValue* args);
   void NotifyFastPairAssociateAccountKey(const base::ListValue* args);
 
   void OnImageDecodedFastPairError(gfx::Image image);
   void OnImageDecodedFastPairDiscovery(gfx::Image image);
   void OnImageDecodedFastPairPairing(gfx::Image image);
+  void OnImageDecodedFastPairApplicationAvailable(gfx::Image image);
+  void OnImageDecodedFastPairApplicationInstalled(gfx::Image image);
   void OnImageDecodedFastPairAssociateAccountKey(gfx::Image image);
 
   std::unique_ptr<ash::quick_pair::FastPairNotificationController>

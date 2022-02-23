@@ -47,6 +47,17 @@ class FastPairNotificationController {
       base::RepeatingClosure on_connect_clicked,
       base::RepeatingClosure on_learn_more_clicked,
       base::OnceCallback<void(bool)> on_close);
+  void ShowApplicationAvailableNotification(
+      const std::u16string& device_name,
+      gfx::Image device_image,
+      base::RepeatingClosure download_app_callback,
+      base::OnceCallback<void(bool)> on_close);
+  void ShowApplicationInstalledNotification(
+      const std::u16string& device_name,
+      gfx::Image device_image,
+      const std::u16string& app_name,
+      base::RepeatingClosure launch_app_callback,
+      base::OnceCallback<void(bool)> on_close);
   void ShowPairingNotification(const std::u16string& device_name,
                                gfx::Image device_image,
                                base::OnceCallback<void(bool)> on_close);
