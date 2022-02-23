@@ -301,56 +301,113 @@ IN_PROC_BROWSER_TEST_F(OmniboxApiTest, OnInputEntered) {
   EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
 }
 
-// Tests that we get suggestions from and send input to the incognito context
+// Tests receiving suggestions from and sending input to the incognito context
 // of an incognito split mode extension.
-// http://crbug.com/100927
-// Test is flaky: http://crbug.com/101219
-IN_PROC_BROWSER_TEST_F(OmniboxApiTest, DISABLED_IncognitoSplitMode) {
-  ResultCatcher catcher_incognito;
-  catcher_incognito.RestrictToBrowserContext(
-      profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true));
+// Regression test for https://crbug.com/100927.
+IN_PROC_BROWSER_TEST_F(OmniboxApiTest, IncognitoSplitMode) {
+  static constexpr char kManifest[] =
+      R"({
+           "name": "SetDefaultSuggestion",
+           "manifest_version": 2,
+           "version": "0.1",
+           "omnibox": { "keyword": "alpha" },
+           "incognito": "split",
+           "background": { "scripts": [ "background.js" ], "persistent": true }
+         })";
+  static constexpr char kBackground[] =
+      R"(let suggestionSuffix =
+             chrome.extension.inIncognitoContext ?
+                 ' incognito' :
+                 ' onTheRecord';
+         chrome.omnibox.onInputChanged.addListener((text, suggest) => {
+           suggest([
+             {content: text + suggestionSuffix, description: 'description'}
+           ]);
+         });
 
-  ASSERT_TRUE(RunExtensionTest("omnibox", {}, {.allow_in_incognito = true}))
-      << message_;
+         chrome.omnibox.onInputEntered.addListener((text, disposition) => {
+           chrome.test.sendMessage(text);
+         });
 
-  // Open an incognito window and wait for the incognito extension process to
-  // respond.
+         chrome.test.notifyPass();)";
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), kBackground);
+
+  // Create an incognito browser, and wait for the extension to load. Our
+  // LoadExtension() method ensures the on-the-record background page has spun
+  // up, but we need to explicitly wait for the incognito version.
   Browser* incognito_browser = CreateIncognitoBrowser();
+  Profile* incognito_profile = incognito_browser->profile();
+  ResultCatcher catcher_incognito;
+  catcher_incognito.RestrictToBrowserContext(incognito_profile);
+  const Extension* extension =
+      LoadExtension(test_dir.UnpackedPath(), {.allow_in_incognito = true});
+  ASSERT_TRUE(extension);
   ASSERT_TRUE(catcher_incognito.GetNextResult()) << catcher_incognito.message();
 
-  LocationBar* location_bar = GetLocationBar(incognito_browser);
-  AutocompleteController* autocomplete_controller =
+  AutocompleteController* incognito_controller =
       GetAutocompleteControllerForBrowser(incognito_browser);
 
   // Test that we get the incognito-specific suggestions.
-  {
-    AutocompleteInput input(u"kw suggestio", metrics::OmniboxEventProto::NTP,
-                            ChromeAutocompleteSchemeClassifier(profile()));
-    autocomplete_controller->Start(input);
-    WaitForAutocompleteDone(browser());
-    EXPECT_TRUE(autocomplete_controller->done());
+  AutocompleteInput input(
+      u"alpha input", metrics::OmniboxEventProto::NTP,
+      ChromeAutocompleteSchemeClassifier(incognito_profile));
+  incognito_controller->Start(input);
+  WaitForAutocompleteDone(incognito_browser);
+  EXPECT_TRUE(incognito_controller->done());
 
-    // First result should be to invoke the keyword with what we typed, 2-4
-    // should be to invoke with suggestions from the extension, and the last
-    // should be to search for what we typed.
-    const AutocompleteResult& result = autocomplete_controller->result();
-    ASSERT_EQ(5U, result.size()) << AutocompleteResultAsString(result);
-    ASSERT_FALSE(result.match_at(0).keyword.empty());
-    EXPECT_EQ(u"kw suggestion3 incognito", result.match_at(3).fill_into_edit);
-  }
+  // First result should be to invoke the keyword with what we typed, the
+  // second should be the provided suggestion from the extension, and the
+  // final should be to search for what we typed.
+  const AutocompleteResult& result = incognito_controller->result();
+  ASSERT_EQ(3u, result.size());
 
-  // Test that our input is sent to the incognito context. The test will do a
-  // text comparison and succeed only if "command incognito" is sent to the
-  // incognito context.
+  // First result.
+  EXPECT_EQ(u"alpha", result.match_at(0).keyword);
+  EXPECT_EQ(u"alpha input", result.match_at(0).fill_into_edit);
+  EXPECT_EQ(AutocompleteMatchType::SEARCH_OTHER_ENGINE,
+            result.match_at(0).type);
+
+  // Second result: incognito-specific.
+  EXPECT_EQ(u"alpha", result.match_at(1).keyword);
+  EXPECT_EQ(u"alpha input incognito", result.match_at(1).fill_into_edit);
+  EXPECT_EQ(AutocompleteProvider::TYPE_KEYWORD,
+            result.match_at(1).provider->type());
+
+  // Third result: search what you typed.
+  EXPECT_EQ(AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED,
+            result.match_at(2).type);
+
+  // Split-mode test: Send different input to the on-the-record and off-the-
+  // record profiles, and wait for a message from each. Verify that the
+  // extension received the proper input in each context.
+  ExtensionTestMessageListener on_the_record_listener(/*will_reply=*/false);
+  on_the_record_listener.set_browser_context(profile());
+
+  ExtensionTestMessageListener incognito_listener(/*will_reply=*/false);
+  incognito_listener.set_browser_context(incognito_profile);
+
   {
-    ResultCatcher catcher;
-    AutocompleteInput input(u"kw command incognito",
+    AutocompleteInput input(u"alpha word on the record",
                             metrics::OmniboxEventProto::NTP,
                             ChromeAutocompleteSchemeClassifier(profile()));
-    autocomplete_controller->Start(input);
-    location_bar->AcceptInput();
-    EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
+    GetAutocompleteController()->Start(input);
+    GetLocationBar(browser())->AcceptInput();
   }
+  {
+    AutocompleteInput input(
+        u"alpha word incognito", metrics::OmniboxEventProto::NTP,
+        ChromeAutocompleteSchemeClassifier(incognito_profile));
+    incognito_controller->Start(input);
+    GetLocationBar(incognito_browser)->AcceptInput();
+  }
+
+  EXPECT_TRUE(on_the_record_listener.WaitUntilSatisfied());
+  EXPECT_TRUE(incognito_listener.WaitUntilSatisfied());
+
+  EXPECT_EQ("word on the record", on_the_record_listener.message());
+  EXPECT_EQ("word incognito", incognito_listener.message());
 }
 
 // The test is flaky on Win10. crbug.com/1045731.
