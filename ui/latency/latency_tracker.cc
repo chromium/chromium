@@ -58,7 +58,7 @@ enum Jank : int {
 };
 
 void EmitScrollUpdateTime(base::TimeDelta dur, bool janky) {
-  int count = dur.InMicroseconds();
+  int count = dur.InMilliseconds();
   if (count <= 0) {
     // Histograms aren't allowed to add zero counts, this could happen
     // especially in tests when the clock hasn't advanced enough for a
@@ -66,7 +66,7 @@ void EmitScrollUpdateTime(base::TimeDelta dur, bool janky) {
     return;
   }
   auto* histogram = base::BooleanHistogram::FactoryGet(
-      "Event.Jank.ScrollUpdate.TotalJankyAndNonJankyDuration",
+      "Event.Jank.ScrollUpdate.TotalJankyAndNonJankyDuration2",
       base::HistogramBase::kUmaTargetedHistogramFlag);
   histogram->AddCount(janky ? kJanky : kNonJanky, count);
 }
