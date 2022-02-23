@@ -66,6 +66,30 @@ Polymer({
   /** @private {?ResizeObserver} */
   resizeObserver_: null,
 
+  /**
+   * @private {boolean} The last state that was explicitly set via setPlay.
+   * In case setPlay() is invoked before the animation is initialized, the
+   * state is stored in this variable. Once the animation initializes, the
+   * state is sent to the worker.
+   */
+  playState_: false,
+
+  /**
+   * @private {boolean} Whether the Worker needs to receive new size
+   * information about the canvas. This is necessary for the corner case
+   * when the size information is received when the animation is still being
+   * loaded into the worker.
+   */
+  workerNeedsSizeUpdate_: false,
+
+  /**
+   * @private {boolean} Whether the Worker needs to receive new control
+   * information about its desired state. This is necessary for the corner case
+   * when the control information is received when the animation is still being
+   * loaded into the worker.
+   */
+  workerNeedsPlayControlUpdate_: false,
+
   /** @private {?Worker} */
   worker_: null,
 
@@ -102,15 +126,26 @@ Polymer({
   },
 
   /**
-   * Controls the animation based on the value of |shouldPlay|.
-   * @param {boolean} shouldPlay Will play the animation if true else pauses it.
+   * Controls the animation based on the value of |shouldPlay|. If the
+   * animation is being loaded into the worker when this method is invoked,
+   * the action will be postponed to when the animation is fully loaded.
+   * @param {boolean} shouldPlay True for play, false for pause.
    */
   setPlay(shouldPlay) {
+    this.playState_ = shouldPlay;
     if (this.isAnimationLoaded_) {
-      this.worker_.postMessage({control: {play: shouldPlay}});
+      this.sendPlayControlInformationToWorker_();
     } else {
-      this.autoplay = shouldPlay;
+      this.workerNeedsPlayControlUpdate_ = true;
     }
+  },
+
+  /**
+   * Sends control (play/pause) information to the worker.
+   * @private
+   */
+  sendPlayControlInformationToWorker_() {
+    this.worker_.postMessage({control: {play: this.playState_}});
   },
 
   /**
@@ -223,14 +258,25 @@ Polymer({
   },
 
   /**
-   * Handles the canvas element resize event. This informs the offscreen
-   * canvas worker of the new canvas size.
+   * Handles the canvas element resize event. If the animation isn't fully
+   * loaded, the canvas size is sent later, once the loading is done.
    * @private
    */
   onCanvasElementResized_() {
     if (this.isAnimationLoaded_) {
-      this.worker_.postMessage({drawSize: this.getCanvasDrawBufferSize_()});
+      this.sendCanvasSizeToWorker_();
+    } else {
+      // Mark a size update as necessary once the animation is loaded.
+      this.workerNeedsSizeUpdate_ = true;
     }
+  },
+
+  /**
+   * This informs the offscreen canvas worker of the current canvas size.
+   * @private
+   */
+  sendCanvasSizeToWorker_() {
+    this.worker_.postMessage({drawSize: this.getCanvasDrawBufferSize_()});
   },
 
   /**
@@ -261,6 +307,7 @@ Polymer({
   onMessage_(event) {
     if (event.data.name === 'initialized' && event.data.success) {
       this.isAnimationLoaded_ = true;
+      this.sendPendingInfo_();
       this.fire('cr-lottie-initialized');
     } else if (event.data.name === 'playing') {
       this.fire('cr-lottie-playing');
@@ -272,5 +319,23 @@ Polymer({
       this.fire('cr-lottie-resized', event.data.size);
     }
   },
+
+  /**
+   * Called once the animation is fully loaded into the worker. Sends any
+   * size or control information that may have arrived while the animation
+   * was not yet fully loaded.
+   * @private
+   */
+  sendPendingInfo_() {
+    if (this.workerNeedsSizeUpdate_) {
+      this.workerNeedsSizeUpdate_ = false;
+      this.sendCanvasSizeToWorker_();
+    }
+    if (this.workerNeedsPlayControlUpdate_) {
+      this.workerNeedsPlayControlUpdate_ = false;
+      this.sendPlayControlInformationToWorker_();
+    }
+  },
+
 });
 /* #ignore */ console.warn('crbug/1173575, non-JS module files deprecated.');
