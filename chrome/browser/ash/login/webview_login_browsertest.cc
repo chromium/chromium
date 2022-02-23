@@ -711,8 +711,15 @@ IN_PROC_BROWSER_TEST_F(WebviewLoginTest, ErrorScreenOnGaiaError) {
   OobeScreenWaiter(ErrorScreenView::kScreenId).Wait();
 }
 
+// Device settings could only change on the owned device.
+class WebviewDeviceOwnedLoginTest : public WebviewLoginTest {
+ private:
+  DeviceStateMixin device_state_{
+      &mixin_host_, DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED};
+};
+
 // Create new account option should be available only if the settings allow it.
-IN_PROC_BROWSER_TEST_F(WebviewLoginTest, AllowNewUser) {
+IN_PROC_BROWSER_TEST_F(WebviewDeviceOwnedLoginTest, AllowNewUser) {
   WaitForGaiaPageLoad();
 
   std::string frame_url = "$('gaia-signin').authenticator_.reloadUrl_";

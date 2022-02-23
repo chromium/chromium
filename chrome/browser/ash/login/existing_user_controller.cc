@@ -394,10 +394,6 @@ ExistingUserController::ExistingUserController()
       kAccountsPrefShowUserNamesOnSignIn,
       base::BindRepeating(&ExistingUserController::DeviceSettingsChanged,
                           base::Unretained(this)));
-  allow_new_user_subscription_ = cros_settings_->AddSettingsObserver(
-      kAccountsPrefAllowNewUser,
-      base::BindRepeating(&ExistingUserController::DeviceSettingsChanged,
-                          base::Unretained(this)));
   allow_guest_subscription_ = cros_settings_->AddSettingsObserver(
       kAccountsPrefAllowGuest,
       base::BindRepeating(&ExistingUserController::DeviceSettingsChanged,
@@ -493,15 +489,8 @@ void ExistingUserController::UpdateLoginDisplay(
   } else {
     sync_token_checkers_.reset();
   }
-  // If no user pods are visible, fallback to single new user pod which will
-  // have guest session link.
   bool show_guest = user_manager->IsGuestSessionAllowed();
-  show_users_on_signin |= !login_users.empty();
-  bool allow_new_user = true;
-  cros_settings_->GetBoolean(kAccountsPrefAllowNewUser, &allow_new_user);
-  GetLoginDisplay()->Init(login_users, show_guest, show_users_on_signin,
-                          allow_new_user);
-  GetLoginDisplayHost()->OnPreferencesChanged();
+  GetLoginDisplay()->Init(login_users, show_guest);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -1165,7 +1154,6 @@ void ExistingUserController::ForceOnlineLoginForAccountId(
   // Save the necessity to sign-in online into UserManager in case the user
   // aborts the online flow.
   user_manager::UserManager::Get()->SaveForceOnlineSignin(account_id, true);
-  GetLoginDisplayHost()->OnPreferencesChanged();
 
   // Start online sign-in UI for the user.
   is_login_in_progress_ = false;

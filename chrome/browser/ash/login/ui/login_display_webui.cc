@@ -42,17 +42,7 @@ LoginDisplayWebUI::~LoginDisplayWebUI() {
 LoginDisplayWebUI::LoginDisplayWebUI() = default;
 
 void LoginDisplayWebUI::Init(const user_manager::UserList& users,
-                             bool show_guest,
-                             bool show_users,
-                             bool allow_new_user) {
-  // Testing that the delegate has been set.
-  DCHECK(delegate_);
-
-  OobeUI* oobe_ui = LoginDisplayHost::default_host()->GetOobeUI();
-  const std::string display_type = oobe_ui->display_type();
-  allow_new_user_changed_ = (allow_new_user_ != allow_new_user);
-  allow_new_user_ = allow_new_user;
-
+                             bool show_guest) {
   ui::UserActivityDetector* activity_detector = ui::UserActivityDetector::Get();
   if (activity_detector && !activity_detector->HasObserver(this))
     activity_detector->AddObserver(this);
@@ -63,11 +53,6 @@ void LoginDisplayWebUI::Init(const user_manager::UserList& users,
 // ---- Gaia screen methods
 
 // ---- Not yet classified methods
-
-void LoginDisplayWebUI::OnPreferencesChanged() {
-  if (webui_handler_)
-    webui_handler_->OnPreferencesChanged();
-}
 
 void LoginDisplayWebUI::SetUIEnabled(bool is_enabled) {
   LoginDisplayHost* host = LoginDisplayHost::default_host();
@@ -90,15 +75,6 @@ void LoginDisplayWebUI::ShowEnterpriseEnrollmentScreen() {
 void LoginDisplayWebUI::ShowKioskAutolaunchScreen() {
   if (delegate_)
     delegate_->OnStartKioskAutolaunchScreen();
-}
-
-void LoginDisplayWebUI::SetWebUIHandler(
-    LoginDisplayWebUIHandler* webui_handler) {
-  webui_handler_ = webui_handler;
-}
-
-bool LoginDisplayWebUI::AllowNewUserChanged() const {
-  return allow_new_user_changed_;
 }
 
 bool LoginDisplayWebUI::IsSigninInProgress() const {

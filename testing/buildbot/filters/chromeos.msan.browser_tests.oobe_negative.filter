@@ -162,6 +162,7 @@
 -WebviewClientCertsLoginTest.*
 -WebviewClientCertsLoginTestBase.*
 -WebviewClientCertsTokenLoadingLoginTest.*
+-WebviewDeviceOwnedLoginTest.*
 -WebviewLoginTest.*
 -WebviewProxyAuthLoginTest.*
 -WelcomeScreenBrowserTest.*

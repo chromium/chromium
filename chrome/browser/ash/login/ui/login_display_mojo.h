@@ -33,10 +33,7 @@ class LoginDisplayMojo : public LoginDisplay,
 
   // LoginDisplay:
   void Init(const user_manager::UserList& filtered_users,
-            bool show_guest,
-            bool show_users,
-            bool show_new_user) override;
-  void OnPreferencesChanged() override;
+            bool show_guest) override;
   void SetUIEnabled(bool is_enabled) override;
 
   // SigninScreenHandlerDelegate:
@@ -45,8 +42,6 @@ class LoginDisplayMojo : public LoginDisplay,
   bool IsSigninInProgress() const override;
   void ShowEnterpriseEnrollmentScreen() override;
   void ShowKioskAutolaunchScreen() override;
-  void SetWebUIHandler(LoginDisplayWebUIHandler* webui_handler) override;
-  bool AllowNewUserChanged() const override;
   bool IsUserSigninCompleted() const override;
 
   // user_manager::UserManager::Observer:
@@ -60,7 +55,6 @@ class LoginDisplayMojo : public LoginDisplay,
   bool initialized_ = false;
 
   LoginDisplayHostMojo* const host_ = nullptr;  // Unowned.
-  LoginDisplayWebUIHandler* webui_handler_ = nullptr;
 
   base::WeakPtrFactory<LoginDisplayMojo> weak_factory_{this};
 };

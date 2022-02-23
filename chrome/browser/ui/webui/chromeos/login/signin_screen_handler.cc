@@ -201,8 +201,6 @@ SigninScreenHandler::SigninScreenHandler(
 
 SigninScreenHandler::~SigninScreenHandler() {
   weak_factory_.InvalidateWeakPtrs();
-  if (delegate_)
-    delegate_->SetWebUIHandler(nullptr);
   network_state_informer_->RemoveObserver(this);
   proximity_auth::ScreenlockBridge::Get()->SetLockHandler(nullptr);
   proximity_auth::ScreenlockBridge::Get()->SetFocusedUser(EmptyAccountId());
@@ -277,8 +275,6 @@ void SigninScreenHandler::Show() {
 
 void SigninScreenHandler::SetDelegate(SigninScreenHandlerDelegate* delegate) {
   delegate_ = delegate;
-  if (delegate_)
-    delegate_->SetWebUIHandler(this);
 }
 
 void SigninScreenHandler::UpdateState(NetworkError::ErrorReason reason) {
@@ -300,17 +296,6 @@ void SigninScreenHandler::ShowImpl() {
   if (!page_is_ready()) {
     show_on_init_ = true;
     return;
-  }
-}
-
-void SigninScreenHandler::UpdateUIState(UIState ui_state) {
-  switch (ui_state) {
-    case UI_STATE_GAIA_SIGNIN:
-      ui_state_ = UI_STATE_GAIA_SIGNIN;
-      break;
-    default:
-      NOTREACHED();
-      break;
   }
 }
 
@@ -482,30 +467,6 @@ void SigninScreenHandler::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(prefs::kUsersLastInputMethod);
 }
 
-void SigninScreenHandler::OnPreferencesChanged() {
-  // Make sure that one of the login UI is fully functional now, otherwise
-  // preferences update would be picked up next time it will be shown.
-  if (!webui_visible_) {
-    LOG(WARNING) << "Login UI is not active - postponed prefs change.";
-    preferences_changed_delayed_ = true;
-    return;
-  }
-
-  preferences_changed_delayed_ = false;
-
-  if (!delegate_)
-    return;
-
-  if (delegate_->AllowNewUserChanged() || ui_state_ == UI_STATE_UNKNOWN) {
-    // We need to reload GAIA if UI_STATE_UNKNOWN or the allow new user setting
-    // has changed so that reloaded GAIA shows/hides the option to create a new
-    // account.
-    GaiaScreen* gaia_screen =
-        WizardController::default_controller()->GetScreen<GaiaScreen>();
-    gaia_screen->LoadOnline(EmptyAccountId());
-  }
-}
-
 void SigninScreenHandler::Observe(int type,
                                   const content::NotificationSource& source,
                                   const content::NotificationDetails& details) {
@@ -567,8 +528,6 @@ void SigninScreenHandler::HandleOfflineLogin() {
   HideOfflineMessage(NetworkStateInformer::OFFLINE,
                      NetworkError::ERROR_REASON_NONE);
   LoginDisplayHost::default_host()->StartWizard(OfflineLoginView::kScreenId);
-
-  UpdateUIState(UI_STATE_GAIA_SIGNIN);
 }
 
 void SigninScreenHandler::HandleToggleEnrollmentScreen() {
@@ -594,8 +553,6 @@ void SigninScreenHandler::HandleLoginVisible(const std::string& source) {
                             TRACE_ID_GLOBAL(1)));
   }
   webui_visible_ = true;
-  if (preferences_changed_delayed_)
-    OnPreferencesChanged();
 }
 
 void SigninScreenHandler::HandleLoginUIStateChanged(const std::string& source,
@@ -613,8 +570,6 @@ void SigninScreenHandler::HandleLoginUIStateChanged(const std::string& source,
     HandleToggleKioskAutolaunchScreen();
     return;
   }
-
-  ui_state_ = UI_STATE_GAIA_SIGNIN;
 }
 
 void SigninScreenHandler::HandleShowLoadingTimeoutError() {
@@ -622,13 +577,11 @@ void SigninScreenHandler::HandleShowLoadingTimeoutError() {
 }
 
 bool SigninScreenHandler::IsGaiaVisible() {
-  return IsSigninScreen(GetCurrentScreen()) &&
-      ui_state_ == UI_STATE_GAIA_SIGNIN;
+  return IsSigninScreen(GetCurrentScreen());
 }
 
 bool SigninScreenHandler::IsGaiaHiddenByError() {
-  return IsSigninScreenHiddenByError() &&
-      ui_state_ == UI_STATE_GAIA_SIGNIN;
+  return IsSigninScreenHiddenByError();
 }
 
 bool SigninScreenHandler::IsSigninScreenHiddenByError() {

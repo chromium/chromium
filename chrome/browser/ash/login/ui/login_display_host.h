@@ -137,9 +137,6 @@ class LoginDisplayHost {
   // Starts sign in screen.
   virtual void StartSignInScreen() = 0;
 
-  // Invoked when system preferences that affect the signin screen have changed.
-  virtual void OnPreferencesChanged() = 0;
-
   // Start kiosk identified by `kiosk_app_id` splash screen. if `is_auto_launch`
   // is true, the app is being auto-launched with no delay.
   virtual void StartKiosk(const KioskAppId& kiosk_app_id,

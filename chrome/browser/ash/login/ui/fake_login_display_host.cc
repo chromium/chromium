@@ -99,8 +99,6 @@ void FakeLoginDisplayHost::CancelUserAdding() {}
 
 void FakeLoginDisplayHost::StartSignInScreen() {}
 
-void FakeLoginDisplayHost::OnPreferencesChanged() {}
-
 void FakeLoginDisplayHost::StartKiosk(const KioskAppId& kiosk_app_id,
                                       bool is_auto_launch) {}
 

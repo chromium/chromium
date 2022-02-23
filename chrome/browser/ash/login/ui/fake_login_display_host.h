@@ -45,7 +45,6 @@ class FakeLoginDisplayHost : public LoginDisplayHost {
   void StartUserAdding(base::OnceClosure completion_callback) override;
   void CancelUserAdding() override;
   void StartSignInScreen() override;
-  void OnPreferencesChanged() override;
   void StartKiosk(const KioskAppId& kiosk_app_id, bool is_auto_launch) override;
   void AttemptShowEnableConsumerKioskScreen() override;
   void CompleteLogin(const UserContext& user_context) override;

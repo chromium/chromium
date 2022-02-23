@@ -63,9 +63,7 @@ void LoginDisplayMojo::UpdateChallengeResponseAuthAvailability(
 }
 
 void LoginDisplayMojo::Init(const user_manager::UserList& filtered_users,
-                            bool show_guest,
-                            bool show_users,
-                            bool show_new_user) {
+                            bool show_guest) {
   host_->SetUserCount(filtered_users.size());
   auto* client = LoginScreenClientImpl::Get();
 
@@ -131,11 +129,6 @@ void LoginDisplayMojo::Init(const user_manager::UserList& filtered_users,
   }
 }
 
-void LoginDisplayMojo::OnPreferencesChanged() {
-  if (webui_handler_)
-    webui_handler_->OnPreferencesChanged();
-}
-
 void LoginDisplayMojo::SetUIEnabled(bool is_enabled) {
   // OOBE UI is null iff we display the user adding screen.
   if (is_enabled && host_->GetOobeUI() != nullptr) {
@@ -161,16 +154,6 @@ void LoginDisplayMojo::ShowEnterpriseEnrollmentScreen() {
 
 void LoginDisplayMojo::ShowKioskAutolaunchScreen() {
   NOTIMPLEMENTED();
-}
-
-void LoginDisplayMojo::SetWebUIHandler(
-    LoginDisplayWebUIHandler* webui_handler) {
-  webui_handler_ = webui_handler;
-}
-
-bool LoginDisplayMojo::AllowNewUserChanged() const {
-  NOTIMPLEMENTED();
-  return false;
 }
 
 bool LoginDisplayMojo::IsUserSigninCompleted() const {

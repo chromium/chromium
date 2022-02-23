@@ -80,7 +80,6 @@ class LoginDisplayHostMojo : public LoginDisplayHostCommon,
   void OnStartUserAdding() override;
   void CancelUserAdding() override;
   void OnStartSignInScreen() override;
-  void OnPreferencesChanged() override;
   void OnStartAppLaunch() override;
   void OnBrowserCreated() override;
   void ShowGaiaDialog(const AccountId& prefilled_account) override;
@@ -185,6 +184,8 @@ class LoginDisplayHostMojo : public LoginDisplayHostCommon,
   // ui::UserActivityObserver:
   void OnUserActivity(const ui::Event* event) override;
 
+  void OnDeviceSettingsChanged();
+
   // State associated with a pending authentication attempt.
   struct AuthState {
     AuthState(AccountId account_id, base::OnceCallback<void(bool)> callback);
@@ -201,6 +202,8 @@ class LoginDisplayHostMojo : public LoginDisplayHostCommon,
 
   std::unique_ptr<UserBoardViewMojo> user_board_view_mojo_;
   std::unique_ptr<UserSelectionScreen> user_selection_screen_;
+
+  base::CallbackListSubscription allow_new_user_subscription_;
 
   std::unique_ptr<ExistingUserController> existing_user_controller_;
 

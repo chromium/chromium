@@ -390,7 +390,6 @@ class ExistingUserController : public LoginDisplay::Delegate,
   std::unique_ptr<login::NetworkStateHelper> network_state_helper_;
 
   base::CallbackListSubscription show_user_names_subscription_;
-  base::CallbackListSubscription allow_new_user_subscription_;
   base::CallbackListSubscription allow_guest_subscription_;
   base::CallbackListSubscription users_subscription_;
   base::CallbackListSubscription local_account_auto_login_id_subscription_;

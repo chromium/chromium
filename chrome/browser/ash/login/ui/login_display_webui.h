@@ -26,11 +26,7 @@ class LoginDisplayWebUI : public LoginDisplay,
   ~LoginDisplayWebUI() override;
 
   // LoginDisplay implementation:
-  void Init(const user_manager::UserList& users,
-            bool show_guest,
-            bool show_users,
-            bool allow_new_user) override;
-  void OnPreferencesChanged() override;
+  void Init(const user_manager::UserList& users, bool show_guest) override;
   void SetUIEnabled(bool is_enabled) override;
 
   // SigninScreenHandlerDelegate implementation:
@@ -39,22 +35,10 @@ class LoginDisplayWebUI : public LoginDisplay,
   bool IsSigninInProgress() const override;
   void ShowEnterpriseEnrollmentScreen() override;
   void ShowKioskAutolaunchScreen() override;
-  void SetWebUIHandler(LoginDisplayWebUIHandler* webui_handler) override;
-  bool AllowNewUserChanged() const override;
   bool IsUserSigninCompleted() const override;
 
   // ui::UserActivityDetector implementation:
   void OnUserActivity(const ui::Event* event) override;
-
- private:
-  // Whether to show add new user.
-  bool allow_new_user_ = false;
-
-  // Whether the allow new user setting has changed.
-  bool allow_new_user_changed_ = false;
-
-  // Reference to the WebUI handling layer for the login screen
-  LoginDisplayWebUIHandler* webui_handler_ = nullptr;
 };
 
 }  // namespace ash

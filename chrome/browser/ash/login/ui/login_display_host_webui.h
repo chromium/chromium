@@ -80,7 +80,6 @@ class LoginDisplayHostWebUI : public LoginDisplayHostCommon,
   void OnStartUserAdding() override;
   void CancelUserAdding() override;
   void OnStartSignInScreen() override;
-  void OnPreferencesChanged() override;
   void OnStartAppLaunch() override;
   void OnBrowserCreated() override;
   void ShowGaiaDialog(const AccountId& prefilled_account) override;
@@ -236,9 +235,6 @@ class LoginDisplayHostWebUI : public LoginDisplayHostCommon,
 
   // Login display we are using.
   std::unique_ptr<LoginDisplayWebUI> login_display_;
-
-  // True if the login display is the current screen.
-  bool is_showing_login_ = false;
 
   // Stores status area current visibility to be applied once login WebUI
   // is shown.

@@ -1332,8 +1332,6 @@ void GaiaScreenHandler::ShowGaiaScreenIfReady() {
   }
 
   LoadAuthExtension(!gaia_silent_load_ /* force */);
-  signin_screen_handler_->UpdateUIState(
-      SigninScreenHandler::UI_STATE_GAIA_SIGNIN);
   core_oobe_view_->UpdateKeyboardState();
 
   if (gaia_silent_load_) {
