@@ -5,7 +5,6 @@
 #include "chrome/browser/chromeos/extensions/file_manager/private_api_mount.h"
 
 #include <memory>
-#include <string>
 #include <utility>
 
 #include "ash/components/disks/disk_mount_manager.h"
@@ -27,6 +26,8 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/api/file_manager_private.h"
 #include "components/drive/event_logger.h"
+#include "components/services/unzip/content/unzip_service.h"
+#include "components/services/unzip/public/cpp/unzip.h"
 #include "content/public/browser/browser_thread.h"
 #include "google_apis/common/task_util.h"
 #include "storage/browser/file_system/file_system_url.h"
@@ -39,6 +40,9 @@ using content::BrowserThread;
 namespace file_manager_private = extensions::api::file_manager_private;
 
 FileManagerPrivateAddMountFunction::FileManagerPrivateAddMountFunction() =
+    default;
+
+FileManagerPrivateAddMountFunction::~FileManagerPrivateAddMountFunction() =
     default;
 
 ExtensionFunction::ResponseAction FileManagerPrivateAddMountFunction::Run() {
@@ -55,10 +59,10 @@ ExtensionFunction::ResponseAction FileManagerPrivateAddMountFunction::Run() {
   }
   set_log_on_completion(true);
 
-  const base::FilePath path = file_manager::util::GetLocalPathFromURL(
-      render_frame_host(), profile, GURL(params->source));
+  path_ = file_manager::util::GetLocalPathFromURL(render_frame_host(), profile,
+                                                  GURL(params->source));
 
-  if (path.empty())
+  if (path_.empty())
     return RespondNow(Error("Invalid path"));
 
   if (auto* notifier =
@@ -77,19 +81,47 @@ ExtensionFunction::ResponseAction FileManagerPrivateAddMountFunction::Run() {
 
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  std::vector<std::string> options;
   if (params->password)
-    options.push_back("password=" + *params->password);
+    options_.push_back("password=" + *params->password);
 
-  // MountPath() takes a std::string.
-  DiskMountManager* disk_mount_manager = DiskMountManager::GetInstance();
-  disk_mount_manager->MountPath(
-      path.AsUTF8Unsafe(), base::ToLowerASCII(path.Extension()),
-      path.BaseName().AsUTF8Unsafe(), options, chromeos::MOUNT_TYPE_ARCHIVE,
-      chromeos::MOUNT_ACCESS_MODE_READ_WRITE, base::DoNothing());
+  extension_ = base::ToLowerASCII(path_.Extension());
+
+  // Detect the file path encoding of ZIP archives.
+  if (extension_ == ".zip") {
+    unzip::DetectEncoding(
+        unzip::LaunchUnzipper(), path_,
+        base::BindOnce(&FileManagerPrivateAddMountFunction::OnEncodingDetected,
+                       this));
+  } else {
+    FinishMounting();
+  }
 
   // Pass back the actual source path of the mount point.
-  return RespondNow(OneArgument(base::Value(path.AsUTF8Unsafe())));
+  return RespondNow(OneArgument(base::Value(path_.AsUTF8Unsafe())));
+}
+
+void FileManagerPrivateAddMountFunction::OnEncodingDetected(
+    const Encoding encoding) {
+  // Pass the detected ZIP encoding as a mount option.
+  std::string& option = options_.emplace_back("encoding=");
+
+  if (IsShiftJisOrVariant(encoding) || encoding == RUSSIAN_CP866) {
+    option += MimeEncodingName(encoding);
+  } else {
+    option += "libzip";
+  }
+
+  FinishMounting();
+}
+
+void FileManagerPrivateAddMountFunction::FinishMounting() {
+  DiskMountManager* const disk_mount_manager = DiskMountManager::GetInstance();
+  DCHECK(disk_mount_manager);
+  disk_mount_manager->MountPath(
+      path_.AsUTF8Unsafe(), std::move(extension_),
+      path_.BaseName().AsUTF8Unsafe(), std::move(options_),
+      chromeos::MOUNT_TYPE_ARCHIVE, chromeos::MOUNT_ACCESS_MODE_READ_WRITE,
+      base::DoNothing());
 }
 
 ExtensionFunction::ResponseAction FileManagerPrivateRemoveMountFunction::Run() {

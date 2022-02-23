@@ -30,6 +30,7 @@ include_rules = [
   "+services/network",
   "+services/tracing/public",
   "+services/viz/public/mojom",
+  "+third_party/ced",
 ]
 
 specific_include_rules = {
