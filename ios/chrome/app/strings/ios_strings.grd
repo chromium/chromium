@@ -2842,6 +2842,12 @@ Your data was encrypted with your sync passphrase on <ph name="TIME">$2<ex>Sept 
       <message name="IDS_IOS_TAB_SWITCHER_SYNC_IS_OFF" desc="Short paragraph(s) encouraging the user to enable sync on device [Length: 300em, may be line wrapped to multiple lines at run time.] [iOS only]">
           To get your tabs from your other devices, turn on sync.
       </message>
+      <message name="IDS_IOS_TABS_SEARCH_OPEN_TABS_SECTION_HEADER_TITLE" desc="Section header for the section that contains all the open tabs from the search results.">
+        Open Tabs
+      </message>
+      <message name="IDS_IOS_TABS_SEARCH_OPEN_TABS_COUNT" desc="The number of the open tabs found as search results in the tab grid.">
+        <ph name="COUNT">$1<ex>2</ex></ph> Found
+      </message>
       <message name="IDS_IOS_TABS_SEARCH_SUGGESTED_ACTIONS" desc="Section header for the suggested actions section shown in the tab grid at the bottom of search results.">
         Suggested
       </message>

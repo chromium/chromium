@@ -13,6 +13,7 @@
 #include "base/metrics/user_metrics_action.h"
 #include "base/notreached.h"
 #import "base/numerics/safe_conversions.h"
+#include "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/commerce/price_alert_util.h"
 #include "ios/chrome/browser/procedural_block_types.h"
 #import "ios/chrome/browser/ui/commands/thumb_strip_commands.h"
@@ -28,6 +29,7 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_context_menu_provider.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_drag_drop_handler.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_empty_view.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_header.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_image_data_source.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_layout.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_shareable_items_provider.h"
@@ -41,7 +43,9 @@
 #import "ios/chrome/browser/ui/util/rtl_geometry.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
+#include "ios/chrome/grit/ios_strings.h"
 #include "ios/public/provider/chrome/browser/modals/modals_api.h"
+#include "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -54,6 +58,7 @@ namespace {
 constexpr CGFloat kSpringAnimationDuration = 0.4;
 constexpr CGFloat kSpringAnimationDamping = 0.6;
 constexpr CGFloat kSpringAnimationInitialVelocity = 1.0;
+constexpr int kOpenTabsSectionIndex = 0;
 constexpr int kSuggestedActionsSectionIndex = 1;
 
 NSString* const kCellIdentifier = @"GridCellIdentifier";
@@ -191,6 +196,11 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
     [collectionView registerClass:[SuggestedActionsGridCell class]
         forCellWithReuseIdentifier:kSuggestedActionsCellIdentifier];
   }
+  if (IsTabsSearchEnabled()) {
+    [collectionView registerClass:[GridHeader class]
+        forSupplementaryViewOfKind:UICollectionElementKindSectionHeader
+               withReuseIdentifier:UICollectionElementKindSectionHeader];
+  }
   // During deletion (in horizontal layout) the backgroundView can resize,
   // revealing temporarily the collectionView background. This makes sure
   // both are the same color.
@@ -248,9 +258,10 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
   [super traitCollectionDidChange:previousTraitCollection];
-  [self.collectionView.collectionViewLayout invalidateLayout];
   [self.suggestedActionsViewController
       traitCollectionDidChange:previousTraitCollection];
+  [self.collectionView.collectionViewLayout invalidateLayout];
+  [self.collectionView layoutIfNeeded];
 }
 
 #pragma mark - Public
@@ -326,6 +337,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   if (mode == TabGridModeNormal) {
     [self.selectedEditingItemIDs removeAllObjects];
     [self.selectedSharableEditingItemIDs removeAllObjects];
+    self.searchText = nil;
     // After transition from the selection mode to the normal mode, the
     // selection border doesn't show around the selection item. The collection
     // view needs to be updated with the selected item again for it to appear
@@ -453,6 +465,36 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   return base::checked_cast<NSInteger>(self.items.count);
 }
 
+- (UICollectionReusableView*)collectionView:(UICollectionView*)collectionView
+          viewForSupplementaryElementOfKind:(NSString*)kind
+                                atIndexPath:(NSIndexPath*)indexPath {
+  GridHeader* headerView =
+      [collectionView dequeueReusableSupplementaryViewOfKind:kind
+                                         withReuseIdentifier:kind
+                                                forIndexPath:indexPath];
+  if ([kind isEqualToString:UICollectionElementKindSectionHeader]) {
+    switch (indexPath.section) {
+      case kOpenTabsSectionIndex: {
+        headerView.title = l10n_util::GetNSString(
+            IDS_IOS_TABS_SEARCH_OPEN_TABS_SECTION_HEADER_TITLE);
+        NSString* resultsCount = [NSString
+            stringWithFormat:@"%ld",
+                             base::checked_cast<NSInteger>(self.items.count)];
+        headerView.value =
+            l10n_util::GetNSStringF(IDS_IOS_TABS_SEARCH_OPEN_TABS_COUNT,
+                                    base::SysNSStringToUTF16(resultsCount));
+        break;
+      }
+      case kSuggestedActionsSectionIndex: {
+        headerView.title =
+            l10n_util::GetNSString(IDS_IOS_TABS_SEARCH_SUGGESTED_ACTIONS);
+        break;
+      }
+    }
+  }
+  return headerView;
+}
+
 - (UICollectionViewCell*)collectionView:(UICollectionView*)collectionView
                  cellForItemAtIndexPath:(NSIndexPath*)indexPath {
   NSUInteger itemIndex = base::checked_cast<NSUInteger>(indexPath.item);
@@ -530,13 +572,23 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   if (IsTabsSearchRegularResultsSuggestedActionsEnabled() &&
       indexPath.section == kSuggestedActionsSectionIndex) {
     UIEdgeInsets sectionInset = layout.sectionInset;
-    CGFloat width = CGRectGetWidth(collectionView.bounds) -
-                    self.gridView.contentInset.left - sectionInset.right -
-                    self.gridView.contentInset.right;
+    CGFloat width = layout.collectionView.contentSize.width -
+                    sectionInset.left - sectionInset.right;
     CGFloat height = self.suggestedActionsViewController.contentHeight;
     return CGSizeMake(width, height);
   }
   return itemSize;
+}
+
+- (CGSize)collectionView:(UICollectionView*)collectionView
+                             layout:
+                                 (UICollectionViewLayout*)collectionViewLayout
+    referenceSizeForHeaderInSection:(NSInteger)section {
+  if (!IsTabsSearchEnabled() || _mode != TabGridModeSearch ||
+      !_searchText.length) {
+    return CGSizeZero;
+  }
+  return CGSizeMake(collectionView.bounds.size.width, kGridHeaderHeight);
 }
 
 // This prevents the user from dragging a cell past the plus sign cell (the last
@@ -910,6 +962,8 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   // Whether the view is visible or not, the delegate must be updated.
   [self.delegate gridViewController:self didChangeItemCount:self.items.count];
   [self updateFractionVisibleOfLastItem];
+  if (IsTabsSearchEnabled() && _searchText.length)
+    [self updateSearchResultsHeader];
 }
 
 - (void)insertItem:(TabSwitcherItem*)item
@@ -990,6 +1044,9 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 
   [self updateVisibleCellZIndex];
   [self updateVisibleCellIdentifiers];
+
+  if (IsTabsSearchEnabled() && _searchText.length)
+    [self updateSearchResultsHeader];
 }
 
 - (void)selectItemWithID:(NSString*)selectedItemID {
@@ -1457,6 +1514,23 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
     return NO;
   }
   return self.items.count == 0;
+}
+
+// Updates the number of results found on the search open tabs section header.
+- (void)updateSearchResultsHeader {
+  GridHeader* headerView = (GridHeader*)[self.collectionView
+      supplementaryViewForElementKind:UICollectionElementKindSectionHeader
+                          atIndexPath:
+                              [NSIndexPath
+                                  indexPathForRow:0
+                                        inSection:kOpenTabsSectionIndex]];
+  if (!headerView)
+    return;
+  NSString* resultsCount = [NSString
+      stringWithFormat:@"%ld", base::checked_cast<NSInteger>(self.items.count)];
+  headerView.value =
+      l10n_util::GetNSStringF(IDS_IOS_TABS_SEARCH_OPEN_TABS_COUNT,
+                              base::SysNSStringToUTF16(resultsCount));
 }
 
 #pragma mark Suggested Actions Section

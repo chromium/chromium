@@ -59,6 +59,12 @@ const CGFloat kGridLayoutLineSpacingRegularRegular = 14.0f;
 const CGFloat kReorderingInactiveCellOpacity = 0.80;
 const CGFloat kReorderingActiveCellScale = 1.15;
 
+// GridHeader styling.
+const CGFloat kGridHeaderHeight = 32.0f;
+const int kGridHeaderTitleColor = 0xFFFFFF;
+const int kGridHeaderValueColor = 0xEBEBF5;
+const CGFloat kGridHeaderContentSpacing = 4.0f;
+
 // GridCell styling.
 // Dark theme colors.
 // Extra dark theme colors until iOS 12 gets removed.

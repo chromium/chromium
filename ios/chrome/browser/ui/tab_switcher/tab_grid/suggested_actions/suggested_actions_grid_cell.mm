@@ -44,8 +44,6 @@
   _suggestedActionsView.translatesAutoresizingMaskIntoConstraints = NO;
   [self.contentView addSubview:_suggestedActionsView];
   NSArray* constraints = @[
-    [_suggestedActionsView.centerYAnchor
-        constraintEqualToAnchor:self.contentView.centerYAnchor],
     [_suggestedActionsView.topAnchor
         constraintEqualToAnchor:self.contentView.topAnchor],
     [_suggestedActionsView.bottomAnchor

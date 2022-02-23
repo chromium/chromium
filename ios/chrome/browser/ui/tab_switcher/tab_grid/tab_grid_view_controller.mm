@@ -1125,7 +1125,6 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
       kTabGridIncognitoTabsEmptyStateIdentifier;
   viewController.theme = GridThemeDark;
   viewController.delegate = self;
-  viewController.suggestedActionsDelegate = self;
   viewController.dragDropHandler = self.incognitoTabsDragDropHandler;
   NSArray* constraints = @[
     [viewController.view.topAnchor
@@ -1861,6 +1860,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   switch (self.currentPage) {
     case TabGridPageIncognitoTabs:
       [self.incognitoTabsDelegate searchItemsWithText:searchText];
+      self.incognitoTabsViewController.searchText = searchText;
       break;
     case TabGridPageRegularTabs:
     case TabGridPageRemoteTabs:

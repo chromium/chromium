@@ -10,16 +10,11 @@
 #include "base/mac/foundation_util.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_constants.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/suggested_actions/suggested_actions_delegate.h"
-#import "ios/chrome/browser/ui/table_view/cells/table_view_disclosure_header_footer_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_image_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_tabs_search_suggested_history_item.h"
-#import "ios/chrome/browser/ui/table_view/cells/table_view_text_button_item.h"
-#import "ios/chrome/browser/ui/table_view/cells/table_view_text_header_footer_item.h"
-#import "ios/chrome/browser/ui/table_view/cells/table_view_text_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_url_item.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_styler.h"
-#import "ios/chrome/browser/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #include "ios/chrome/grit/ios_strings.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -38,8 +33,7 @@ const int kSectionIdentifierSuggestedActions = kSectionIdentifierEnumZero + 1;
 }  // namespace
 
 typedef NS_ENUM(NSInteger, ItemType) {
-  ItemTypeSuggestedActionsHeader = kItemTypeEnumZero,
-  ItemTypeSuggestedActionSearchRecentTabs,
+  ItemTypeSuggestedActionSearchRecentTabs = kItemTypeEnumZero,
   ItemTypeSuggestedActionSearchWeb,
   ItemTypeSuggestedActionSearchHistory,
 };
@@ -56,7 +50,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 - (instancetype)initWithDelegate:
     (id<SuggestedActionsViewControllerDelegate>)delegate {
-  self = [super initWithStyle:ChromeTableViewStyle()];
+  self = [super initWithStyle:UITableViewStyleGrouped];
 
   if (self) {
     _delegate = delegate;
@@ -74,11 +68,24 @@ typedef NS_ENUM(NSInteger, ItemType) {
       kSuggestedActionsViewControllerAccessibilityIdentifier;
   self.tableView.cellLayoutMarginsFollowReadableWidth = YES;
   self.tableView.estimatedRowHeight = kEstimatedRowHeight;
-  self.tableView.estimatedSectionHeaderHeight = kEstimatedRowHeight;
+  self.tableView.estimatedSectionHeaderHeight = 0.0;
   self.tableView.rowHeight = UITableViewAutomaticDimension;
   self.tableView.sectionFooterHeight = 0.0;
   self.tableView.alwaysBounceVertical = NO;
   self.tableView.scrollEnabled = NO;
+  // The TableView header and footer are set to some default size when they are
+  // set to nil, and that will result on empty space on the top and the bottom
+  // of the table. To workaround that an empty frame is created and set on both
+  // the header and the footer of the TableView.
+  CGRect frame = CGRectZero;
+  frame.size.height = CGFLOAT_MIN;
+  [self.tableView setTableHeaderView:[[UIView alloc] initWithFrame:frame]];
+  [self.tableView setTableFooterView:[[UIView alloc] initWithFrame:frame]];
+
+  self.tableView.layer.cornerRadius = kGridCellCornerRadius;
+  [self loadModel];
+  [self.tableView reloadData];
+  [self.tableView layoutIfNeeded];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -94,12 +101,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
   TableViewModel* model = self.tableViewModel;
   [model addSectionWithIdentifier:kSectionIdentifierSuggestedActions];
-  TableViewTextHeaderFooterItem* header = [[TableViewTextHeaderFooterItem alloc]
-      initWithType:ItemTypeSuggestedActionsHeader];
-  header.text = l10n_util::GetNSString(IDS_IOS_TABS_SEARCH_SUGGESTED_ACTIONS);
-  [model setHeader:header
-      forSectionWithIdentifier:kSectionIdentifierSuggestedActions];
-
   TableViewImageItem* searchWebItem = [[TableViewImageItem alloc]
       initWithType:ItemTypeSuggestedActionSearchWeb];
   searchWebItem.title =
@@ -113,7 +114,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
       initWithType:ItemTypeSuggestedActionSearchRecentTabs];
   searchRecentTabsItem.title = l10n_util::GetNSString(
       IDS_IOS_TABS_SEARCH_SUGGESTED_ACTION_SEARCH_RECENT_TABS);
-  searchRecentTabsItem.image = [[UIImage imageNamed:@"popup_menu_search"]
+  searchRecentTabsItem.image = [[UIImage imageNamed:@"popup_menu_recent_tabs"]
       imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
   [model addItem:searchRecentTabsItem
       toSectionWithIdentifier:kSectionIdentifierSuggestedActions];
@@ -172,6 +173,13 @@ typedef NS_ENUM(NSInteger, ItemType) {
           didSelectSearchHistoryInSuggestedActionsViewController:self];
       break;
   }
+}
+
+#pragma mark - UITraitEnvironment
+
+- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
+  [self.tableView setNeedsLayout];
+  [self.tableView layoutIfNeeded];
 }
 
 #pragma mark - Public
