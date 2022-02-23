@@ -57,13 +57,6 @@ LocationBar* GetLocationBar(Browser* browser) {
   return browser->window()->GetLocationBar();
 }
 
-AutocompleteController* GetAutocompleteController(Browser* browser) {
-  return GetLocationBar(browser)
-      ->GetOmniboxView()
-      ->model()
-      ->autocomplete_controller();
-}
-
 std::u16string AutocompleteResultAsString(const AutocompleteResult& result) {
   std::string output(base::StringPrintf("{%" PRIuS "} ", result.size()));
   for (size_t i = 0; i < result.size(); ++i) {
@@ -112,17 +105,39 @@ void VerifyMatchComponents(const ExpectedMatchComponents& expected,
   }
 }
 
-using OmniboxApiTest = ExtensionApiTest;
+class OmniboxApiTest : public ExtensionApiTest {
+ public:
+  explicit OmniboxApiTest(ExtensionBrowserTest::ContextType context_type =
+                              ExtensionBrowserTest::ContextType::kNone)
+      : ExtensionApiTest(context_type) {}
+  ~OmniboxApiTest() override = default;
+
+  void SetUpOnMainThread() override {
+    ExtensionApiTest::SetUpOnMainThread();
+    // The omnibox suggestion results depend on the TemplateURLService being
+    // loaded. Make sure it is loaded so that the autocomplete results are
+    // consistent.
+    search_test_utils::WaitForTemplateURLServiceToLoad(
+        TemplateURLServiceFactory::GetForProfile(profile()));
+  }
+
+  // Helper functions to retrieve the AutocompleteController for the Browser
+  // created with the test (`browser()`) or a specific supplied `browser`.
+  AutocompleteController* GetAutocompleteController() {
+    return GetAutocompleteControllerForBrowser(browser());
+  }
+  AutocompleteController* GetAutocompleteControllerForBrowser(
+      Browser* browser) {
+    return GetLocationBar(browser)
+        ->GetOmniboxView()
+        ->model()
+        ->autocomplete_controller();
+  }
+};
 
 }  // namespace
 
 IN_PROC_BROWSER_TEST_F(OmniboxApiTest, SendSuggestions) {
-  // The results depend on the TemplateURLService being loaded. Make sure it is
-  // loaded so that the autocomplete results are consistent.
-  Profile* profile = browser()->profile();
-  search_test_utils::WaitForTemplateURLServiceToLoad(
-      TemplateURLServiceFactory::GetForProfile(profile));
-
   constexpr char kManifest[] =
       R"({
            "name": "Basic Send Suggestions",
@@ -151,14 +166,13 @@ IN_PROC_BROWSER_TEST_F(OmniboxApiTest, SendSuggestions) {
       LoadExtension(test_dir.UnpackedPath());
   ASSERT_TRUE(extension);
 
-  AutocompleteController* autocomplete_controller =
-      GetAutocompleteController(browser());
+  AutocompleteController* autocomplete_controller = GetAutocompleteController();
 
   // Test that our extension's keyword is suggested to us when we partially type
   // it.
   {
     AutocompleteInput input(u"alph", metrics::OmniboxEventProto::NTP,
-                            ChromeAutocompleteSchemeClassifier(profile));
+                            ChromeAutocompleteSchemeClassifier(profile()));
     autocomplete_controller->Start(input);
     WaitForAutocompleteDone(browser());
     EXPECT_TRUE(autocomplete_controller->done());
@@ -178,7 +192,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxApiTest, SendSuggestions) {
 
   // Test that our extension can send suggestions back to us.
   AutocompleteInput input(u"alpha input", metrics::OmniboxEventProto::NTP,
-                          ChromeAutocompleteSchemeClassifier(profile));
+                          ChromeAutocompleteSchemeClassifier(profile()));
   autocomplete_controller->Start(input);
   WaitForAutocompleteDone(browser());
   EXPECT_TRUE(autocomplete_controller->done());
@@ -251,22 +265,18 @@ IN_PROC_BROWSER_TEST_F(OmniboxApiTest, SendSuggestions) {
 
 IN_PROC_BROWSER_TEST_F(OmniboxApiTest, OnInputEntered) {
   ASSERT_TRUE(RunExtensionTest("omnibox")) << message_;
-  Profile* profile = browser()->profile();
-  search_test_utils::WaitForTemplateURLServiceToLoad(
-      TemplateURLServiceFactory::GetForProfile(profile));
 
   LocationBar* location_bar = GetLocationBar(browser());
   OmniboxView* omnibox_view = location_bar->GetOmniboxView();
   ResultCatcher catcher;
-  AutocompleteController* autocomplete_controller =
-      GetAutocompleteController(browser());
+  AutocompleteController* autocomplete_controller = GetAutocompleteController();
   omnibox_view->OnBeforePossibleChange();
   omnibox_view->SetUserText(u"kw command");
   omnibox_view->OnAfterPossibleChange(true);
 
   {
     AutocompleteInput input(u"kw command", metrics::OmniboxEventProto::NTP,
-                            ChromeAutocompleteSchemeClassifier(profile));
+                            ChromeAutocompleteSchemeClassifier(profile()));
     autocomplete_controller->Start(input);
   }
   omnibox_view->model()->AcceptInput(WindowOpenDisposition::CURRENT_TAB);
@@ -282,7 +292,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxApiTest, OnInputEntered) {
 
   {
     AutocompleteInput input(u"kw newtab", metrics::OmniboxEventProto::NTP,
-                            ChromeAutocompleteSchemeClassifier(profile));
+                            ChromeAutocompleteSchemeClassifier(profile()));
     autocomplete_controller->Start(input);
   }
   omnibox_view->model()->AcceptInput(WindowOpenDisposition::NEW_FOREGROUND_TAB);
@@ -296,10 +306,9 @@ IN_PROC_BROWSER_TEST_F(OmniboxApiTest, OnInputEntered) {
 // http://crbug.com/100927
 // Test is flaky: http://crbug.com/101219
 IN_PROC_BROWSER_TEST_F(OmniboxApiTest, DISABLED_IncognitoSplitMode) {
-  Profile* profile = browser()->profile();
   ResultCatcher catcher_incognito;
   catcher_incognito.RestrictToBrowserContext(
-      profile->GetPrimaryOTRProfile(/*create_if_needed=*/true));
+      profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true));
 
   ASSERT_TRUE(RunExtensionTest("omnibox", {}, {.allow_in_incognito = true}))
       << message_;
@@ -309,19 +318,14 @@ IN_PROC_BROWSER_TEST_F(OmniboxApiTest, DISABLED_IncognitoSplitMode) {
   Browser* incognito_browser = CreateIncognitoBrowser();
   ASSERT_TRUE(catcher_incognito.GetNextResult()) << catcher_incognito.message();
 
-  // The results depend on the TemplateURLService being loaded. Make sure it is
-  // loaded so that the autocomplete results are consistent.
-  search_test_utils::WaitForTemplateURLServiceToLoad(
-      TemplateURLServiceFactory::GetForProfile(browser()->profile()));
-
   LocationBar* location_bar = GetLocationBar(incognito_browser);
   AutocompleteController* autocomplete_controller =
-      GetAutocompleteController(incognito_browser);
+      GetAutocompleteControllerForBrowser(incognito_browser);
 
   // Test that we get the incognito-specific suggestions.
   {
     AutocompleteInput input(u"kw suggestio", metrics::OmniboxEventProto::NTP,
-                            ChromeAutocompleteSchemeClassifier(profile));
+                            ChromeAutocompleteSchemeClassifier(profile()));
     autocomplete_controller->Start(input);
     WaitForAutocompleteDone(browser());
     EXPECT_TRUE(autocomplete_controller->done());
@@ -342,7 +346,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxApiTest, DISABLED_IncognitoSplitMode) {
     ResultCatcher catcher;
     AutocompleteInput input(u"kw command incognito",
                             metrics::OmniboxEventProto::NTP,
-                            ChromeAutocompleteSchemeClassifier(profile));
+                            ChromeAutocompleteSchemeClassifier(profile()));
     autocomplete_controller->Start(input);
     location_bar->AcceptInput();
     EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
@@ -361,16 +365,9 @@ IN_PROC_BROWSER_TEST_F(OmniboxApiTest, DISABLED_IncognitoSplitMode) {
 IN_PROC_BROWSER_TEST_F(OmniboxApiTest, MAYBE_PopupStaysClosed) {
   ASSERT_TRUE(RunExtensionTest("omnibox")) << message_;
 
-  // The results depend on the TemplateURLService being loaded. Make sure it is
-  // loaded so that the autocomplete results are consistent.
-  Profile* profile = browser()->profile();
-  search_test_utils::WaitForTemplateURLServiceToLoad(
-      TemplateURLServiceFactory::GetForProfile(profile));
-
   LocationBar* location_bar = GetLocationBar(browser());
   OmniboxView* omnibox_view = location_bar->GetOmniboxView();
-  AutocompleteController* autocomplete_controller =
-      GetAutocompleteController(browser());
+  AutocompleteController* autocomplete_controller = GetAutocompleteController();
 
   // Input a keyword query and wait for suggestions from the extension.
   omnibox_view->OnBeforePossibleChange();
@@ -389,7 +386,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxApiTest, MAYBE_PopupStaysClosed) {
   // directly, figure out how to send it via the proper calls to
   // location_bar or location_bar->().
   AutocompleteInput input(u"kw command", metrics::OmniboxEventProto::NTP,
-                          ChromeAutocompleteSchemeClassifier(profile));
+                          ChromeAutocompleteSchemeClassifier(profile()));
   autocomplete_controller->Start(input);
   location_bar->AcceptInput();
   WaitForAutocompleteDone(browser());
@@ -411,14 +408,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxApiTest, MAYBE_PopupStaysClosed) {
 IN_PROC_BROWSER_TEST_F(OmniboxApiTest, MAYBE_DeleteOmniboxSuggestionResult) {
   ASSERT_TRUE(RunExtensionTest("omnibox")) << message_;
 
-  // The results depend on the TemplateURLService being loaded. Make sure it is
-  // loaded so that the autocomplete results are consistent.
-  Profile* profile = browser()->profile();
-  search_test_utils::WaitForTemplateURLServiceToLoad(
-      TemplateURLServiceFactory::GetForProfile(profile));
-
-  AutocompleteController* autocomplete_controller =
-      GetAutocompleteController(browser());
+  AutocompleteController* autocomplete_controller = GetAutocompleteController();
 
   chrome::FocusLocationBar(browser());
   ASSERT_TRUE(ui_test_utils::IsViewFocused(browser(), VIEW_ID_OMNIBOX));
@@ -484,14 +474,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxApiTest, MAYBE_DeleteOmniboxSuggestionResult) {
 IN_PROC_BROWSER_TEST_F(OmniboxApiTest, ExtensionSuggestionsOnlyInKeywordMode) {
   ASSERT_TRUE(RunExtensionTest("omnibox")) << message_;
 
-  // The results depend on the TemplateURLService being loaded. Make sure it is
-  // loaded so that the autocomplete results are consistent.
-  Profile* profile = browser()->profile();
-  search_test_utils::WaitForTemplateURLServiceToLoad(
-      TemplateURLServiceFactory::GetForProfile(profile));
-
-  AutocompleteController* autocomplete_controller =
-      GetAutocompleteController(browser());
+  AutocompleteController* autocomplete_controller = GetAutocompleteController();
 
   chrome::FocusLocationBar(browser());
   ASSERT_TRUE(ui_test_utils::IsViewFocused(browser(), VIEW_ID_OMNIBOX));
@@ -559,10 +542,10 @@ IN_PROC_BROWSER_TEST_F(OmniboxApiTest, ExtensionSuggestionsOnlyInKeywordMode) {
 using ContextType = ExtensionBrowserTest::ContextType;
 
 class OmniboxApiTestWithContextType
-    : public ExtensionApiTest,
+    : public OmniboxApiTest,
       public testing::WithParamInterface<ContextType> {
  public:
-  OmniboxApiTestWithContextType() : ExtensionApiTest(GetParam()) {}
+  OmniboxApiTestWithContextType() : OmniboxApiTest(GetParam()) {}
   ~OmniboxApiTestWithContextType() override = default;
 };
 
@@ -651,14 +634,7 @@ IN_PROC_BROWSER_TEST_P(OmniboxApiTestWithContextType, SetDefaultSuggestion) {
   test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), kBackground);
   ASSERT_TRUE(RunExtensionTest(test_dir.UnpackedPath(), {}, {})) << message_;
 
-  // The results depend on the TemplateURLService being loaded. Make sure it is
-  // loaded so that the autocomplete results are consistent.
-  // TODO(devlin): Hoist this into a SetUp() method?
-  search_test_utils::WaitForTemplateURLServiceToLoad(
-      TemplateURLServiceFactory::GetForProfile(profile()));
-
-  AutocompleteController* autocomplete_controller =
-      GetAutocompleteController(browser());
+  AutocompleteController* autocomplete_controller = GetAutocompleteController();
 
   chrome::FocusLocationBar(browser());
   ASSERT_TRUE(ui_test_utils::IsViewFocused(browser(), VIEW_ID_OMNIBOX));
