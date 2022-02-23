@@ -1392,13 +1392,151 @@ IN_PROC_BROWSER_TEST_F(BackgroundTracingManagerBrowserTest,
 
   // This should fail to trigger a trace since the sample value > the
   // the upper reference value above.
-  LOCAL_HISTOGRAM_COUNTS("fake", 0);
+  LOCAL_HISTOGRAM_COUNTS("fake", 4);
 
   // Abort the scenario.
   BackgroundTracingManager::GetInstance()->AbortScenarioForTesting();
   background_tracing_helper.WaitForScenarioAborted();
 
   EXPECT_FALSE(trace_receiver_helper.trace_received());
+}
+
+// This tests that histogram values = upper reference value will trigger.
+IN_PROC_BROWSER_TEST_F(BackgroundTracingManagerBrowserTest,
+                       ReceiveTraceSucceedsOnUpperReferenceValue) {
+  TestBackgroundTracingHelper background_tracing_helper;
+  TestTraceReceiverHelper trace_receiver_helper;
+
+  base::Value dict(base::Value::Type::DICTIONARY);
+  dict.SetStringKey("mode", "PREEMPTIVE_TRACING_MODE");
+  dict.SetStringKey("custom_categories",
+                    tracing::TraceStartupConfig::kDefaultStartupCategories);
+
+  base::Value rules_list(base::Value::Type::LIST);
+  {
+    base::Value rules_dict(base::Value::Type::DICTIONARY);
+    rules_dict.SetStringKey(
+        "rule", "MONITOR_AND_DUMP_WHEN_SPECIFIC_HISTOGRAM_AND_VALUE");
+    rules_dict.SetStringKey("histogram_name", "fake");
+    rules_dict.SetIntKey("histogram_lower_value", 1);
+    rules_dict.SetIntKey("histogram_upper_value", 3);
+    rules_list.Append(std::move(rules_dict));
+  }
+
+  dict.SetKey("configs", std::move(rules_list));
+
+  std::unique_ptr<BackgroundTracingConfig> config(
+      BackgroundTracingConfigImpl::FromDict(std::move(dict)));
+  EXPECT_TRUE(config);
+
+  EXPECT_TRUE(BackgroundTracingManager::GetInstance()
+                  ->SetActiveScenarioWithReceiveCallback(
+                      std::move(config),
+                      trace_receiver_helper.get_receive_callback(),
+                      BackgroundTracingManager::NO_DATA_FILTERING));
+
+  background_tracing_helper.WaitForTracingEnabled();
+
+  LOCAL_HISTOGRAM_COUNTS("fake", 3);
+
+  trace_receiver_helper.WaitForTraceReceived();
+  // Abort the scenario.
+  BackgroundTracingManager::GetInstance()->AbortScenarioForTesting();
+  background_tracing_helper.WaitForScenarioAborted();
+
+  EXPECT_TRUE(trace_receiver_helper.trace_received());
+}
+
+// This tests that histogram values = lower reference value will trigger.
+IN_PROC_BROWSER_TEST_F(BackgroundTracingManagerBrowserTest,
+                       ReceiveTraceSucceedsOnLowerReferenceValue) {
+  TestBackgroundTracingHelper background_tracing_helper;
+  TestTraceReceiverHelper trace_receiver_helper;
+
+  base::Value dict(base::Value::Type::DICTIONARY);
+  dict.SetStringKey("mode", "PREEMPTIVE_TRACING_MODE");
+  dict.SetStringKey("custom_categories",
+                    tracing::TraceStartupConfig::kDefaultStartupCategories);
+
+  base::Value rules_list(base::Value::Type::LIST);
+  {
+    base::Value rules_dict(base::Value::Type::DICTIONARY);
+    rules_dict.SetStringKey(
+        "rule", "MONITOR_AND_DUMP_WHEN_SPECIFIC_HISTOGRAM_AND_VALUE");
+    rules_dict.SetStringKey("histogram_name", "fake");
+    rules_dict.SetIntKey("histogram_lower_value", 1);
+    rules_dict.SetIntKey("histogram_upper_value", 3);
+    rules_list.Append(std::move(rules_dict));
+  }
+
+  dict.SetKey("configs", std::move(rules_list));
+
+  std::unique_ptr<BackgroundTracingConfig> config(
+      BackgroundTracingConfigImpl::FromDict(std::move(dict)));
+  EXPECT_TRUE(config);
+
+  EXPECT_TRUE(BackgroundTracingManager::GetInstance()
+                  ->SetActiveScenarioWithReceiveCallback(
+                      std::move(config),
+                      trace_receiver_helper.get_receive_callback(),
+                      BackgroundTracingManager::NO_DATA_FILTERING));
+
+  background_tracing_helper.WaitForTracingEnabled();
+
+  LOCAL_HISTOGRAM_COUNTS("fake", 1);
+
+  trace_receiver_helper.WaitForTraceReceived();
+  // Abort the scenario.
+  BackgroundTracingManager::GetInstance()->AbortScenarioForTesting();
+  background_tracing_helper.WaitForScenarioAborted();
+
+  EXPECT_TRUE(trace_receiver_helper.trace_received());
+}
+
+// This tests that we can trigger for a single enum value.
+IN_PROC_BROWSER_TEST_F(BackgroundTracingManagerBrowserTest,
+                       ReceiveReactiveTraceSucceedsOnSingleEnumValue) {
+  TestBackgroundTracingHelper background_tracing_helper;
+  TestTraceReceiverHelper trace_receiver_helper;
+
+  base::Value dict(base::Value::Type::DICTIONARY);
+  dict.SetStringKey("mode", "PREEMPTIVE_TRACING_MODE");
+  dict.SetStringKey("custom_categories",
+                    tracing::TraceStartupConfig::kDefaultStartupCategories);
+
+  base::Value rules_list(base::Value::Type::LIST);
+  {
+    base::Value rules_dict(base::Value::Type::DICTIONARY);
+    rules_dict.SetStringKey(
+        "rule", "MONITOR_AND_DUMP_WHEN_SPECIFIC_HISTOGRAM_AND_VALUE");
+    rules_dict.SetStringKey("histogram_name", "fake");
+    rules_dict.SetIntKey("histogram_lower_value", 1);
+    rules_dict.SetIntKey("histogram_upper_value", 1);
+    rules_list.Append(std::move(rules_dict));
+  }
+
+  dict.SetKey("configs", std::move(rules_list));
+
+  std::unique_ptr<BackgroundTracingConfig> config(
+      BackgroundTracingConfigImpl::FromDict(std::move(dict)));
+  EXPECT_TRUE(config);
+
+  EXPECT_TRUE(BackgroundTracingManager::GetInstance()
+                  ->SetActiveScenarioWithReceiveCallback(
+                      std::move(config),
+                      trace_receiver_helper.get_receive_callback(),
+                      BackgroundTracingManager::NO_DATA_FILTERING));
+
+  background_tracing_helper.WaitForTracingEnabled();
+
+  LOCAL_HISTOGRAM_COUNTS("fake", 1);
+
+  trace_receiver_helper.WaitForTraceReceived();
+  // Abort the scenario.
+  BackgroundTracingManager::GetInstance()->AbortScenarioForTesting();
+  background_tracing_helper.WaitForScenarioAborted();
+
+  EXPECT_TRUE(trace_receiver_helper.trace_received());
 }
 
 // This tests that invalid preemptive mode configs will fail.
