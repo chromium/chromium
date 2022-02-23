@@ -13,7 +13,16 @@ source_set("sandbox_export") {
 }
 
 source_set("common") {
-  sources = [ "constants.h" ]
+  sources = [
+    "constants.h",
+    "features.cc",
+    "features.h",
+  ]
+
+  deps = [
+    "//base:base",
+    "//sandbox:sandbox_buildflags",
+  ]
 }
 
 # Meta-target that forwards to the proper platform one.

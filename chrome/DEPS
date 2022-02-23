@@ -5,6 +5,7 @@ include_rules = [
   "+pdf/buildflags.h",
   "+pdf/pdf_features.h",
   "+printing",
+  "+sandbox",
   "+sandbox/policy",
   "+sql",
   # Browser, renderer, common and tests access V8 for various purposes.

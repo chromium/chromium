@@ -40,8 +40,8 @@ class RendererFeatureSandboxWinTest
 
   // App Containers are only available in Windows 8 and up
   ::sandbox::AppContainerType GetExpectedAppContainerType() override {
-    if (base::win::GetVersion() >= base::win::Version::WIN8 &&
-        ::testing::get<0>(GetParam()))
+    if (base::win::GetVersion() >= base::win::Version::WIN10_RS2 &&
+        ::testing::get<TestParameter::kEnableRendererAppContainer>(GetParam()))
       return ::sandbox::AppContainerType::kLowbox;
 
     return ::sandbox::AppContainerType::kNone;

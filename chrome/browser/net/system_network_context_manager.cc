@@ -64,6 +64,7 @@
 #include "net/cookies/cookie_util.h"
 #include "net/net_buildflags.h"
 #include "net/third_party/uri_template/uri_template.h"
+#include "sandbox/features.h"
 #include "sandbox/policy/features.h"
 #include "services/cert_verifier/public/mojom/cert_verifier_service_factory.mojom.h"
 #include "services/network/network_service.h"
@@ -742,7 +743,7 @@ SystemNetworkContextManager::GetNetExportFileWriter() {
 // static
 bool SystemNetworkContextManager::IsNetworkSandboxEnabled() {
 #if BUILDFLAG(IS_WIN)
-  if (!sandbox::policy::features::IsWinNetworkServiceSandboxSupported())
+  if (!sandbox::features::IsAppContainerSandboxSupported())
     return false;
   auto* local_state = g_browser_process->local_state();
   if (local_state &&

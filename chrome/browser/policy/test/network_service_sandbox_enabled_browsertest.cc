@@ -18,7 +18,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_WIN)
-#include "sandbox/policy/features.h"
+#include "sandbox/features.h"
 #endif
 
 namespace policy {
@@ -58,7 +58,7 @@ IN_PROC_BROWSER_TEST_P(NetworkServiceSandboxEnabledTest, IsRespected) {
 #if BUILDFLAG(IS_WIN)
   // On Windows, the policy is ignored if the platform does not support
   // sandboxing at all, e.g. pre Windows 10.
-  if (!sandbox::policy::features::IsWinNetworkServiceSandboxSupported())
+  if (!sandbox::features::IsAppContainerSandboxSupported())
     expected_value = false;
 #endif
   ChromeContentBrowserClient client;

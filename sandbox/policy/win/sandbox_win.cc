@@ -41,13 +41,13 @@
 #include "base/win/win_util.h"
 #include "base/win/windows_version.h"
 #include "printing/buildflags/buildflags.h"
+#include "sandbox/features.h"
 #include "sandbox/policy/features.h"
 #include "sandbox/policy/mojom/sandbox.mojom.h"
 #include "sandbox/policy/sandbox_type.h"
 #include "sandbox/policy/switches.h"
 #include "sandbox/policy/win/lpac_capability.h"
 #include "sandbox/policy/win/sandbox_diagnostics.h"
-#include "sandbox/win/src/app_container.h"
 #include "sandbox/win/src/job.h"
 #include "sandbox/win/src/process_mitigations.h"
 #include "sandbox/win/src/sandbox.h"
@@ -550,7 +550,7 @@ BOOL WINAPI DuplicateHandlePatch(HANDLE source_process_handle,
 #endif
 
 bool IsAppContainerEnabled() {
-  if (base::win::GetVersion() < base::win::Version::WIN8)
+  if (!sandbox::features::IsAppContainerSandboxSupported())
     return false;
 
   return base::FeatureList::IsEnabled(features::kRendererAppContainer);
@@ -932,7 +932,7 @@ ResultCode SandboxWin::AddAppContainerProfileToPolicy(
 bool SandboxWin::IsAppContainerEnabledForSandbox(
     const base::CommandLine& command_line,
     Sandbox sandbox_type) {
-  if (base::win::GetVersion() < base::win::Version::WIN10_RS1)
+  if (!sandbox::features::IsAppContainerSandboxSupported())
     return false;
 
   if (sandbox_type == Sandbox::kMediaFoundationCdm)

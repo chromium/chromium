@@ -9,6 +9,7 @@
 #include "content/public/common/network_service_util.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/content_browser_test.h"
+#include "sandbox/features.h"
 #include "sandbox/policy/features.h"
 
 namespace content {
@@ -31,7 +32,7 @@ class SandboxedNQEBrowserTest : public ContentBrowserTest {
 
   void SetUp() override {
 #if BUILDFLAG(IS_WIN)
-    if (!sandbox::policy::features::IsWinNetworkServiceSandboxSupported()) {
+    if (!sandbox::features::IsAppContainerSandboxSupported()) {
       // On *some* Windows, sandboxing cannot be enabled. We skip all the tests
       // on such platforms.
       GTEST_SKIP();

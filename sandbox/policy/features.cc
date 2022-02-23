@@ -4,13 +4,11 @@
 
 #include "sandbox/policy/features.h"
 
-#include "base/win/windows_version.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "sandbox/features.h"
 
-namespace sandbox {
-namespace policy {
-namespace features {
+namespace sandbox::policy::features {
 
 #if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_FUCHSIA)
 // Enables network service sandbox.
@@ -62,22 +60,12 @@ const base::Feature kForceSpectreVariant2Mitigation{
     "ForceSpectreVariant2Mitigation", base::FEATURE_DISABLED_BY_DEFAULT};
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if BUILDFLAG(IS_WIN)
-bool IsWinNetworkServiceSandboxSupported() {
-  // Since some APIs used for LPAC are unsupported below Windows 10 RS2 (1703
-  // build 15063) so place a check here in a central place.
-  if (base::win::GetVersion() < base::win::Version::WIN10_RS2)
-    return false;
-  return true;
-}
-#endif  // BUILDFLAG(IS_WIN)
-
 bool IsNetworkSandboxEnabled() {
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_FUCHSIA)
   return true;
 #else
 #if BUILDFLAG(IS_WIN)
-  if (!IsWinNetworkServiceSandboxSupported())
+  if (!sandbox::features::IsAppContainerSandboxSupported())
     return false;
 #endif  // BUILDFLAG(IS_WIN)
   // Check feature status.
@@ -85,6 +73,4 @@ bool IsNetworkSandboxEnabled() {
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_FUCHSIA)
 }
 
-}  // namespace features
-}  // namespace policy
-}  // namespace sandbox
+}  // namespace sandbox::policy::features

@@ -31,10 +31,9 @@ component("policy") {
     "//build:chromeos_buildflags",
     "//ppapi/buildflags",
     "//printing/buildflags",
-    "//sandbox:common",
     "//sandbox/policy/mojom",
   ]
-  public_deps = []
+  public_deps = [ "//sandbox:common" ]
   if (is_linux || is_chromeos) {
     sources += [
       "linux/bpf_audio_policy_linux.cc",

@@ -34,6 +34,7 @@
 #include "base/win/scoped_process_information.h"
 #include "base/win/win_util.h"
 #include "base/win/windows_version.h"
+#include "sandbox/features.h"
 #include "sandbox/win/src/app_container_base.h"
 #include "sandbox/win/src/sandbox_factory.h"
 #include "sandbox/win/tests/common/controller.h"
@@ -275,7 +276,7 @@ typedef base::win::GenericScopedHandle<SocketHandleTraits,
 class AppContainerTest : public ::testing::Test {
  public:
   void SetUp() override {
-    if (base::win::GetVersion() < base::win::Version::WIN8)
+    if (!features::IsAppContainerSandboxSupported())
       return;
     package_name_ = GenerateRandomPackageName();
     broker_services_ = GetBroker();
@@ -474,7 +475,7 @@ SBOX_TESTS_COMMAND int AppContainerEvent_Open(int argc, wchar_t** argv) {
 }
 
 TEST_F(AppContainerTest, DenyOpenEventForLowBox) {
-  if (base::win::GetVersion() < base::win::Version::WIN8)
+  if (!features::IsAppContainerSandboxSupported())
     return;
 
   TestRunner runner(JOB_UNPROTECTED, USER_UNPROTECTED, USER_UNPROTECTED);
@@ -614,7 +615,7 @@ TEST_F(AppContainerTest, WithImpersonationCapabilities) {
 }
 
 TEST_F(AppContainerTest, NoCapabilitiesLPAC) {
-  if (base::win::GetVersion() < base::win::Version::WIN10_RS1)
+  if (!features::IsAppContainerSandboxSupported())
     return;
 
   container_->SetEnableLowPrivilegeAppContainer(true);
@@ -860,7 +861,7 @@ SBOX_TESTS_COMMAND int Socket_CreateUDP(int argc, wchar_t** argv) {
 }
 
 TEST(AppContainerLaunchTest, CheckLPACACE) {
-  if (base::win::GetVersion() < base::win::Version::WIN10_RS1)
+  if (!features::IsAppContainerSandboxSupported())
     return;
   TestRunner runner;
   AddNetworkAppContainerPolicy(runner.GetPolicy());
@@ -871,7 +872,7 @@ TEST(AppContainerLaunchTest, CheckLPACACE) {
 }
 
 TEST(AppContainerLaunchTest, IsAppContainer) {
-  if (base::win::GetVersion() < base::win::Version::WIN10_RS1)
+  if (!features::IsAppContainerSandboxSupported())
     return;
   TestRunner runner;
   AddNetworkAppContainerPolicy(runner.GetPolicy());
@@ -982,7 +983,7 @@ class SocketBrokerTest
 TEST_P(SocketBrokerTest, SocketBrokerTestUDP) {
   // Some APIs, such as named capabilities, needed to create the network service
   // sandbox require Windows 10 RS2.
-  if (base::win::GetVersion() < base::win::Version::WIN10_RS2)
+  if (!features::IsAppContainerSandboxSupported())
     return;
 
   UDPEchoServer server;
@@ -1003,7 +1004,7 @@ TEST_P(SocketBrokerTest, SocketBrokerTestUDP) {
 TEST_P(SocketBrokerTest, SocketBrokerTestTCP) {
   // Some APIs, such as named capabilities, needed to create the network service
   // sandbox require Windows 10 RS2.
-  if (base::win::GetVersion() < base::win::Version::WIN10_RS2)
+  if (!features::IsAppContainerSandboxSupported())
     return;
 
   std::wstring hostname = GetTestHostName();

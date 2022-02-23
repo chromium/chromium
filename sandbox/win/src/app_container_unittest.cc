@@ -18,6 +18,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/win/sid.h"
 #include "base/win/windows_version.h"
+#include "sandbox/features.h"
 #include "sandbox/win/src/app_container_base.h"
 #include "sandbox/win/src/security_capabilities.h"
 #include "sandbox/win/src/win_utils.h"
@@ -184,7 +185,7 @@ void AccessCheckFile(AppContainer* container,
 }  // namespace
 
 TEST(AppContainerTest, SecurityCapabilities) {
-  if (base::win::GetVersion() < base::win::Version::WIN8)
+  if (!features::IsAppContainerSandboxSupported())
     return;
 
   // This isn't a valid package SID but it doesn't matter for this test.
@@ -210,7 +211,7 @@ TEST(AppContainerTest, SecurityCapabilities) {
 }
 
 TEST(AppContainerTest, CreateAndDeleteAppContainerProfile) {
-  if (base::win::GetVersion() < base::win::Version::WIN8)
+  if (!features::IsAppContainerSandboxSupported())
     return;
 
   std::wstring package_name = GenerateRandomPackageName();
@@ -225,7 +226,7 @@ TEST(AppContainerTest, CreateAndDeleteAppContainerProfile) {
 }
 
 TEST(AppContainerTest, CreateAndOpenAppContainer) {
-  if (base::win::GetVersion() < base::win::Version::WIN8)
+  if (!features::IsAppContainerSandboxSupported())
     return;
 
   std::wstring package_name = GenerateRandomPackageName();
@@ -248,8 +249,7 @@ TEST(AppContainerTest, CreateAndOpenAppContainer) {
 }
 
 TEST(AppContainerTest, SetLowPrivilegeAppContainer) {
-  // LPAC first supported in RS1.
-  if (base::win::GetVersion() < base::win::Version::WIN10_RS1)
+  if (!features::IsAppContainerSandboxSupported())
     return;
   std::wstring package_name = GenerateRandomPackageName();
   scoped_refptr<AppContainerBase> container =
@@ -260,7 +260,7 @@ TEST(AppContainerTest, SetLowPrivilegeAppContainer) {
 }
 
 TEST(AppContainerTest, OpenAppContainerAndGetSecurityCapabilities) {
-  if (base::win::GetVersion() < base::win::Version::WIN8)
+  if (!features::IsAppContainerSandboxSupported())
     return;
 
   std::wstring package_name = GenerateRandomPackageName();
@@ -273,12 +273,9 @@ TEST(AppContainerTest, OpenAppContainerAndGetSecurityCapabilities) {
   ASSERT_TRUE(ValidSecurityCapabilities(
       no_capabilities.get(), container->GetPackageSid(), capabilities));
 
-  // No support for named capabilities prior to Win10.
-  if (base::win::GetVersion() >= base::win::Version::WIN10) {
-    ASSERT_TRUE(container->AddCapability(L"FakeCapability"));
-    capabilities.push_back(
-        *base::win::Sid::FromNamedCapability(L"FakeCapability"));
-  }
+  ASSERT_TRUE(container->AddCapability(L"FakeCapability"));
+  capabilities.push_back(
+      *base::win::Sid::FromNamedCapability(L"FakeCapability"));
 
   ASSERT_TRUE(container->AddCapability(
       base::win::WellKnownCapability::kInternetClient));
@@ -293,7 +290,7 @@ TEST(AppContainerTest, OpenAppContainerAndGetSecurityCapabilities) {
 }
 
 TEST(AppContainerTest, GetResources) {
-  if (base::win::GetVersion() < base::win::Version::WIN8)
+  if (!features::IsAppContainerSandboxSupported())
     return;
 
   std::wstring package_name = GenerateRandomPackageName();
@@ -319,7 +316,7 @@ TEST(AppContainerTest, GetResources) {
 }
 
 TEST(AppContainerTest, AccessCheckFile) {
-  if (base::win::GetVersion() < base::win::Version::WIN8)
+  if (!features::IsAppContainerSandboxSupported())
     return;
 
   // We don't need a valid profile to do the access check tests.
@@ -347,8 +344,7 @@ TEST(AppContainerTest, AccessCheckFile) {
                   base::win::WellKnownSid::kAllApplicationPackages,
                   GENERIC_READ | GENERIC_EXECUTE,
                   FILE_GENERIC_READ | FILE_GENERIC_EXECUTE, TRUE);
-  // No support for LPAC less than Win10 RS1.
-  if (base::win::GetVersion() < base::win::Version::WIN10_RS1)
+  if (!features::IsAppContainerSandboxSupported())
     return;
   container->SetEnableLowPrivilegeAppContainer(true);
   AccessCheckFile(container.get(), path,
@@ -360,7 +356,7 @@ TEST(AppContainerTest, AccessCheckFile) {
 }
 
 TEST(AppContainerTest, AccessCheckRegistry) {
-  if (base::win::GetVersion() < base::win::Version::WIN8)
+  if (!features::IsAppContainerSandboxSupported())
     return;
 
   // We don't need a valid profile to do the access check tests.
@@ -392,7 +388,7 @@ TEST(AppContainerTest, AccessCheckRegistry) {
 }
 
 TEST(AppContainerTest, ImpersonationCapabilities) {
-  if (base::win::GetVersion() < base::win::Version::WIN8)
+  if (!features::IsAppContainerSandboxSupported())
     return;
 
   std::wstring package_name = GenerateRandomPackageName();
@@ -418,12 +414,11 @@ TEST(AppContainerTest, ImpersonationCapabilities) {
       base::win::WellKnownCapability::kPrivateNetworkClientServer));
   impersonation_capabilities.push_back(*base::win::Sid::FromKnownCapability(
       base::win::WellKnownCapability::kPrivateNetworkClientServer));
-  // No support for named capabilities prior to Win10.
-  if (base::win::GetVersion() >= base::win::Version::WIN10) {
-    ASSERT_TRUE(container->AddImpersonationCapability(L"FakeCapability"));
-    impersonation_capabilities.push_back(
-        *base::win::Sid::FromNamedCapability(L"FakeCapability"));
-  }
+
+  ASSERT_TRUE(container->AddImpersonationCapability(L"FakeCapability"));
+  impersonation_capabilities.push_back(
+      *base::win::Sid::FromNamedCapability(L"FakeCapability"));
+
   const wchar_t kSddlSid[] = L"S-1-15-3-1";
   ASSERT_TRUE(container->AddImpersonationCapabilitySddl(kSddlSid));
   impersonation_capabilities.push_back(

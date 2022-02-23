@@ -20,6 +20,7 @@
 #include "content/shell/browser/shell.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/features.h"
+#include "sandbox/features.h"
 #include "sandbox/policy/features.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/network_service_test.mojom.h"
@@ -44,7 +45,7 @@ class SandboxedHttpCacheBrowserTest : public ContentBrowserTest {
 
   void SetUp() override {
 #if BUILDFLAG(IS_WIN)
-    if (!sandbox::policy::features::IsWinNetworkServiceSandboxSupported()) {
+    if (!sandbox::features::IsAppContainerSandboxSupported()) {
       // On *some* Windows, sandboxing cannot be enabled. We skip all the tests
       // on such platforms.
       GTEST_SKIP();

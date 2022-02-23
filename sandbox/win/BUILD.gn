@@ -160,12 +160,12 @@ static_library("sandbox") {
   public_deps = [
     ":common",
     "//base",
+    "//sandbox:common",
   ]
 
   deps = [
     ":maybe_set_appcontainer_acls",
     "//base:base_static",
-    "//sandbox:common",
   ]
 }
 

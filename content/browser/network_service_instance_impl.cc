@@ -63,7 +63,7 @@
 #include "base/win/security_util.h"
 #include "base/win/sid.h"
 #include "base/win/windows_version.h"
-#include "sandbox/policy/features.h"
+#include "sandbox/features.h"
 #elif BUILDFLAG(IS_ANDROID)
 #include "content/common/android/cpu_affinity_setter.h"
 #endif  // BUILDFLAG(IS_WIN)
@@ -365,7 +365,7 @@ bool MaybeGrantAccessToDataPath(const SandboxParameters& sandbox_params,
     return false;
 #if BUILDFLAG(IS_WIN)
   // On platforms that don't support the LPAC sandbox, do nothing.
-  if (!sandbox::policy::features::IsWinNetworkServiceSandboxSupported())
+  if (!sandbox::features::IsAppContainerSandboxSupported())
     return true;
   DCHECK(!sandbox_params.lpac_capability_name.empty());
   auto ac_sids = base::win::Sid::FromNamedCapabilityVector(

@@ -13,9 +13,7 @@
 #include "build/chromeos_buildflags.h"
 #include "sandbox/policy/export.h"
 
-namespace sandbox {
-namespace policy {
-namespace features {
+namespace sandbox::policy::features {
 
 #if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_FUCHSIA)
 SANDBOX_POLICY_EXPORT extern const base::Feature kNetworkServiceSandbox;
@@ -39,20 +37,11 @@ SANDBOX_POLICY_EXPORT extern const base::Feature
     kForceSpectreVariant2Mitigation;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if BUILDFLAG(IS_WIN)
-// Returns whether the Network Service Sandbox is supported by the current
-// Windows platform. Call this function rather than checking the
-// kNetworkServiceSandbox feature directly.
-SANDBOX_POLICY_EXPORT bool IsWinNetworkServiceSandboxSupported();
-#endif
-
 // Returns whether the network sandbox is enabled for the current platform
 // configuration. This might be overridden by the content embedder so prefer
 // calling ContentBrowserClient::ShouldSandboxNetworkService().
 SANDBOX_POLICY_EXPORT bool IsNetworkSandboxEnabled();
 
-}  // namespace features
-}  // namespace policy
-}  // namespace sandbox
+}  // namespace sandbox::policy::features
 
 #endif  // SANDBOX_POLICY_FEATURES_H_

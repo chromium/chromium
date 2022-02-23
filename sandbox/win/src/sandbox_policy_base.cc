@@ -15,6 +15,7 @@
 #include "base/win/sid.h"
 #include "base/win/win_util.h"
 #include "base/win/windows_version.h"
+#include "sandbox/features.h"
 #include "sandbox/win/src/acl.h"
 #include "sandbox/win/src/crosscall_server.h"
 #include "sandbox/win/src/filesystem_policy.h"
@@ -283,7 +284,7 @@ ResultCode PolicyBase::SetDelayedIntegrityLevel(
 }
 
 ResultCode PolicyBase::SetLowBox(const wchar_t* sid) {
-  if (base::win::GetVersion() < base::win::Version::WIN8)
+  if (!features::IsAppContainerSandboxSupported())
     return SBOX_ERROR_UNSUPPORTED;
 
   DCHECK(sid);
@@ -604,7 +605,7 @@ HANDLE PolicyBase::GetStderrHandle() {
 
 ResultCode PolicyBase::AddAppContainerProfile(const wchar_t* package_name,
                                               bool create_profile) {
-  if (base::win::GetVersion() < base::win::Version::WIN8)
+  if (!features::IsAppContainerSandboxSupported())
     return SBOX_ERROR_UNSUPPORTED;
 
   DCHECK(package_name);
