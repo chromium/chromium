@@ -12,27 +12,20 @@ See //recipes.star for information on setting experiments for a recipe.
 """
 
 load("@stdlib//internal/graph.star", "graph")
-load("@stdlib//internal/luci/common.star", "kinds")
+load("./nodes.star", "nodes")
 
-RECIPE_EXPERIMENTS_KIND = "recipe_experiments"
+_RECIPE_EXPERIMENTS = nodes.create_unscoped_node_type("recipe_experiments")
 
-def _recipe_experiments_key(recipe):
-    return graph.key("@chromium", "", RECIPE_EXPERIMENTS_KIND, recipe)
+_RECIPE_EXPERIMENTS_REF = nodes.create_bucket_scoped_node_type("recipe_experiments_ref")
 
 def register_recipe_experiments(recipe, experiments):
-    graph.add_node(_recipe_experiments_key(recipe), props = {
+    _RECIPE_EXPERIMENTS.add(recipe, props = {
         "experiments": experiments,
     })
 
-RECIPE_EXPERIMENTS_REF_KIND = "recipe_experiments_ref"
-
-def _recipe_experiments_ref_key(bucket, builder):
-    return graph.key("@chromium", "", kinds.BUCKET, bucket, RECIPE_EXPERIMENTS_REF_KIND, builder)
-
 def register_recipe_experiments_ref(bucket, builder, recipe):
-    key = _recipe_experiments_ref_key(bucket, builder)
-    graph.add_node(key)
-    graph.add_edge(key, _recipe_experiments_key(recipe))
+    key = _RECIPE_EXPERIMENTS_REF.add(bucket, builder)
+    graph.add_edge(key, _RECIPE_EXPERIMENTS.key(recipe))
 
 def _set_recipe_experiments(ctx):
     cfg = None
@@ -47,7 +40,7 @@ def _set_recipe_experiments(ctx):
         bucket_name = bucket.name
         for builder in bucket.swarming.builders:
             builder_name = builder.name
-            recipe_experiments_nodes = graph.children(_recipe_experiments_ref_key(bucket_name, builder_name), RECIPE_EXPERIMENTS_KIND)
+            recipe_experiments_nodes = graph.children(_RECIPE_EXPERIMENTS_REF.key(bucket_name, builder_name), _RECIPE_EXPERIMENTS.kind)
             if len(recipe_experiments_nodes) != 1:
                 fail("Each builder should refer to 1 recipe")
             recipe_experiments_node = recipe_experiments_nodes[0]
