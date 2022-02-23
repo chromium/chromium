@@ -5433,21 +5433,6 @@
             ]
         }
     ],
-    "RemoveExcessNTPs": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "RemoveExcessNTPs"
-                    ]
-                }
-            ]
-        }
-    ],
     "ReportCertificateErrors": [
         {
             "platforms": [
@@ -5862,16 +5847,29 @@
             ]
         }
     ],
-    "SingleNTP": [
+    "SingleNTPRemoveExcessNTPs": [
         {
             "platforms": [
                 "ios"
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "Enabled_SingleNTP_RemoveExtraNTP",
+                    "enable_features": [
+                        "RemoveExcessNTPs",
+                        "SingleNTP"
+                    ]
+                },
+                {
+                    "name": "Enabled_SingleNTP",
                     "enable_features": [
                         "SingleNTP"
+                    ]
+                },
+                {
+                    "name": "Enabled_RemoveExtraNTP",
+                    "enable_features": [
+                        "RemoveExcessNTPs"
                     ]
                 }
             ]
