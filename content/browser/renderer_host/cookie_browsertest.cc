@@ -171,7 +171,7 @@ IN_PROC_BROWSER_TEST_F(CookieBrowserTest, Cookies) {
   EXPECT_EQ("", GetCookieFromJS(web_contents_https->GetMainFrame()));
   EXPECT_EQ("", GetCookieFromJS(web_contents_http->GetMainFrame()));
 
-  // TLS page writes not-secure cookie.
+  // Non-TLS page writes not-secure cookie.
   EXPECT_TRUE(
       ExecJs(web_contents_http->GetMainFrame(), "document.cookie = 'B=2';"));
   EXPECT_EQ("B=2", GetCookieFromJS(web_contents_https->GetMainFrame()));
