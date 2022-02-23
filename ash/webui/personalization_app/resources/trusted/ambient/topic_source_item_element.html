@@ -9,6 +9,10 @@
     padding-inline-end: var(--cr-icon-ripple-padding);
     padding-inline-start: var(--cr-section-padding);
   }
+  .primary-text {
+    color: var(--cros-text-color-primary);
+    font: var(--cros-body-2-font);
+  }
 </style>
 
 <div id="container">
@@ -20,7 +24,7 @@
   </div>
 
   <div id="labelWrapper" aria-hidden="true">
-    <div>[[getItemName_(topicSource, hasGooglePhotosAlbums)]]</div>
+    <div class="primary-text">[[getItemName_(topicSource, hasGooglePhotosAlbums)]]</div>
     <div class="cr-secondary-text">
       [[getItemDescription_(topicSource, hasGooglePhotosAlbums)]]
     </div>
