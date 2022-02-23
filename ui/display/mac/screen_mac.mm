@@ -470,19 +470,12 @@ class ScreenMac : public Screen {
 
 // static
 gfx::NativeWindow Screen::GetWindowForView(gfx::NativeView native_view) {
-#if !defined(USE_AURA)
   NSView* view = native_view.GetNativeNSView();
   return [view window];
-#else
-  gfx::NativeWindow window = nil;
-  return window;
-#endif
 }
 
-#if !defined(USE_AURA)
 Screen* CreateNativeScreen() {
   return new ScreenMac;
 }
-#endif
 
 }  // namespace display
