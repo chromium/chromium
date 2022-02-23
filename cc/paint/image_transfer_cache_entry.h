@@ -27,6 +27,8 @@ class SkPixmap;
 
 namespace cc {
 
+class PaintOpReader;
+
 static constexpr uint32_t kInvalidImageTransferCacheEntryId =
     static_cast<uint32_t>(-1);
 
@@ -151,11 +153,9 @@ class CC_PAINT_EXPORT ServiceImageTransferCacheEntry final
   }
 
  private:
-  sk_sp<SkImage> MakeSkImage(
-      const SkPixmap& pixmap,
-      uint32_t width,
-      uint32_t height,
-      absl::optional<TargetColorParams> target_color_params);
+  bool DeserializeYUVA(PaintOpReader& reader);
+  bool DeserializeRGBA(PaintOpReader& reader,
+                       absl::optional<TargetColorParams> target_color_params);
 
   raw_ptr<GrDirectContext> context_ = nullptr;
   std::vector<sk_sp<SkImage>> plane_images_;
