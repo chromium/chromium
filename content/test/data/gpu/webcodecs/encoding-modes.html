@@ -13,11 +13,6 @@ Check that VideoEncoder can encode in different latency and bitrate modes
       const width = 640;
       const height = 480;
       const frames_in_one_pass = 15;
-      let source = await createFrameSource(arg.source_type, width, height);
-      if (!source) {
-        TEST.skip('Unsupported source: ' + arg.source_type);
-        return;
-      }
 
       let errors = 0;
       let chunks = [];
@@ -37,6 +32,12 @@ Check that VideoEncoder can encode in different latency and bitrate modes
       let support = await VideoEncoder.isConfigSupported(encoder_config);
       if (!support.supported) {
         TEST.skip('Unsupported codec: ' + arg.codec);
+        return;
+      }
+
+      let source = await createFrameSource(arg.source_type, width, height);
+      if (!source) {
+        TEST.skip('Unsupported source: ' + arg.source_type);
         return;
       }
 
@@ -65,6 +66,7 @@ Check that VideoEncoder can encode in different latency and bitrate modes
 
       await encoder.flush();
       encoder.close();
+      source.close();
 
       TEST.assert(
         decoder_configs.length >= 1,

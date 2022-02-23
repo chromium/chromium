@@ -175,6 +175,8 @@ class FrameSource {
   async getNextFrame() {
     return null;
   }
+
+  close() {}
 }
 
 // Source of video frames coming from taking snapshots of a canvas.
@@ -213,6 +215,11 @@ class StreamSource extends FrameSource {
     const result = await this.reader.read();
     const frame = result.value;
     return frame;
+  }
+
+  close() {
+    if (this.reader)
+      this.reader.cancel();
   }
 }
 
@@ -293,6 +300,11 @@ class DecoderSource extends FrameSource {
 
     return next.promise;
   }
+
+  close() {
+    if (this.decoder)
+      this.decoder.close();
+  }
 }
 
 function createCanvasCaptureSource(width, height) {
@@ -367,7 +379,15 @@ async function prepareDecoderSource(
     encoder.encode(frame, {keyFrame: false});
     frame.close();
   }
-  await encoder.flush();
+  try {
+    await encoder.flush();
+    encoder.close();
+    canvasSource.close();
+  } catch (e) {
+    errors++;
+    TEST.log(e);
+  }
+
   if (errors > 0)
     return null;
 

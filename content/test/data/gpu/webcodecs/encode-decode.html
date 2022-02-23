@@ -91,6 +91,7 @@ several frames and accelerated VideoDecoder needs to successfully decode them.
       await decoder.flush();
       encoder.close();
       decoder.close();
+      source.close();
 
       TEST.assert(
         frames_encoded == frames_to_encode,

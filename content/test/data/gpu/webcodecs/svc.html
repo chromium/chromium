@@ -95,6 +95,7 @@ some chunks.
       await decoder.flush();
       encoder.close();
       decoder.close();
+      source.close();
 
       TEST.assert(
         frames_encoded == frames_to_encode,
