@@ -2,13 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {AmbientActionName, SetAmbientModeEnabledAction, SetTopicSourceAction} from 'chrome://personalization/trusted/ambient/ambient_actions.js';
+import {AmbientActionName, SetAmbientModeEnabledAction, SetTemperatureUnitAction, SetTopicSourceAction} from 'chrome://personalization/trusted/ambient/ambient_actions.js';
 import {AmbientObserver} from 'chrome://personalization/trusted/ambient/ambient_observer.js';
 import {AmbientSubpage} from 'chrome://personalization/trusted/ambient/ambient_subpage_element.js';
 import {ToggleRow} from 'chrome://personalization/trusted/ambient/toggle_row_element.js';
 import {TopicSourceItem} from 'chrome://personalization/trusted/ambient/topic_source_item_element.js';
-import {TopicSource} from 'chrome://personalization/trusted/personalization_app.mojom-webui.js';
+import {TemperatureUnit, TopicSource} from 'chrome://personalization/trusted/personalization_app.mojom-webui.js';
 import {emptyState} from 'chrome://personalization/trusted/personalization_state.js';
+import {CrRadioButtonElement} from 'chrome://resources/cr_elements/cr_radio_button/cr_radio_button.m.js';
 import {CrToggleElement} from 'chrome://resources/cr_elements/cr_toggle/cr_toggle.m.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/test_util.js';
@@ -199,5 +200,52 @@ export function AmbientSubpageTest() {
     action = await personalizationStore.waitForAction(
                  AmbientActionName.SET_TOPIC_SOURCE) as SetTopicSourceAction;
     assertEquals(TopicSource.kArtGallery, action.topicSource);
+  });
+
+  test('has correct temperature unit on load', async () => {
+    ambientSubpageElement = initElement(AmbientSubpage);
+
+    personalizationStore.setReducersEnabled(true);
+    personalizationStore.expectAction(AmbientActionName.SET_TEMPERATURE_UNIT);
+    let action =
+        await personalizationStore.waitForAction(
+            AmbientActionName.SET_TEMPERATURE_UNIT) as SetTemperatureUnitAction;
+    assertEquals(TemperatureUnit.kFahrenheit, action.temperatureUnit);
+  });
+
+  test('sets temperature unit when temperature unit item clicked', async () => {
+    ambientSubpageElement = initElement(AmbientSubpage);
+    personalizationStore.data.ambient.temperatureUnit =
+        TemperatureUnit.kCelsius;
+    personalizationStore.notifyObservers();
+    await waitAfterNextRender(ambientSubpageElement);
+
+    const weatherUnit =
+        ambientSubpageElement.shadowRoot!.querySelector('ambient-weather-unit');
+    assertTrue(!!weatherUnit);
+
+    const temperatureUnitItems =
+        weatherUnit!.shadowRoot!.querySelectorAll('cr-radio-button');
+    assertEquals(2, temperatureUnitItems!.length);
+
+    const fahrenheitUnitButton =
+        temperatureUnitItems[0] as CrRadioButtonElement;
+    const celsiusUnitButton = temperatureUnitItems[1] as CrRadioButtonElement;
+
+    personalizationStore.expectAction(AmbientActionName.SET_TEMPERATURE_UNIT);
+    fahrenheitUnitButton!.click();
+    assertTrue(fahrenheitUnitButton.checked);
+    let action =
+        await personalizationStore.waitForAction(
+            AmbientActionName.SET_TEMPERATURE_UNIT) as SetTemperatureUnitAction;
+    assertEquals(TemperatureUnit.kFahrenheit, action.temperatureUnit);
+
+    personalizationStore.expectAction(AmbientActionName.SET_TEMPERATURE_UNIT);
+    celsiusUnitButton!.click();
+    assertTrue(celsiusUnitButton.checked);
+    action =
+        await personalizationStore.waitForAction(
+            AmbientActionName.SET_TEMPERATURE_UNIT) as SetTemperatureUnitAction;
+    assertEquals(TemperatureUnit.kCelsius, action.temperatureUnit);
   });
 }

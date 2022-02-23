@@ -350,8 +350,8 @@ enum TopicSource {
 
 // Temperature unit for screensaver weather section.
 enum TemperatureUnit {
-  kFahrenheit = 1,
-  kCelsius = 2,
+  kFahrenheit = 0,
+  kCelsius = 1,
 };
 
 // Album metadaba to display. Contains necessary data for both topic sources.
@@ -384,6 +384,9 @@ interface AmbientObserver {
 
   // Notifies the JS side about the current state of TopicSource.
   OnTopicSourceChanged(TopicSource topic_source);
+
+  // Notifies the JS side about the current state of TemperatureUnit.
+  OnTemperatureUnitChanged(TemperatureUnit temperature_unit);
 
   // Notifies the JS side about the current albums.
   OnAlbumsChanged(array<AmbientModeAlbum> albums);

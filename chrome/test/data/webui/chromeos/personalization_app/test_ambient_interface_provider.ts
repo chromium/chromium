@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {AmbientObserverInterface, AmbientObserverRemote, AmbientProviderInterface, TopicSource} from 'chrome://personalization/trusted/personalization_app.mojom-webui.js';
+import {AmbientObserverInterface, AmbientObserverRemote, AmbientProviderInterface, TemperatureUnit, TopicSource} from 'chrome://personalization/trusted/personalization_app.mojom-webui.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 export class TestAmbientProvider extends TestBrowserProxy implements
@@ -13,6 +13,7 @@ export class TestAmbientProvider extends TestBrowserProxy implements
       'setAmbientObserver',
       'setAmbientModeEnabled',
       'setTopicSource',
+      'setTemperatureUnit',
     ]);
   }
 
@@ -35,6 +36,11 @@ export class TestAmbientProvider extends TestBrowserProxy implements
     window.setTimeout(() => {
       this.ambientObserverRemote!.onTopicSourceChanged(TopicSource.kArtGallery);
     }, 10);
+
+    window.setTimeout(() => {
+      this.ambientObserverRemote!.onTemperatureUnitChanged(
+          TemperatureUnit.kFahrenheit);
+    }, 10);
   }
 
   setAmbientModeEnabled(ambientModeEnabled: boolean) {
@@ -43,5 +49,9 @@ export class TestAmbientProvider extends TestBrowserProxy implements
 
   setTopicSource(topic_source: TopicSource) {
     this.methodCalled('setTopicSource', topic_source);
+  }
+
+  setTemperatureUnit(temperature_unit: TemperatureUnit) {
+    this.methodCalled('setTemperatureUnit', temperature_unit);
   }
 }

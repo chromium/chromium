@@ -112,6 +112,16 @@ struct EnumTraits<ash::personalization_app::mojom::TopicSource,
                         ash::AmbientModeTopicSource* output);
 };
 
+template <>
+struct EnumTraits<ash::personalization_app::mojom::TemperatureUnit,
+                  ash::AmbientModeTemperatureUnit> {
+  using MojomTemperatureUnit =
+      ::ash::personalization_app::mojom::TemperatureUnit;
+  static MojomTemperatureUnit ToMojom(ash::AmbientModeTemperatureUnit input);
+  static bool FromMojom(MojomTemperatureUnit input,
+                        ash::AmbientModeTemperatureUnit* output);
+};
+
 }  // namespace mojo
 
 #endif  // ASH_WEBUI_PERSONALIZATION_APP_MOJOM_PERSONALIZATION_APP_MOJOM_TRAITS_H_

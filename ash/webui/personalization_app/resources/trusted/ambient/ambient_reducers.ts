@@ -31,8 +31,20 @@ export function topicSourceReducer(
   }
 }
 
+export function temperatureUnitReducer(
+    state: AmbientState['temperatureUnit'], action: Actions,
+    _: PersonalizationState): AmbientState['temperatureUnit'] {
+  switch (action.name) {
+    case AmbientActionName.SET_TEMPERATURE_UNIT:
+      return action.temperatureUnit;
+    default:
+      return state;
+  }
+}
+
 export const ambientReducers:
     {[K in keyof AmbientState]: ReducerFunction<AmbientState[K]>} = {
       ambientModeEnabled: ambientModeEnabledReducer,
       topicSource: topicSourceReducer,
+      temperatureUnit: temperatureUnitReducer,
     };

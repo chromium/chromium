@@ -9,11 +9,12 @@
 
 import 'chrome://personalization/trusted/ambient/toggle_row_element.js';
 import 'chrome://personalization/trusted/ambient/topic_source_list_element.js';
+import 'chrome://personalization/trusted/ambient/ambient_weather_element.js';
 
 import {CrToggleElement} from 'chrome://resources/cr_elements/cr_toggle/cr_toggle.m.js';
 import {html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {TopicSource} from '../personalization_app.mojom-webui.js';
+import {TemperatureUnit, TopicSource} from '../personalization_app.mojom-webui.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
 
 import {setAmbientModeEnabled} from './ambient_controller.js';
@@ -36,12 +37,14 @@ export class AmbientSubpage extends WithPersonalizationStore {
       ambientModeEnabled_: Boolean,
       hasGooglePhotosAlbums_: {type: Boolean, value: true},
       topicSource_: Number,
+      temperatureUnit_: Number,
     };
   }
 
   private ambientModeEnabled_: boolean;
   private hasGooglePhotosAlbums_: boolean;
   private topicSource_: TopicSource|null = null;
+  private temperatureUnit_: TemperatureUnit|null = null;
 
   connectedCallback() {
     super.connectedCallback();
@@ -50,6 +53,8 @@ export class AmbientSubpage extends WithPersonalizationStore {
         'ambientModeEnabled_', state => state.ambient.ambientModeEnabled);
     this.watch<AmbientSubpage['topicSource_']>(
         'topicSource_', state => state.ambient.topicSource);
+    this.watch<AmbientSubpage['temperatureUnit_']>(
+        'temperatureUnit_', state => state.ambient.temperatureUnit);
     this.updateFromStore();
   }
 
@@ -67,6 +72,10 @@ export class AmbientSubpage extends WithPersonalizationStore {
   private setAmbientModeEnabled_(ambientModeEnabled: boolean) {
     setAmbientModeEnabled(
         ambientModeEnabled, getAmbientProvider(), this.getStore());
+  }
+
+  private temperatureUnitToString_(temperatureUnit: TemperatureUnit): string {
+    return temperatureUnit != null ? temperatureUnit.toString() : '';
   }
 }
 

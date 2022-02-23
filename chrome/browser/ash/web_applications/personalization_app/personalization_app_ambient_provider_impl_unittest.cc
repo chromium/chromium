@@ -48,6 +48,10 @@ class TestAmbientObserver
     albums_ = std::move(albums);
   }
 
+  // TODO: to be updated in b/219247662.
+  void OnTemperatureUnitChanged(
+      ash::AmbientModeTemperatureUnit temperature_unit) override {}
+
   mojo::PendingRemote<ash::personalization_app::mojom::AmbientObserver>
   pending_remote() {
     if (ambient_observer_receiver_.is_bound()) {

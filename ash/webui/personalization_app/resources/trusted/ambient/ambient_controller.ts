@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {AmbientProviderInterface, TopicSource} from '../personalization_app.mojom-webui.js';
+import {AmbientProviderInterface, TemperatureUnit, TopicSource} from '../personalization_app.mojom-webui.js';
 import {PersonalizationStore} from '../personalization_store.js';
-import {setAmbientModeEnabledAction, setTopicSourceAction} from './ambient_actions.js';
+
+import {setAmbientModeEnabledAction, setTemperatureUnitAction, setTopicSourceAction} from './ambient_actions.js';
 
 /**
  * @fileoverview contains all of the functions to interact with ambient mode
@@ -31,4 +32,14 @@ export function setTopicSource(
 
   // Dispatch action to select topic source.
   store.dispatch(setTopicSourceAction(topicSource));
+}
+
+// Set ambient mode temperature unit.
+export function setTemperatureUnit(
+    temperatureUnit: TemperatureUnit, _: AmbientProviderInterface,
+    store: PersonalizationStore): void {
+  // Dispatch action to select temperature unit.
+  store.dispatch(setTemperatureUnitAction(temperatureUnit));
+
+  // TODO(b/217281778): implement SetTemperatureUnit API.
 }

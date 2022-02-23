@@ -30,6 +30,7 @@ using MojomWallpaperLayout = ash::personalization_app::mojom::WallpaperLayout;
 using MojomWallpaperType = ash::personalization_app::mojom::WallpaperType;
 using MojomOnlineImageType = ash::personalization_app::mojom::OnlineImageType;
 using MojomTopicSource = ash::personalization_app::mojom::TopicSource;
+using MojomTemperatureUnit = ash::personalization_app::mojom::TemperatureUnit;
 
 MojomWallpaperLayout
 EnumTraits<MojomWallpaperLayout, ash::WallpaperLayout>::ToMojom(
@@ -298,6 +299,8 @@ bool StructTraits<ash::personalization_app::mojom::DefaultUserImageDataView,
   return data.ReadTitle(&out->title) && data.ReadUrl(&out->url);
 }
 
+// TODO (b/220933864): remove ash::AmbientModeTopicSource and
+// ash::AmbientModeTemperatureUnit enums.
 MojomTopicSource
 EnumTraits<MojomTopicSource, ash::AmbientModeTopicSource>::ToMojom(
     ash::AmbientModeTopicSource input) {
@@ -318,6 +321,32 @@ bool EnumTraits<MojomTopicSource, ash::AmbientModeTopicSource>::FromMojom(
       return true;
     case MojomTopicSource::kArtGallery:
       *output = ash::AmbientModeTopicSource::kArtGallery;
+      return true;
+  }
+  NOTREACHED();
+  return false;
+}
+
+MojomTemperatureUnit
+EnumTraits<MojomTemperatureUnit, ash::AmbientModeTemperatureUnit>::ToMojom(
+    ash::AmbientModeTemperatureUnit input) {
+  switch (input) {
+    case ash::AmbientModeTemperatureUnit::kFahrenheit:
+      return MojomTemperatureUnit::kFahrenheit;
+    case ash::AmbientModeTemperatureUnit::kCelsius:
+      return MojomTemperatureUnit::kCelsius;
+  }
+}
+
+bool EnumTraits<MojomTemperatureUnit, ash::AmbientModeTemperatureUnit>::
+    FromMojom(MojomTemperatureUnit input,
+              ash::AmbientModeTemperatureUnit* output) {
+  switch (input) {
+    case MojomTemperatureUnit::kFahrenheit:
+      *output = ash::AmbientModeTemperatureUnit::kFahrenheit;
+      return true;
+    case MojomTemperatureUnit::kCelsius:
+      *output = ash::AmbientModeTemperatureUnit::kCelsius;
       return true;
   }
   NOTREACHED();
