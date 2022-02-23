@@ -258,13 +258,13 @@ void DataObject::AddFilename(
 }
 
 void DataObject::AddFileSharedBuffer(scoped_refptr<SharedBuffer> buffer,
-                                     bool is_accessible_from_start_frame,
+                                     bool is_image_accessible,
                                      const KURL& source_url,
                                      const String& filename_extension,
                                      const AtomicString& content_disposition) {
   InternalAddFileItem(DataObjectItem::CreateFromFileSharedBuffer(
-      std::move(buffer), is_accessible_from_start_frame, source_url,
-      filename_extension, content_disposition));
+      std::move(buffer), is_image_accessible, source_url, filename_extension,
+      content_disposition));
 }
 
 DataObject::DataObject() : modifiers_(0) {}
@@ -335,7 +335,7 @@ DataObject* DataObject::Create(WebDragData data) {
         break;
       case WebDragData::Item::kStorageTypeBinaryData:
         data_object->AddFileSharedBuffer(
-            item.binary_data, item.binary_data_accessible_from_start_frame,
+            item.binary_data, item.binary_data_image_accessible,
             item.binary_data_source_url, item.binary_data_filename_extension,
             item.binary_data_content_disposition);
         break;
@@ -379,8 +379,7 @@ WebDragData DataObject::ToWebDragData() {
       if (original_item->GetSharedBuffer()) {
         item.storage_type = WebDragData::Item::kStorageTypeBinaryData;
         item.binary_data = original_item->GetSharedBuffer();
-        item.binary_data_accessible_from_start_frame =
-            original_item->IsAccessibleFromStartFrame();
+        item.binary_data_image_accessible = original_item->IsImageAccessible();
         item.binary_data_source_url = original_item->BaseURL();
         item.binary_data_filename_extension =
             original_item->FilenameExtension();

@@ -60,8 +60,7 @@ template <>
 struct PLATFORM_EXPORT StructTraits<blink::mojom::DragItemBinaryDataView,
                                     blink::WebDragData::Item> {
   static mojo_base::BigBuffer data(const blink::WebDragData::Item& item);
-  static bool is_accessible_from_start_frame(
-      const blink::WebDragData::Item& item);
+  static bool is_image_accessible(const blink::WebDragData::Item& item);
   static blink::KURL source_url(const blink::WebDragData::Item& item);
   static base::FilePath filename_extension(
       const blink::WebDragData::Item& item);

@@ -98,7 +98,7 @@ DataObjectItem* DataObjectItem::CreateFromHTML(const String& html,
 // static
 DataObjectItem* DataObjectItem::CreateFromFileSharedBuffer(
     scoped_refptr<SharedBuffer> buffer,
-    bool is_accessible_from_start_frame,
+    bool is_image_accessible,
     const KURL& source_url,
     const String& filename_extension,
     const AtomicString& content_disposition) {
@@ -106,7 +106,7 @@ DataObjectItem* DataObjectItem::CreateFromFileSharedBuffer(
       kFileKind,
       MIMETypeRegistry::GetWellKnownMIMETypeForExtension(filename_extension));
   item->shared_buffer_ = std::move(buffer);
-  item->is_accessible_from_start_frame = is_accessible_from_start_frame;
+  item->is_image_accessible_ = is_image_accessible;
   item->filename_extension_ = filename_extension;
   // TODO(dcheng): Rename these fields to be more generically named.
   item->title_ = content_disposition;
@@ -157,6 +157,9 @@ File* DataObjectItem::GetAsFile() const {
 
     // If this file is not backed by |file_| then it must be a |shared_buffer_|.
     DCHECK(shared_buffer_);
+    // If dragged image is cross-origin, do not allow access to it.
+    if (!is_image_accessible_)
+      return nullptr;
     auto data = std::make_unique<BlobData>();
     data->SetContentType(type_);
     for (const auto& span : *shared_buffer_)

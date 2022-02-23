@@ -88,7 +88,7 @@ class WebDragData {
 
     // Only valid when storage_type == kStorageTypeBinaryData.
     WebData binary_data;
-    bool binary_data_accessible_from_start_frame;
+    bool binary_data_image_accessible;
     WebURL binary_data_source_url;
     WebString binary_data_filename_extension;
     WebString binary_data_content_disposition;
