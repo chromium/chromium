@@ -2085,7 +2085,7 @@ bool V4L2Device::StartPolling(V4L2DevicePoller::EventCallback event_callback,
 
   if (!device_poller_) {
     device_poller_ =
-        std::make_unique<V4L2DevicePoller>(this, "V4L2DeviceThreadPoller");
+        std::make_unique<V4L2DevicePoller>(this, "V4L2DevicePollerThread");
   }
 
   bool ret = device_poller_->StartPolling(std::move(event_callback),

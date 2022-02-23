@@ -46,7 +46,7 @@ namespace media {
 
 namespace {
 
-const char kImageProcessorTraceName[] = "V4L2 Video ImageProcessor";
+const char kImageProcessorTraceName[] = "V4L2ImageProcessorBackend";
 
 enum v4l2_buf_type ToSingleV4L2Planar(enum v4l2_buf_type type) {
   switch (type) {

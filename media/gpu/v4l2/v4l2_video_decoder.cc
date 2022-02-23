@@ -108,6 +108,8 @@ V4L2VideoDecoder::V4L2VideoDecoder(
   DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_checker_);
   VLOGF(2);
 
+  base::PlatformThread::SetName("V4L2VideoDecoderThread");
+
   weak_this_for_polling_ = weak_this_for_polling_factory_.GetWeakPtr();
 }
 
