@@ -626,7 +626,8 @@ void SafeBrowsingNavigationObserverManager::RecordNewWebContents(
         source_render_frame_host->GetLastCommittedURL());
     nav_event->source_main_frame_url =
         SafeBrowsingNavigationObserverManager::ClearURLRef(
-            source_render_frame_host->GetMainFrame()->GetLastCommittedURL());
+            source_render_frame_host->GetOutermostMainFrame()
+                ->GetLastCommittedURL());
   }
   nav_event->source_tab_id =
       sessions::SessionTabHelper::IdForTab(source_web_contents);

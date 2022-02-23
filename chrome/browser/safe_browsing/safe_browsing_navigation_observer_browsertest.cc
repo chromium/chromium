@@ -3166,7 +3166,7 @@ IN_PROC_BROWSER_TEST_F(SBNavigationObserverPortalBrowserTest,
                         false,        // has_server_redirect
                         nav_list->GetNavigationEvent(1));
   VerifyNavigationEvent(GURL(),       // source_url
-                        GURL(),       // source_main_frame_url
+                        initial_url,  // source_main_frame_url
                         landing_url,  // original_request_url
                         landing_url,  // destination_url
                         false,        // is_user_initiated,
@@ -3185,7 +3185,7 @@ IN_PROC_BROWSER_TEST_F(SBNavigationObserverPortalBrowserTest,
 
   ReferrerChain referrer_chain;
   IdentifyReferrerChainForDownload(GetDownload(), &referrer_chain);
-  EXPECT_EQ(3, referrer_chain.size());
+  EXPECT_EQ(2, referrer_chain.size());
   VerifyReferrerChainEntry(
       download_url,                   // url
       GURL(),                         // main_frame_url
@@ -3202,23 +3202,12 @@ IN_PROC_BROWSER_TEST_F(SBNavigationObserverPortalBrowserTest,
       GURL(),                            // main_frame_url
       ReferrerChainEntry::LANDING_PAGE,  // type
       test_server_ip,                    // ip_address
-      initial_url,                       // referrer_url
-      GURL(),                            // referrer_main_frame_url
-      true,                              // is_retargeting
+      GURL(),                            // referrer_url
+      initial_url,                       // referrer_main_frame_url
+      false,                             // is_retargeting
       std::vector<GURL>(),               // server redirects
-      ReferrerChainEntry::RENDERER_INITIATED_WITH_USER_GESTURE,
+      ReferrerChainEntry::RENDERER_INITIATED_WITHOUT_USER_GESTURE,
       referrer_chain.Get(1));
-  VerifyReferrerChainEntry(
-      initial_url,                           // url
-      GURL(),                                // main_frame_url
-      ReferrerChainEntry::LANDING_REFERRER,  // type
-      test_server_ip,                        // ip_address
-      GURL(),                                // referrer_url
-      GURL(),                                // referrer_main_frame_url
-      false,                                 // is_retargeting
-      std::vector<GURL>(),                   // server redirects
-      ReferrerChainEntry::BROWSER_INITIATED,
-      referrer_chain.Get(2));
 }
 
 // Click a link which creates a portal which redirects to the landing page and
@@ -3288,7 +3277,7 @@ IN_PROC_BROWSER_TEST_F(SBNavigationObserverPortalBrowserTest,
                         false,                    // has_server_redirect
                         nav_list->GetNavigationEvent(1));
   VerifyNavigationEvent(GURL(),                   // source_url
-                        GURL(),                   // source_main_frame_url
+                        initial_url,              // source_main_frame_url
                         redirect_to_landing_url,  // original_request_url
                         redirect_to_landing_url,  // destination_url
                         false,                    // is_user_initiated,
@@ -3296,7 +3285,7 @@ IN_PROC_BROWSER_TEST_F(SBNavigationObserverPortalBrowserTest,
                         false,                    // has_server_redirect
                         nav_list->GetNavigationEvent(2));
   VerifyNavigationEvent(redirect_to_landing_url,  // source_url
-                        redirect_to_landing_url,  // source_main_frame_url
+                        initial_url,              // source_main_frame_url
                         landing_url,              // original_request_url
                         landing_url,              // destination_url
                         false,                    // is_user_initiated,
@@ -3315,7 +3304,7 @@ IN_PROC_BROWSER_TEST_F(SBNavigationObserverPortalBrowserTest,
 
   ReferrerChain referrer_chain;
   IdentifyReferrerChainForDownload(GetDownload(), &referrer_chain);
-  EXPECT_EQ(4, referrer_chain.size());
+  EXPECT_EQ(3, referrer_chain.size());
   VerifyReferrerChainEntry(
       download_url,                   // url
       GURL(),                         // main_frame_url
@@ -3333,32 +3322,22 @@ IN_PROC_BROWSER_TEST_F(SBNavigationObserverPortalBrowserTest,
       ReferrerChainEntry::LANDING_PAGE,  // type
       test_server_ip,                    // ip_address
       redirect_to_landing_url,           // referrer_url
-      GURL(),                            // referrer_main_frame_url
+      initial_url,                       // referrer_main_frame_url
       false,                             // is_retargeting
       std::vector<GURL>(),               // server redirects
       ReferrerChainEntry::RENDERER_INITIATED_WITHOUT_USER_GESTURE,
       referrer_chain.Get(1));
   VerifyReferrerChainEntry(
       redirect_to_landing_url,              // url
-      GURL(),                               // main_frame_url
+      initial_url,                          // main_frame_url
       ReferrerChainEntry::CLIENT_REDIRECT,  // type
       test_server_ip,                       // ip_address
-      initial_url,                          // referrer_url
-      GURL(),                               // referrer_main_frame_url
-      true,                                 // is_retargeting
+      GURL(),                               // referrer_url
+      initial_url,                          // referrer_main_frame_url
+      false,                                // is_retargeting
       std::vector<GURL>(),                  // server redirects
-      ReferrerChainEntry::RENDERER_INITIATED_WITH_USER_GESTURE,
+      ReferrerChainEntry::RENDERER_INITIATED_WITHOUT_USER_GESTURE,
       referrer_chain.Get(2));
-  VerifyReferrerChainEntry(initial_url,  // url
-                           GURL(),       // main_frame_url
-                           ReferrerChainEntry::LANDING_REFERRER,  // type
-                           test_server_ip,                        // ip_address
-                           GURL(),               // referrer_url
-                           GURL(),               // referrer_main_frame_url
-                           false,                // is_retargeting
-                           std::vector<GURL>(),  // server redirects
-                           ReferrerChainEntry::BROWSER_INITIATED,
-                           referrer_chain.Get(3));
 }
 
 class SBNavigationObserverOmitNonUserGesturesBrowserTest

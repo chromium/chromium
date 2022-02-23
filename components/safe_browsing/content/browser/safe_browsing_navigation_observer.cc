@@ -326,13 +326,13 @@ void SafeBrowsingNavigationObserver::SetNavigationSourceUrl(
 void SafeBrowsingNavigationObserver::SetNavigationSourceMainFrameUrl(
     content::NavigationHandle* navigation_handle,
     NavigationEvent* nav_event) {
-  if (navigation_handle->IsInMainFrame()) {
+  if (!navigation_handle->GetParentFrameOrOuterDocument()) {
     nav_event->source_main_frame_url = nav_event->source_url;
   } else {
     nav_event->source_main_frame_url =
         SafeBrowsingNavigationObserverManager::ClearURLRef(
-            navigation_handle->GetParentFrame()
-                ->GetMainFrame()
+            navigation_handle->GetParentFrameOrOuterDocument()
+                ->GetOutermostMainFrame()
                 ->GetLastCommittedURL());
   }
 }
