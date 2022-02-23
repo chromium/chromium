@@ -5,8 +5,16 @@
 #ifndef CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_KEY_MANAGEMENT_BROWSER_KEY_ROTATION_LAUNCHER_IMPL_H_
 #define CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_KEY_MANAGEMENT_BROWSER_KEY_ROTATION_LAUNCHER_IMPL_H_
 
+#include <memory>
+#include <string>
+
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/browser/key_rotation_launcher.h"
+
+namespace network {
+class SharedURLLoaderFactory;
+}  // namespace network
 
 namespace policy {
 class BrowserDMTokenStorage;
@@ -19,7 +27,8 @@ class KeyRotationLauncherImpl : public KeyRotationLauncher {
  public:
   KeyRotationLauncherImpl(
       policy::BrowserDMTokenStorage* dm_token_storage,
-      policy::DeviceManagementService* device_management_service);
+      policy::DeviceManagementService* device_management_service,
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
   ~KeyRotationLauncherImpl() override;
 
   // KeyRotationLauncher:
@@ -29,6 +38,7 @@ class KeyRotationLauncherImpl : public KeyRotationLauncher {
  private:
   raw_ptr<policy::BrowserDMTokenStorage> dm_token_storage_;
   raw_ptr<policy::DeviceManagementService> device_management_service_;
+  scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 };
 
 }  // namespace enterprise_connectors

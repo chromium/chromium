@@ -4,6 +4,9 @@
 
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/browser/key_rotation_launcher_impl.h"
 
+#include <string>
+#include <utility>
+
 #include "base/check.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/browser/commands/key_rotation_command.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/browser/commands/key_rotation_command_factory.h"
@@ -18,11 +21,14 @@ namespace enterprise_connectors {
 
 KeyRotationLauncherImpl::KeyRotationLauncherImpl(
     policy::BrowserDMTokenStorage* dm_token_storage,
-    policy::DeviceManagementService* device_management_service)
+    policy::DeviceManagementService* device_management_service,
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
     : dm_token_storage_(dm_token_storage),
-      device_management_service_(device_management_service) {
+      device_management_service_(device_management_service),
+      url_loader_factory_(std::move(url_loader_factory)) {
   DCHECK(dm_token_storage_);
   DCHECK(device_management_service_);
+  DCHECK(url_loader_factory_);
 }
 KeyRotationLauncherImpl::~KeyRotationLauncherImpl() = default;
 
@@ -55,7 +61,8 @@ void KeyRotationLauncherImpl::LaunchKeyRotation(
   std::string dm_server_url = config.GetResourceRequest(false, 0)->url.spec();
 
   KeyRotationCommand::Params params{dm_token.value(), dm_server_url, nonce};
-  auto command = KeyRotationCommandFactory::GetInstance()->CreateCommand();
+  auto command = KeyRotationCommandFactory::GetInstance()->CreateCommand(
+      url_loader_factory_);
   if (!command) {
     // Command can be nullptr if trying to create a key on a unsupported
     // platform.

@@ -7,6 +7,12 @@
 
 #include <memory>
 
+#include "base/memory/scoped_refptr.h"
+
+namespace network {
+class SharedURLLoaderFactory;
+}  // namespace network
+
 namespace enterprise_connectors {
 
 class KeyRotationCommand;
@@ -18,8 +24,10 @@ class KeyRotationCommandFactory {
   static KeyRotationCommandFactory* GetInstance();
 
   // Creates a platform-specific key rotation command
-  // object.
-  virtual std::unique_ptr<KeyRotationCommand> CreateCommand();
+  // object. This object takes in a shared url loader factory as
+  // a parameter, which is used for mojo support in the linux key rotation.
+  virtual std::unique_ptr<KeyRotationCommand> CreateCommand(
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
 
  protected:
   static void SetFactoryInstanceForTesting(KeyRotationCommandFactory* factory);

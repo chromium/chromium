@@ -72,6 +72,7 @@ source_set("unit_tests") {
     "//components/enterprise:test_support",
     "//components/policy/core/common",
     "//components/policy/core/common:test_support",
+    "//services/network:test_support",
     "//testing/gmock",
     "//testing/gtest",
   ]

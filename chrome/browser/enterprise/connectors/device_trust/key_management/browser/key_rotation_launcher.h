@@ -8,7 +8,12 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/scoped_refptr.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/browser/commands/key_rotation_command.h"
+
+namespace network {
+class SharedURLLoaderFactory;
+}  // namespace network
 
 namespace policy {
 class BrowserDMTokenStorage;
@@ -21,7 +26,8 @@ class KeyRotationLauncher {
  public:
   static std::unique_ptr<KeyRotationLauncher> Create(
       policy::BrowserDMTokenStorage* dm_token_storage,
-      policy::DeviceManagementService* device_management_service);
+      policy::DeviceManagementService* device_management_service,
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
 
   virtual ~KeyRotationLauncher() = default;
 

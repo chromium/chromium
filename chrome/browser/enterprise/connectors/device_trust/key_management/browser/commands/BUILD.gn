@@ -12,8 +12,10 @@ source_set("commands") {
 
   sources = [ "key_rotation_command_factory.cc" ]
 
+  public_deps = [ "//base" ]
+
   deps = [
-    "//base",
+    "//services/network/public/cpp",
     "//third_party/abseil-cpp:absl",
   ]
 
@@ -26,6 +28,19 @@ source_set("commands") {
       "//chrome/install_static:install_static_util",
       "//chrome/installer/util:with_no_strings",
       "//google_update",
+    ]
+  }
+  if (is_linux) {
+    sources += [
+      "linux_key_rotation_command.cc",
+      "linux_key_rotation_command.h",
+    ]
+    deps += [
+      "//chrome/browser/enterprise/connectors/device_trust/key_management/common:constants",
+      "//mojo/core:shared_library",
+      "//services/device/public/mojom",
+      "//services/network/public/cpp",
+      "//services/network/public/mojom",
     ]
   }
 }
@@ -44,6 +59,7 @@ source_set("test_support") {
 
   public_deps = [
     ":commands",
+    "//services/network/public/cpp",
     "//testing/gmock",
     "//third_party/abseil-cpp:absl",
   ]
@@ -63,6 +79,20 @@ source_set("unit_tests") {
       "//base",
       "//base/test:test_support",
       "//chrome/installer/util:constants",
+      "//testing/gtest",
+    ]
+  }
+
+  if (is_linux) {
+    sources = [ "linux_key_rotation_command_unittest.cc" ]
+
+    deps = [
+      ":commands",
+      ":test_support",
+      "//base",
+      "//base/test:test_support",
+      "//chrome/browser/enterprise/connectors/device_trust/key_management/common:constants",
+      "//services/network:test_support",
       "//testing/gtest",
     ]
   }

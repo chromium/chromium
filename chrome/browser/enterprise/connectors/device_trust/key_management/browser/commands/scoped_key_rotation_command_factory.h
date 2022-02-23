@@ -10,6 +10,7 @@
 #include <memory>
 
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/browser/commands/key_rotation_command.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace enterprise_connectors {
@@ -27,7 +28,9 @@ class ScopedKeyRotationCommandFactory : public KeyRotationCommandFactory {
       std::unique_ptr<test::MockKeyRotationCommand> mock_key_rotation_command);
 
   // KeyRotationCommandFactory:
-  std::unique_ptr<KeyRotationCommand> CreateCommand() override;
+  std::unique_ptr<KeyRotationCommand> CreateCommand(
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
+      override;
 
  private:
   std::unique_ptr<test::MockKeyRotationCommand> mock_key_rotation_command_;

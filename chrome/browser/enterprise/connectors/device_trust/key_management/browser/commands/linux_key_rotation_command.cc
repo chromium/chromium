@@ -1,0 +1,157 @@
+// Copyright 2022 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chrome/browser/enterprise/connectors/device_trust/key_management/browser/commands/linux_key_rotation_command.h"
+
+#include <string>
+#include <utility>
+
+#include "base/base64.h"
+#include "base/bind.h"
+#include "base/callback.h"
+#include "base/check.h"
+#include "base/command_line.h"
+#include "base/files/file_path.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/path_service.h"
+#include "base/process/process.h"
+#include "base/rand_util.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/syslog_logging.h"
+#include "base/task/thread_pool.h"
+#include "base/threading/thread_restrictions.h"
+#include "base/time/time.h"
+#include "chrome/browser/enterprise/connectors/device_trust/key_management/common/chrome_management_service_constants.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/platform/platform_channel.h"
+#include "mojo/public/cpp/system/invitation.h"
+#include "mojo/public/cpp/system/message_pipe.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
+
+namespace enterprise_connectors {
+
+namespace {
+
+constexpr char kBinaryFileName[] = "chrome-management-service";
+
+// Builds the command line needed to launch the service. The  `params` specify
+// `the needed KeyRotationCommandParams. pipe_name` is the name of the pipe to
+//  connect to.
+base::CommandLine GetCommandLine(const KeyRotationCommand::Params& params,
+                                 const std::string& pipe_name) {
+  base::FilePath exe_path;
+  auto success = base::PathService::Get(base::DIR_EXE, &exe_path);
+  DCHECK(success);
+  exe_path = exe_path.Append(kBinaryFileName);
+
+  base::CommandLine command_line(exe_path);
+  std::string token_base64;
+  base::Base64Encode(params.dm_token, &token_base64);
+  std::string nonce_base64;
+  base::Base64Encode(params.nonce, &nonce_base64);
+
+  command_line.AppendSwitchNative(
+      chrome_management_service::switches::kRotateDTKey, token_base64);
+  command_line.AppendSwitchNative(
+      chrome_management_service::switches::kDmServerUrl, params.dm_server_url);
+  command_line.AppendSwitchNative(chrome_management_service::switches::kNonce,
+                                  nonce_base64);
+  command_line.AppendSwitchASCII(chrome_management_service::switches::kPipeName,
+                                 pipe_name);
+  return command_line;
+}
+
+// `command_line` is the command line we get from the GetCommandLine function,
+// and `options` are the launch options we need to launch the process.
+base::Process Launch(base::CommandLine& command_line,
+                     base::LaunchOptions& options) {
+  return base::LaunchProcess(command_line, options);
+}
+
+}  // namespace
+
+LinuxKeyRotationCommand::LinuxKeyRotationCommand(
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
+    : LinuxKeyRotationCommand(base::BindRepeating(&Launch),
+                              std::move(url_loader_factory)) {}
+
+LinuxKeyRotationCommand::LinuxKeyRotationCommand(
+    LaunchCallback launch_callback,
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
+    : launch_callback_(std::move(launch_callback)),
+      url_loader_factory_(std::move(url_loader_factory)) {
+  DCHECK(launch_callback_);
+  DCHECK(url_loader_factory_);
+}
+
+LinuxKeyRotationCommand::~LinuxKeyRotationCommand() = default;
+
+void LinuxKeyRotationCommand::Trigger(const Params& params, Callback callback) {
+  DCHECK(callback);
+
+  auto pipe_name = base::NumberToString(base::RandUint64());
+  auto command_line = GetCommandLine(params, pipe_name);
+
+  mojo::OutgoingInvitation invitation;
+  mojo::ScopedMessagePipeHandle pipe = invitation.AttachMessagePipe(pipe_name);
+  auto pending_receiver =
+      mojo::PendingReceiver<network::mojom::URLLoaderFactory>(std::move(pipe));
+  url_loader_factory_->Clone(std::move(pending_receiver));
+
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE,
+      {base::MayBlock(), base::TaskPriority::USER_BLOCKING,
+       base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
+      base::BindOnce(
+          [](base::CommandLine command_line, LaunchCallback launch_callback,
+             mojo::OutgoingInvitation invitation) {
+            mojo::PlatformChannel channel;
+            base::LaunchOptions options;
+            channel.PrepareToPassRemoteEndpoint(&options, &command_line);
+
+            base::Process process = launch_callback.Run(command_line, options);
+            if (!process.IsValid())
+              return KeyRotationCommand::Status::FAILED;
+
+            channel.RemoteProcessLaunchAttempted();
+            mojo::OutgoingInvitation::Send(std::move(invitation),
+                                           process.Handle(),
+                                           channel.TakeLocalEndpoint());
+
+            base::ScopedAllowBaseSyncPrimitives allow_wait;
+            int exit_code = -1;
+            if (!process.WaitForExitWithTimeout(base::Minutes(5), &exit_code)) {
+              SYSLOG(ERROR) << "Device trust key rotation timed out.";
+              return KeyRotationCommand::Status::TIMED_OUT;
+            }
+
+            switch (exit_code) {
+              case chrome_management_service::kSuccess:
+                return KeyRotationCommand::Status::SUCCEEDED;
+
+              case chrome_management_service::kStoreKeyFailure:
+                SYSLOG(ERROR) << "Device trust key rotation failed. Could not "
+                                 "write to signing key storage.";
+                break;
+              case chrome_management_service::kUploadKeyFailure:
+                SYSLOG(ERROR) << "Device trust key rotation failed. Could not "
+                                 "send public key to DM server.";
+                break;
+              case chrome_management_service::kInstanceAlreadyRunning:
+                SYSLOG(ERROR) << "Device trust key rotation failed. Another "
+                                 "instance of the "
+                                 "ChromeManagementService is running.";
+                break;
+              default:
+                SYSLOG(ERROR)
+                    << "Device trust key rotation failed with exit code: "
+                    << exit_code;
+            }
+            return KeyRotationCommand::Status::FAILED;
+          },
+          command_line, launch_callback_, std::move(invitation)),
+      std::move(callback));
+}
+
+}  // namespace enterprise_connectors
