@@ -103,8 +103,6 @@ void OAuthMultiloginTokenFetcher::OnGetTokenFailure(
   if (error.IsTransientError() &&
       retried_requests_.find(account_id) == retried_requests_.end()) {
     retried_requests_.insert(account_id);
-    UMA_HISTOGRAM_ENUMERATION("Signin.GetAccessTokenRetry", error.state(),
-                              GoogleServiceAuthError::NUM_STATES);
     EraseRequest(request);
     // Fetching fresh access tokens requires network.
     signin_client_->DelayNetworkCall(

@@ -452,15 +452,6 @@ prefs when the profile is loaded.  -->
   </summary>
 </histogram>
 
-<histogram name="Signin.GetAccessTokenRetry" enum="GoogleServiceAuthError"
-    expires_after="2022-01-23">
-  <owner>droger@chromium.org</owner>
-  <owner>msarda@chromium.org</owner>
-  <summary>
-    Retry reason of failed access token requests during Chrome reconcile.
-  </summary>
-</histogram>
-
 <histogram name="Signin.Intercept.AccountInfoFetchDuration" units="ms"
     expires_after="2022-05-01">
   <owner>alexilin@chromium.org</owner>
