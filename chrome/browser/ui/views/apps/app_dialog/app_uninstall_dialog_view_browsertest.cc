@@ -33,6 +33,7 @@
 #include "content/public/test/test_navigation_observer.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/views/widget/any_widget_observer.h"
 
 class AppUninstallDialogViewBrowserTest : public DialogBrowserTest {
  public:
@@ -204,6 +205,50 @@ IN_PROC_BROWSER_TEST_F(WebAppsUninstallDialogViewBrowserTest, InvokeUi_Accept) {
 IN_PROC_BROWSER_TEST_F(WebAppsUninstallDialogViewBrowserTest, InvokeUi_Cancel) {
   CreateApp();
   ShowUi("cancel");
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppsUninstallDialogViewBrowserTest,
+                       ExistingDialogFocus) {
+  CreateApp();
+
+  auto* app_service_proxy =
+      apps::AppServiceProxyFactory::GetForProfile(browser()->profile());
+  ASSERT_TRUE(app_service_proxy);
+
+  // First call to uninstall should return true in callback for successful.
+  {
+    base::RunLoop run_loop;
+    app_service_proxy->UninstallForTesting(
+        app_id_, nullptr, base::BindLambdaForTesting([&](bool dialog_opened) {
+          EXPECT_TRUE(dialog_opened);
+          run_loop.Quit();
+        }));
+    run_loop.Run();
+  }
+
+  views::Widget* first_widget = ActiveView()->GetWidget();
+  first_widget->Hide();
+  EXPECT_FALSE(first_widget->IsVisible());
+
+  // Second call should be unsuccessful.
+  {
+    base::RunLoop run_loop;
+
+    // The shown widget should be the one opened in the first call to uninstall.
+    views::AnyWidgetObserver observer(views::test::AnyWidgetTestPasskey{});
+    observer.set_shown_callback(
+        base::BindLambdaForTesting([&](views::Widget* widget) {
+          EXPECT_EQ(first_widget, widget);
+          EXPECT_TRUE(first_widget->IsVisible());
+        }));
+    app_service_proxy->UninstallForTesting(
+        app_id_, nullptr, base::BindLambdaForTesting([&](bool dialog_opened) {
+          EXPECT_FALSE(dialog_opened);
+          run_loop.Quit();
+        }));
+
+    run_loop.Run();
+  }
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppsUninstallDialogViewBrowserTest,

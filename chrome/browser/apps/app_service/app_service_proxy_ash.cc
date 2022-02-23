@@ -279,7 +279,12 @@ void AppServiceProxyAsh::UninstallImpl(
     return;
   }
 
-  if (uninstall_dialogs_.find(app_id) != uninstall_dialogs_.end()) {
+  // If the dialog exists for the app id, we bring the dialog to the front
+  auto it = uninstall_dialogs_.find(app_id);
+  if (it != uninstall_dialogs_.end()) {
+    if (it->second->GetWidget()) {
+      it->second->GetWidget()->Show();
+    }
     if (!callback.is_null()) {
       std::move(callback).Run(false);
     }

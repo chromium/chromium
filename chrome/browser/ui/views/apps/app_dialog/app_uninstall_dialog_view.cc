@@ -81,7 +81,7 @@ std::u16string GetWindowTitleForApp(Profile* profile,
 }  // namespace
 
 // static
-void apps::UninstallDialog::UiBase::Create(
+views::Widget* apps::UninstallDialog::UiBase::Create(
     Profile* profile,
     apps::mojom::AppType app_type,
     const std::string& app_id,
@@ -89,11 +89,12 @@ void apps::UninstallDialog::UiBase::Create(
     gfx::ImageSkia image,
     gfx::NativeWindow parent_window,
     apps::UninstallDialog* uninstall_dialog) {
-  constrained_window::CreateBrowserModalDialogViews(
+  views::Widget* widget = constrained_window::CreateBrowserModalDialogViews(
       (new AppUninstallDialogView(profile, app_type, app_id, app_name, image,
                                   uninstall_dialog)),
-      parent_window)
-      ->Show();
+      parent_window);
+  widget->Show();
+  return widget;
 }
 
 AppUninstallDialogView::AppUninstallDialogView(
