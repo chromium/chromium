@@ -61,6 +61,7 @@ source_set("unit_tests") {
     "fast_pair_data_parser_unittest.cc",
     "fast_pair_decryption_unittest.cc",
     "quick_pair_process_manager_impl_unittest.cc",
+    "quick_pair_process_shutdown_controller_unittest.cc",
     "quick_pair_process_unittest.cc",
   ]
 
