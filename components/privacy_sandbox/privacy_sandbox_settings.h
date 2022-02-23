@@ -148,6 +148,10 @@ class PrivacySandboxSettings : public KeyedService {
   // appropriate context specific check.
   bool IsTrustTokensAllowed();
 
+  // Returns whether the Privacy Sandbox is being restricted by the associated
+  // delegate. Forwards directly to the corresponding delegate function.
+  bool IsPrivacySandboxRestricted();
+
   // Called when there's a broad cookies clearing action. For example, this
   // should be called on "Clear browsing data", but shouldn't be called on the
   // Clear-Site-Data header, as it's restricted to a specific site.

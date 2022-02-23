@@ -335,6 +335,10 @@ bool PrivacySandboxSettings::IsTrustTokensAllowed() {
   return IsPrivacySandboxEnabled();
 }
 
+bool PrivacySandboxSettings::IsPrivacySandboxRestricted() {
+  return delegate_->IsPrivacySandboxRestricted();
+}
+
 void PrivacySandboxSettings::OnCookiesCleared() {
   SetFlocDataAccessibleFromNow(/*reset_calculate_timer=*/false);
 }
