@@ -35,20 +35,28 @@ CssSelectorFragmentAnchor* CssSelectorFragmentAnchor::TryCreate(
 
   Element* anchor_node = nullptr;
   for (CssSelectorDirective* directive : css_selector_directives) {
-    if (!directive->value().IsEmpty())
+    if (!directive->value().IsEmpty() && !directive->IsConsumed()) {
       anchor_node = doc.RootNode().QuerySelector(directive->value());
-    // TODO(crbug.com/1265721): this will ignore directives after the first
-    // successful match, for now we are just scrolling the element into view,
-    // later when we add highlighting, it's good considering highlighting all
-    // matching elements.
-    if (anchor_node)
-      break;
+
+      // TODO(crbug.com/1265721): this will ignore directives after the first
+      // successful match, for now we are just scrolling the element into view,
+      // later when we add highlighting, it's good considering highlighting all
+      // matching elements.
+      if (anchor_node)
+        break;
+    }
   }
 
-  doc.SetCSSTarget(anchor_node);
+  doc.SetSelectorFragmentAnchorCSSTarget(anchor_node);
 
   if (!anchor_node)
     return nullptr;
+
+  // On the same page navigation i.e. <a href="#element>Go to element</a>
+  // we don't want to create a CssSelectorFragmentAnchor again,
+  // we want to create an ElementFragmentAnchor instead, so consume all of them
+  for (CssSelectorDirective* directive : css_selector_directives)
+    directive->SetConsumed(true);
 
   return MakeGarbageCollected<CssSelectorFragmentAnchor>(*anchor_node, frame,
                                                          should_scroll);
@@ -62,18 +70,6 @@ CssSelectorFragmentAnchor::CssSelectorFragmentAnchor(Element& anchor_node,
 
 bool CssSelectorFragmentAnchor::InvokeSelector() {
   DCHECK(anchor_node_);
-
-  // if user has not scrolled yet, do the necessary work to scroll anchor_node_
-  // into view, otherwise we are done scrolling.
-  if (!user_scrolled_ && should_scroll_ &&
-      frame_->GetDocument()->IsLoadCompleted()) {
-    ScrollIntoViewOptions* options = ScrollIntoViewOptions::Create();
-    options->setBlock("center");
-    options->setInlinePosition("nearest");
-    ScrollElementIntoViewWithOptions(anchor_node_, options);
-    should_scroll_ = false;
-  }
-
   return true;
 }
 

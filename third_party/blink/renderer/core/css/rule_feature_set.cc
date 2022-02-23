@@ -126,6 +126,7 @@ bool SupportsInvalidation(CSSSelector::PseudoType type) {
     case CSSSelector::kPseudoAfter:
     case CSSSelector::kPseudoMarker:
     case CSSSelector::kPseudoModal:
+    case CSSSelector::kPseudoSelectorFragmentAnchor:
     case CSSSelector::kPseudoBackdrop:
     case CSSSelector::kPseudoLang:
     case CSSSelector::kPseudoDir:
@@ -635,6 +636,7 @@ InvalidationSet* RuleFeatureSet::InvalidationSetForSimpleSelector(
       case CSSSelector::kPseudoHasDatalist:
       case CSSSelector::kPseudoMultiSelectFocus:
       case CSSSelector::kPseudoModal:
+      case CSSSelector::kPseudoSelectorFragmentAnchor:
         return &EnsurePseudoInvalidationSet(selector.GetPseudoType(), type,
                                             position);
       case CSSSelector::kPseudoFirstOfType:

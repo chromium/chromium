@@ -219,6 +219,7 @@ class CORE_EXPORT CSSSelector {
     kPseudoAfter,
     kPseudoMarker,
     kPseudoModal,
+    kPseudoSelectorFragmentAnchor,
     kPseudoBackdrop,
     kPseudoLang,
     kPseudoNot,

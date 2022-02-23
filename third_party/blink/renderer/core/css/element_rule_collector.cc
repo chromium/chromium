@@ -51,6 +51,7 @@
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/html/html_document.h"
+#include "third_party/blink/renderer/core/page/scrolling/fragment_anchor.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 
 namespace blink {
@@ -479,6 +480,11 @@ void ElementRuleCollector::CollectMatchingRules(
   if (SelectorChecker::MatchesFocusPseudoClass(element)) {
     CollectMatchingRulesForList(match_request.rule_set->FocusPseudoClassRules(),
                                 match_request, checker);
+  }
+  if (SelectorChecker::MatchesSelectorFragmentAnchorPseudoClass(element)) {
+    CollectMatchingRulesForList(
+        match_request.rule_set->SelectorFragmentAnchorRules(), match_request,
+        checker);
   }
   if (SelectorChecker::MatchesFocusVisiblePseudoClass(element)) {
     CollectMatchingRulesForList(

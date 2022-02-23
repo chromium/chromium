@@ -385,6 +385,7 @@ const char* PseudoTypeToString(CSSSelector::PseudoType pseudo_type) {
     DEFINE_STRING_MAPPING(PseudoVideoPersistentAncestor)
     DEFINE_STRING_MAPPING(PseudoXrOverlay)
     DEFINE_STRING_MAPPING(PseudoTargetText)
+    DEFINE_STRING_MAPPING(PseudoSelectorFragmentAnchor)
     DEFINE_STRING_MAPPING(PseudoModal)
     DEFINE_STRING_MAPPING(PseudoHighlight)
     DEFINE_STRING_MAPPING(PseudoSpellingError)

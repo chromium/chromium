@@ -203,6 +203,7 @@ class CORE_EXPORT SelectorChecker {
   static bool MatchesFocusPseudoClass(const Element&);
   static bool MatchesFocusVisiblePseudoClass(const Element&);
   static bool MatchesSpatialNavigationInterestPseudoClass(const Element&);
+  static bool MatchesSelectorFragmentAnchorPseudoClass(const Element&);
 
  private:
   // Does the work of checking whether the simple selector and element pointed

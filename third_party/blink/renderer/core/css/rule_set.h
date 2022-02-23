@@ -301,6 +301,11 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
     DCHECK(!pending_rules_);
     return &visited_dependent_rules_;
   }
+  const HeapVector<Member<const RuleData>>* SelectorFragmentAnchorRules()
+      const {
+    DCHECK(!pending_rules_);
+    return &selector_fragment_anchor_rules_;
+  }
   const HeapVector<Member<StyleRulePage>>& PageRules() const {
     DCHECK(!pending_rules_);
     return page_rules_;
@@ -471,6 +476,7 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
   HeapVector<Member<const RuleData>> part_pseudo_rules_;
   HeapVector<Member<const RuleData>> slotted_pseudo_element_rules_;
   HeapVector<Member<const RuleData>> visited_dependent_rules_;
+  HeapVector<Member<const RuleData>> selector_fragment_anchor_rules_;
   RuleFeatureSet features_;
   HeapVector<Member<StyleRulePage>> page_rules_;
   HeapVector<Member<StyleRuleFontFace>> font_face_rules_;

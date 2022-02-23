@@ -181,6 +181,7 @@ static void ExtractSelectorValues(const CSSSelector* selector,
         case CSSSelector::kPseudoHostContext:
         case CSSSelector::kPseudoSpatialNavigationInterest:
         case CSSSelector::kPseudoSlotted:
+        case CSSSelector::kPseudoSelectorFragmentAnchor:
           pseudo_type = selector->GetPseudoType();
           break;
         case CSSSelector::kPseudoWebKitCustomElement:
@@ -287,6 +288,9 @@ bool RuleSet::FindBestRuleSetAndAdd(const CSSSelector& component,
       return true;
     case CSSSelector::kPseudoFocus:
       focus_pseudo_class_rules_.push_back(rule_data);
+      return true;
+    case CSSSelector::kPseudoSelectorFragmentAnchor:
+      selector_fragment_anchor_rules_.push_back(rule_data);
       return true;
     case CSSSelector::kPseudoFocusVisible:
       focus_visible_pseudo_class_rules_.push_back(rule_data);
@@ -593,6 +597,7 @@ void RuleSet::CompactRules() {
   link_pseudo_class_rules_.ShrinkToFit();
   cue_pseudo_rules_.ShrinkToFit();
   focus_pseudo_class_rules_.ShrinkToFit();
+  selector_fragment_anchor_rules_.ShrinkToFit();
   focus_visible_pseudo_class_rules_.ShrinkToFit();
   spatial_navigation_interest_class_rules_.ShrinkToFit();
   universal_rules_.ShrinkToFit();
@@ -645,6 +650,7 @@ void RuleSet::AssertRuleListsSorted() const {
   DCHECK(IsRuleListSorted(link_pseudo_class_rules_));
   DCHECK(IsRuleListSorted(cue_pseudo_rules_));
   DCHECK(IsRuleListSorted(focus_pseudo_class_rules_));
+  DCHECK(IsRuleListSorted(selector_fragment_anchor_rules_));
   DCHECK(IsRuleListSorted(focus_visible_pseudo_class_rules_));
   DCHECK(IsRuleListSorted(spatial_navigation_interest_class_rules_));
   DCHECK(IsRuleListSorted(universal_rules_));
@@ -728,6 +734,7 @@ void RuleSet::Trace(Visitor* visitor) const {
   visitor->Trace(link_pseudo_class_rules_);
   visitor->Trace(cue_pseudo_rules_);
   visitor->Trace(focus_pseudo_class_rules_);
+  visitor->Trace(selector_fragment_anchor_rules_);
   visitor->Trace(focus_visible_pseudo_class_rules_);
   visitor->Trace(spatial_navigation_interest_class_rules_);
   visitor->Trace(universal_rules_);

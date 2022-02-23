@@ -66,6 +66,7 @@
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/page/focus_controller.h"
 #include "third_party/blink/renderer/core/page/page.h"
+#include "third_party/blink/renderer/core/page/scrolling/fragment_anchor.h"
 #include "third_party/blink/renderer/core/page/spatial_navigation.h"
 #include "third_party/blink/renderer/core/page/spatial_navigation_controller.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
@@ -993,6 +994,8 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
         return false;
       return selector.MatchNth(NthIndexCache::NthLastOfTypeIndex(element));
     }
+    case CSSSelector::kPseudoSelectorFragmentAnchor:
+      return MatchesSelectorFragmentAnchorPseudoClass(element);
     case CSSSelector::kPseudoTarget:
       probe::ForcePseudoState(&element, CSSSelector::kPseudoTarget,
                               &force_pseudo_state);
@@ -1572,6 +1575,16 @@ bool SelectorChecker::CheckScrollbarPseudoClass(
     default:
       return false;
   }
+}
+
+bool SelectorChecker::MatchesSelectorFragmentAnchorPseudoClass(
+    const Element& element) {
+  return element == element.GetDocument().CssTarget() &&
+         element.GetDocument().View()->GetFragmentAnchor() &&
+         element.GetDocument()
+             .View()
+             ->GetFragmentAnchor()
+             ->IsSelectorFragmentAnchor();
 }
 
 bool SelectorChecker::MatchesFocusPseudoClass(const Element& element) {

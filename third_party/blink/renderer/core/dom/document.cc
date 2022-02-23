@@ -5028,10 +5028,24 @@ Element* Document::SequentialFocusNavigationStartingPoint(
   return nullptr;
 }
 
+void Document::SetSelectorFragmentAnchorCSSTarget(Element* new_target) {
+  SetCSSTarget(new_target);
+  if (css_target_) {
+    css_target_is_selector_fragment_ = true;
+    css_target_->PseudoStateChanged(CSSSelector::kPseudoSelectorFragmentAnchor);
+  }
+}
+
 void Document::SetCSSTarget(Element* new_target) {
-  if (css_target_)
+  if (css_target_) {
     css_target_->PseudoStateChanged(CSSSelector::kPseudoTarget);
+    if (css_target_is_selector_fragment_) {
+      css_target_->PseudoStateChanged(
+          CSSSelector::kPseudoSelectorFragmentAnchor);
+    }
+  }
   css_target_ = new_target;
+  css_target_is_selector_fragment_ = false;
   if (css_target_)
     css_target_->PseudoStateChanged(CSSSelector::kPseudoTarget);
 }

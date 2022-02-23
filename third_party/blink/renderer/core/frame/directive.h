@@ -25,6 +25,8 @@ class Directive : public ScriptWrappable {
   ~Directive() override;
 
   Type GetType() const;
+  bool IsConsumed() { return consumed_; }
+  void SetConsumed(bool consumed) { consumed_ = consumed; }
   void Trace(Visitor*) const override;
 
   // Web-exposed Directive interface.
@@ -37,6 +39,7 @@ class Directive : public ScriptWrappable {
 
  private:
   Type type_;
+  bool consumed_ = false;
 };
 
 }  // namespace blink

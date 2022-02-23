@@ -355,6 +355,7 @@ PseudoId CSSSelector::GetPseudoId(PseudoType type) {
     case kPseudoVideoPersistentAncestor:
     case kPseudoXrOverlay:
     case kPseudoModal:
+    case kPseudoSelectorFragmentAnchor:
     case kPseudoHas:
     case kPseudoRelativeLeftmost:
       return kPseudoIdNone;
@@ -385,6 +386,8 @@ const static NameToPseudoStruct kPseudoTypeWithoutArgumentsMap[] = {
     {"-internal-multi-select-focus", CSSSelector::kPseudoMultiSelectFocus},
     {"-internal-popup-open", CSSSelector::kPseudoPopupOpen},
     {"-internal-relative-leftmost", CSSSelector::kPseudoRelativeLeftmost},
+    {"-internal-selector-fragment-anchor",
+     CSSSelector::kPseudoSelectorFragmentAnchor},
     {"-internal-shadow-host-has-appearance",
      CSSSelector::kPseudoHostHasAppearance},
     {"-internal-spatial-navigation-focus",
@@ -765,6 +768,7 @@ void CSSSelector::UpdatePseudoType(const AtomicString& value,
     case kPseudoRequired:
     case kPseudoRoot:
     case kPseudoScope:
+    case kPseudoSelectorFragmentAnchor:
     case kPseudoSingleButton:
     case kPseudoStart:
     case kPseudoState:

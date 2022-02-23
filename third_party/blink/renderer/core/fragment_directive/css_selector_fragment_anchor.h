@@ -44,6 +44,8 @@ class CORE_EXPORT CssSelectorFragmentAnchor final
 
   void Trace(Visitor*) const override;
 
+  bool IsSelectorFragmentAnchor() override { return true; }
+
  private:
   Member<Element> anchor_node_;
 };
