@@ -60,8 +60,8 @@ android_library("autofill_assistant_public_impl_java") {
 
 android_resources("java_resources") {
   sources = [
-    "internal/java/res/drawable-v24/autofill_assistant_actions_gradient.xml",
-    "internal/java/res/drawable/autofill_assistant_actions_gradient.xml",
+    "internal/java/res/drawable-v23/autofill_assistant_actions_gradient.xml",
+    "internal/java/res/drawable-v31/autofill_assistant_actions_gradient.xml",
     "internal/java/res/drawable/autofill_assistant_circle_background.xml",
     "internal/java/res/drawable/autofill_assistant_default_details.xml",
     "internal/java/res/drawable/autofill_assistant_details_bg.xml",
