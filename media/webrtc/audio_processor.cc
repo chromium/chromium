@@ -188,15 +188,35 @@ class AudioProcessorCaptureFifo {
   bool data_available_;
 };
 
-AudioProcessor::AudioProcessor(
+// static
+std::unique_ptr<AudioProcessor> AudioProcessor::Create(
     DeliverProcessedAudioCallback deliver_processed_audio_callback,
     LogCallback log_callback,
     const AudioProcessingSettings& settings,
     const media::AudioParameters& input_format,
-    const media::AudioParameters& output_format)
-    : settings_(settings),
-      webrtc_audio_processing_(
-          media::CreateWebRtcAudioProcessingModule(settings)),
+    const media::AudioParameters& output_format) {
+  log_callback.Run(base::StringPrintf(
+      "AudioProcessor::Create({multi_channel_capture_processing=%s})",
+      settings.multi_channel_capture_processing ? "true" : "false"));
+
+  rtc::scoped_refptr<webrtc::AudioProcessing> webrtc_audio_processing =
+      media::CreateWebRtcAudioProcessingModule(settings);
+
+  return std::make_unique<AudioProcessor>(
+      std::move(deliver_processed_audio_callback), std::move(log_callback),
+      input_format, output_format, std::move(webrtc_audio_processing),
+      settings.stereo_mirroring);
+}
+
+AudioProcessor::AudioProcessor(
+    DeliverProcessedAudioCallback deliver_processed_audio_callback,
+    LogCallback log_callback,
+    const media::AudioParameters& input_format,
+    const media::AudioParameters& output_format,
+    rtc::scoped_refptr<webrtc::AudioProcessing> webrtc_audio_processing,
+    bool stereo_mirroring)
+    : webrtc_audio_processing_(webrtc_audio_processing),
+      stereo_mirroring_(stereo_mirroring),
       log_callback_(std::move(log_callback)),
       input_format_(input_format),
       output_format_(output_format),
@@ -205,14 +225,10 @@ AudioProcessor::AudioProcessor(
       audio_delay_stats_reporter_(kBuffersPerSecond) {
   DCHECK(deliver_processed_audio_callback_);
   DCHECK(log_callback_);
-  SendLogMessage(base::StringPrintf(
-      "%s({multi_channel_capture_processing=%s})", __func__,
-      settings_.multi_channel_capture_processing ? "true" : "false"));
 
   CHECK(input_format_.IsValid());
   CHECK(output_format_.IsValid());
-  if (settings.NeedWebrtcAudioProcessing()) {
-    DCHECK(!!webrtc_audio_processing_);
+  if (webrtc_audio_processing_) {
     DCHECK_EQ(output_format_.sample_rate() / 100,
               output_format_.frames_per_buffer());
   }
@@ -224,9 +240,8 @@ AudioProcessor::AudioProcessor(
   // If audio processing is needed, rebuffer to 10 ms. If not, rebuffer to the
   // requested output format.
   const int fifo_output_frames_per_buffer =
-      settings_.NeedWebrtcAudioProcessing()
-          ? input_format_.sample_rate() / 100
-          : output_format_.frames_per_buffer();
+      webrtc_audio_processing_ ? input_format_.sample_rate() / 100
+                               : output_format_.frames_per_buffer();
   SendLogMessage(
       base::StringPrintf("%s => (FIFO: fifo_output_frames_per_buffer=%d)",
                          __func__, fifo_output_frames_per_buffer));
@@ -279,7 +294,7 @@ void AudioProcessor::ProcessCapturedAudio(const media::AudioBus& audio_source,
     }
 
     // Swap channels before interleaving the data.
-    if (settings_.stereo_mirroring &&
+    if (stereo_mirroring_ &&
         output_format_.channel_layout() == media::CHANNEL_LAYOUT_STEREO) {
       // Swap the first and second channels.
       output_bus->bus()->SwapChannels(0, 1);

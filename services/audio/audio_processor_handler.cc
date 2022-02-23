@@ -18,7 +18,7 @@ AudioProcessorHandler::AudioProcessorHandler(
     DeliverProcessedAudioCallback deliver_processed_audio_callback,
     mojo::PendingReceiver<media::mojom::AudioProcessorControls>
         controls_receiver)
-    : audio_processor_(std::make_unique<media::AudioProcessor>(
+    : audio_processor_(media::AudioProcessor::Create(
           std::move(deliver_processed_audio_callback),
           std::move(log_callback),
           settings,

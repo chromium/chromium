@@ -63,13 +63,23 @@ class COMPONENT_EXPORT(MEDIA_WEBRTC) AudioProcessor {
   // |log_callback| is used for logging messages on the owning sequence.
   // |input_format| specifies the format of the incoming capture data.
   // |output_format| specifies the output format. If
-  // |settings.NeedWebrtcAudioProcessing()| is true, then the output must be in
+  // |settings|.NeedWebrtcAudioProcessing() is true, then the output must be in
   // 10 ms chunks.
-  AudioProcessor(DeliverProcessedAudioCallback deliver_processed_audio_callback,
-                 LogCallback log_callback,
-                 const AudioProcessingSettings& settings,
-                 const media::AudioParameters& input_format,
-                 const media::AudioParameters& output_format);
+  static std::unique_ptr<AudioProcessor> Create(
+      DeliverProcessedAudioCallback deliver_processed_audio_callback,
+      LogCallback log_callback,
+      const AudioProcessingSettings& settings,
+      const media::AudioParameters& input_format,
+      const media::AudioParameters& output_format);
+
+  // See Create() for details.
+  AudioProcessor(
+      DeliverProcessedAudioCallback deliver_processed_audio_callback,
+      LogCallback log_callback,
+      const media::AudioParameters& input_format,
+      const media::AudioParameters& output_format,
+      rtc::scoped_refptr<webrtc::AudioProcessing> webrtc_audio_processing,
+      bool stereo_mirroring);
 
   ~AudioProcessor();
 
@@ -82,7 +92,7 @@ class COMPONENT_EXPORT(MEDIA_WEBRTC) AudioProcessor {
   // depending on internal FIFO size and content. |num_preferred_channels| is
   // the highest number of channels that any sink is interested in. This can be
   // different from the number of channels in the output format. A value of -1
-  // means an unknown number. If |settings_.multi_channel_capture_processing| is
+  // means an unknown number. If |settings|.multi_channel_capture_processing is
   // true, the number of channels of the output of the Audio Processing Module
   // (APM) will be equal to the highest observed value of num_preferred_channels
   // as long as it does not exceed the number of channels of the output format.
@@ -155,7 +165,7 @@ class COMPONENT_EXPORT(MEDIA_WEBRTC) AudioProcessor {
   // |num_preferred_channels| is the highest number of channels that any sink is
   // interested in. This can be different from the number of channels in the
   // output format. A value of -1 means an unknown number. If
-  // |settings_.multi_channel_capture_processing| is true, the number of
+  // |settings|.multi_channel_capture_processing is true, the number of
   // channels of the output of the Audio Processing Module (APM) will be equal
   // to the highest observed value of num_preferred_channels as long as it does
   // not exceed the number of channels of the output format.
@@ -173,11 +183,13 @@ class COMPONENT_EXPORT(MEDIA_WEBRTC) AudioProcessor {
 
   SEQUENCE_CHECKER(owning_sequence_);
 
-  const AudioProcessingSettings settings_;
-
   // The WebRTC audio processing module (APM). Performs the bulk of the audio
   // processing and resampling algorithms.
   const rtc::scoped_refptr<webrtc::AudioProcessing> webrtc_audio_processing_;
+
+  // If true, then the audio processor should swap the left and right channel of
+  // captured stereo audio.
+  const bool stereo_mirroring_;
 
   // Members accessed only by the owning sequence:
 
@@ -215,7 +227,7 @@ class COMPONENT_EXPORT(MEDIA_WEBRTC) AudioProcessor {
   // Observed maximum number of preferred output channels. Used for not
   // performing audio processing on more channels than the sinks are interested
   // in. The value is a maximum over time and can increase but never decrease.
-  // If |settings_.multi_channel_capture_processing| is true, Audio Processing
+  // If |settings|.multi_channel_capture_processing is true, Audio Processing
   // Module (APM) will output max_num_preferred_output_channels_ channels as
   // long as it does not exceed the number of channels of the output format.
   int max_num_preferred_output_channels_ = 1;

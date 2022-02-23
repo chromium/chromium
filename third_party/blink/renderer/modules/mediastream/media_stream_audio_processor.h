@@ -85,7 +85,7 @@ class MODULES_EXPORT MediaStreamAudioProcessor
 
   // Accessor to check if WebRTC audio processing is enabled or not.
   bool has_webrtc_audio_processing() const {
-    return audio_processor_.has_webrtc_audio_processing();
+    return audio_processor_->has_webrtc_audio_processing();
   }
 
   // Instructs the Audio Processing Module (APM) to reduce its complexity when
@@ -123,7 +123,7 @@ class MODULES_EXPORT MediaStreamAudioProcessor
 
   absl::optional<webrtc::AudioProcessing::Config>
   GetAudioProcessingModuleConfigForTesting() const {
-    return audio_processor_.GetAudioProcessingModuleConfigForTesting();
+    return audio_processor_->GetAudioProcessingModuleConfigForTesting();
   }
 
   // This method is called on the libjingle thread.
@@ -131,7 +131,7 @@ class MODULES_EXPORT MediaStreamAudioProcessor
   AudioProcessorStatistics GetStats(bool has_remote_tracks) override;
 
   // Handles audio processing, rebuffering, and input/output formatting.
-  media::AudioProcessor audio_processor_;
+  const std::unique_ptr<media::AudioProcessor> audio_processor_;
 
   // Manages subscription to the playout reference audio. Must be outlived by
   // |audio_processor_|.
