@@ -623,7 +623,7 @@ crbug.com/1294071 [ android-pie android-shield-android-tv ] conformance/glsl/bug
 # Flakily returning RGBA(0,0,0,0) for all pixels
 crbug.com/1295386 [ android android-shield-android-tv ] conformance/textures/misc/texture-corner-case-videos.html [ RetryOnFailure ]
 crbug.com/1295386 [ android android-shield-android-tv ] conformance/textures/video/tex-2d-luminance_alpha-luminance_alpha-unsigned_byte.html [ Failure ]
-crbug.com/1295386 [ android android-shield-android-tv ] conformance/textures/video/tex-2d-rgba-rgba-unsigned_short_5_5_5_1.html [ RetryOnFailure ]
+crbug.com/1295386 [ android android-shield-android-tv ] conformance/textures/video/tex-2d-rgba-rgba-unsigned_short_5_5_5_1.html [ Failure ]
 
 # Pixel 4
 crbug.com/1175223 [ android android-pixel-4 angle-opengles passthrough ] conformance/extensions/angle-instanced-arrays-out-of-bounds.html [ Failure ]
