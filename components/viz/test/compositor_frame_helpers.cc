@@ -22,6 +22,10 @@ constexpr gfx::Rect kDefaultDamageRect(0, 0);
 }  // namespace
 
 RenderPassBuilder::RenderPassBuilder(CompositorRenderPassId id,
+                                     const gfx::Size& output_size)
+    : RenderPassBuilder(id, gfx::Rect(output_size)) {}
+
+RenderPassBuilder::RenderPassBuilder(CompositorRenderPassId id,
                                      const gfx::Rect& output_rect)
     : pass_(CompositorRenderPass::Create()) {
   pass_->SetNew(id, output_rect, output_rect, gfx::Transform());

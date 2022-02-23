@@ -49,11 +49,12 @@ struct TextureQuadParams {
 };
 
 // Helper to build a CompositorRenderPass and add quads to it. By default the
-// CompositoRenderPass will have full damage. Functionality is broken down into
+// CompositorRenderPass will have full damage. Functionality is broken down into
 // methods to modify render pass attributes, methods to add new quads and
 // methods to modify SharedQuadState for the last quad added.
 class RenderPassBuilder {
  public:
+  RenderPassBuilder(CompositorRenderPassId id, const gfx::Size& output_size);
   RenderPassBuilder(CompositorRenderPassId id, const gfx::Rect& output_rect);
   RenderPassBuilder(const RenderPassBuilder& other) = delete;
   RenderPassBuilder& operator=(const RenderPassBuilder& other) = delete;
