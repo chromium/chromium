@@ -31,6 +31,7 @@ suite('SitePermissions', function() {
     document.body.innerHTML = '';
     element = document.createElement('extensions-site-permissions');
     element.delegate = delegate;
+    element.enableEnhancedSiteControls = true;
     document.body.appendChild(element);
   });
 

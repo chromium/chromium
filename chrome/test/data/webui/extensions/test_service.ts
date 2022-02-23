@@ -37,6 +37,7 @@ export class TestService extends TestBrowserProxy implements ServiceInterface {
       'getFilteredExtensionActivityLog',
       'getProfileConfiguration',
       'getUserSiteSettings',
+      'getUserSiteSettingsChangedTarget',
       'inspectItemView',
       'installDroppedFile',
       'loadUnpacked',

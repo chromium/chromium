@@ -14,7 +14,7 @@ import {assert} from 'chrome://resources/js/assert_ts.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {SitePermissionsDelegate} from './site_permissions.js';
+import {SiteSettingsDelegate} from './site_settings_mixin.js';
 
 // A RegExp to roughly match acceptable patterns entered by the user.
 // exec'ing() this RegExp will match the following groups:
@@ -85,7 +85,7 @@ export class SitePermissionsEditDialogElement extends PolymerElement {
     };
   }
 
-  delegate: SitePermissionsDelegate;
+  delegate: SiteSettingsDelegate;
   siteSet: chrome.developerPrivate.UserSiteSet;
   siteToEdit: string|null;
   private site_: string;

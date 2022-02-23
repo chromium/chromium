@@ -13,7 +13,7 @@ import {KeyboardShortcutDelegate} from './keyboard_shortcut_delegate.js';
 import {LoadErrorDelegate} from './load_error.js';
 import {Dialog, navigation, Page} from './navigation_helper.js';
 import {PackDialogDelegate} from './pack_dialog.js';
-import {SitePermissionsDelegate} from './site_permissions.js';
+import {SiteSettingsDelegate} from './site_settings_mixin.js';
 import {ToolbarDelegate} from './toolbar.js';
 
 export interface ServiceInterface extends ActivityLogDelegate,
@@ -21,7 +21,7 @@ export interface ServiceInterface extends ActivityLogDelegate,
                                           ErrorPageDelegate, ItemDelegate,
                                           KeyboardShortcutDelegate,
                                           LoadErrorDelegate, PackDialogDelegate,
-                                          SitePermissionsDelegate,
+                                          SiteSettingsDelegate,
                                           ToolbarDelegate {
   notifyDragInstallInProgress(): void;
   loadUnpackedFromDrag(): Promise<boolean>;
@@ -33,8 +33,6 @@ export interface ServiceInterface extends ActivityLogDelegate,
   getProfileConfiguration(): Promise<chrome.developerPrivate.ProfileInfo>;
   getExtensionsInfo(): Promise<Array<chrome.developerPrivate.ExtensionInfo>>;
   getExtensionSize(id: string): Promise<string>;
-  getUserSiteSettingsChangedTarget():
-      ChromeEvent<(settings: chrome.developerPrivate.UserSiteSettings) => void>;
 }
 
 export class Service implements ServiceInterface {

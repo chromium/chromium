@@ -18,7 +18,7 @@ import {assert} from 'chrome://resources/js/assert_ts.js';
 import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.m.js';
 import {DomRepeatEvent, html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {SitePermissionsDelegate} from './site_permissions.js';
+import {SiteSettingsDelegate} from './site_settings_mixin.js';
 import {getFaviconUrl} from './url_util.js';
 
 export interface ExtensionsSitePermissionsListElement {
@@ -60,7 +60,7 @@ export class ExtensionsSitePermissionsListElement extends PolymerElement {
     };
   }
 
-  delegate: SitePermissionsDelegate;
+  delegate: SiteSettingsDelegate;
   header: string;
   siteSet: chrome.developerPrivate.UserSiteSet;
   sites: Array<string>;
