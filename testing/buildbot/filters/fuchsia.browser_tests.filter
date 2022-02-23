@@ -581,7 +581,6 @@
 -JourneyLoggerTest.GooglePaymentApp
 -JourneyLoggerTest.UKMCheckoutEventsNotRecordedForAppOriginWhenNoWindowShown
 -JourneyLoggerTest.UKMTransactionAmountRecorded
--KioskModeTest.EnableKioskModeTest
 -LargeStickyAdViolationBrowserTest.LargeStickyAd_AdInterventionTriggered
 -LargeStickyAdViolationBrowserTest.NoLargeStickyAd_AdInterventionNotTriggered
 -LargeStickyAdViolationBrowserTestWithoutEnforcement.LargeStickyAd_NoAdInterventionTriggered
@@ -652,7 +651,6 @@
 -MimeHandlerViewTest.RejectPointLock
 -MimeHandlerViewTest.SingleRequest
 -MimeHandlerViewTest.TargetBlankAnchor
--MouseLockControllerTest.Mouse*
 -MyIpAddressProxyScriptBrowserTest.Verify
 -NavigationConsumingTest.NavigationConsumesUserGesture_Fullscreen
 -NavigationPredictorBrowserTest.ClickAnchorElement

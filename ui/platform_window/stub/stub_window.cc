@@ -59,7 +59,13 @@ bool StubWindow::HasCapture() const {
   return false;
 }
 
-void StubWindow::ToggleFullscreen() {}
+void StubWindow::ToggleFullscreen() {
+  if (window_state_ == ui::PlatformWindowState::kUnknown) {
+    window_state_ = ui::PlatformWindowState::kFullScreen;
+  } else {
+    window_state_ = ui::PlatformWindowState::kUnknown;
+  }
+}
 
 void StubWindow::Maximize() {}
 
@@ -68,7 +74,7 @@ void StubWindow::Minimize() {}
 void StubWindow::Restore() {}
 
 PlatformWindowState StubWindow::GetPlatformWindowState() const {
-  return PlatformWindowState::kUnknown;
+  return window_state_;
 }
 
 void StubWindow::Activate() {

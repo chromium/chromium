@@ -62,6 +62,7 @@ class STUB_WINDOW_EXPORT StubWindow : public PlatformWindow {
 
   raw_ptr<PlatformWindowDelegate> delegate_;
   gfx::Rect bounds_;
+  ui::PlatformWindowState window_state_ = ui::PlatformWindowState::kUnknown;
 };
 
 }  // namespace ui
