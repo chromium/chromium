@@ -65,15 +65,23 @@ class SimpleFeature : public Feature {
                                     Context context,
                                     Platform platform,
                                     int context_id) const {
-    return IsAvailableToContext(extension, context, GURL(), platform,
-                                context_id);
+    return IsAvailableToContextImpl(extension, context, GURL(), platform,
+                                    context_id, true);
   }
   Availability IsAvailableToContext(const Extension* extension,
                                     Context context,
                                     const GURL& url,
                                     int context_id) const {
-    return IsAvailableToContext(extension, context, url, GetCurrentPlatform(),
-                                context_id);
+    return IsAvailableToContextImpl(extension, context, url,
+                                    GetCurrentPlatform(), context_id, true);
+  }
+  Availability IsAvailableToContext(const Extension* extension,
+                                    Context context,
+                                    const GURL& url,
+                                    Platform platform,
+                                    int context_id) const {
+    return IsAvailableToContextImpl(extension, context, url, platform,
+                                    context_id, true);
   }
 
   // extension::Feature:
@@ -83,11 +91,6 @@ class SimpleFeature : public Feature {
                                      int manifest_version,
                                      Platform platform,
                                      int context_id) const override;
-  Availability IsAvailableToContext(const Extension* extension,
-                                    Context context,
-                                    const GURL& url,
-                                    Platform platform,
-                                    int context_id) const override;
   Availability IsAvailableToEnvironment(int context_id) const override;
   bool IsInternal() const override;
   bool IsIdInBlocklist(const HashedExtensionId& hashed_id) const override;
@@ -197,6 +200,14 @@ class SimpleFeature : public Feature {
   Availability CreateAvailability(AvailabilityResult result,
                                   mojom::FeatureSessionType session_type) const;
 
+  Availability IsAvailableToContextImpl(
+      const Extension* extension,
+      Context context,
+      const GURL& url,
+      Platform platform,
+      int context_id,
+      bool check_developer_mode) const override;
+
  private:
   friend struct FeatureComparator;
   FRIEND_TEST_ALL_PREFIXES(FeatureProviderTest, ManifestFeatureTypes);
@@ -206,6 +217,14 @@ class SimpleFeature : public Feature {
 
   // Holds String to Enum value mappings.
   struct Mappings;
+
+  static Feature::Availability IsAvailableToContextForBind(
+      const Extension* extension,
+      Feature::Context context,
+      const GURL& url,
+      Feature::Platform platform,
+      int context_id,
+      const Feature* feature);
 
   static bool IsIdInList(const HashedExtensionId& hashed_id,
                          const std::vector<std::string>& list);
@@ -229,7 +248,8 @@ class SimpleFeature : public Feature {
       Platform platform,
       version_info::Channel channel,
       mojom::FeatureSessionType session_type,
-      int context_id) const;
+      int context_id,
+      bool check_developer_mode) const;
 
   // Returns the availability of the feature with respect to a given extension's
   // properties.

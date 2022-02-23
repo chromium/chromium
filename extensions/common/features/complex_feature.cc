@@ -56,20 +56,22 @@ Feature::Availability ComplexFeature::IsAvailableToManifest(
   return first_availability;
 }
 
-Feature::Availability ComplexFeature::IsAvailableToContext(
+Feature::Availability ComplexFeature::IsAvailableToContextImpl(
     const Extension* extension,
     Context context,
     const GURL& url,
     Platform platform,
-    int context_id) const {
-  Feature::Availability first_availability = features_[0]->IsAvailableToContext(
-      extension, context, url, platform, context_id);
+    int context_id,
+    bool check_developer_mode) const {
+  Feature::Availability first_availability =
+      features_[0]->IsAvailableToContextImpl(extension, context, url, platform,
+                                             context_id, check_developer_mode);
   if (first_availability.is_available())
     return first_availability;
 
   for (auto it = features_.cbegin() + 1; it != features_.cend(); ++it) {
-    Availability availability = (*it)->IsAvailableToContext(
-        extension, context, url, platform, context_id);
+    Availability availability = (*it)->IsAvailableToContextImpl(
+        extension, context, url, platform, context_id, check_developer_mode);
     if (availability.is_available())
       return availability;
   }

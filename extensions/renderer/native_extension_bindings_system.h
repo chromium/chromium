@@ -115,6 +115,12 @@ class NativeExtensionBindingsSystem {
   static void BindingAccessor(v8::Local<v8::Name> name,
                               const v8::PropertyCallbackInfo<v8::Value>& info);
 
+  // Callback for accessing a restricted extension API. Access to the API is
+  // restricted to the developer mode only.
+  static void ThrowDeveloperModeRestrictedError(
+      v8::Local<v8::Name> name,
+      const v8::PropertyCallbackInfo<v8::Value>& info);
+
   // Creates and returns the API binding for the given |name|.
   static v8::Local<v8::Object> GetAPIHelper(v8::Local<v8::Context> context,
                                             v8::Local<v8::String> name);

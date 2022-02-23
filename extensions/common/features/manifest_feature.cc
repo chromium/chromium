@@ -15,14 +15,15 @@ ManifestFeature::ManifestFeature() {
 ManifestFeature::~ManifestFeature() {
 }
 
-Feature::Availability ManifestFeature::IsAvailableToContext(
+Feature::Availability ManifestFeature::IsAvailableToContextImpl(
     const Extension* extension,
     Feature::Context context,
     const GURL& url,
     Feature::Platform platform,
-    int context_id) const {
-  Availability availability = SimpleFeature::IsAvailableToContext(
-      extension, context, url, platform, context_id);
+    int context_id,
+    bool check_developer_mode) const {
+  Availability availability = SimpleFeature::IsAvailableToContextImpl(
+      extension, context, url, platform, context_id, check_developer_mode);
   if (!availability.is_available())
     return availability;
 

@@ -18,11 +18,14 @@ class ManifestFeature : public SimpleFeature {
   // that a permission or manifest feature can declare dependency on other
   // manifest features.
 
-  Feature::Availability IsAvailableToContext(const Extension* extension,
-                                             Feature::Context context,
-                                             const GURL& url,
-                                             Feature::Platform platform,
-                                             int context_id) const override;
+ protected:
+  Feature::Availability IsAvailableToContextImpl(
+      const Extension* extension,
+      Feature::Context context,
+      const GURL& url,
+      Feature::Platform platform,
+      int context_id,
+      bool check_developer_mode) const override;
 };
 
 }  // namespace extensions

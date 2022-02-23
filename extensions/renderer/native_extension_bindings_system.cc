@@ -11,6 +11,7 @@
 #include "base/command_line.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_piece.h"
+#include "base/strings/stringprintf.h"
 #include "base/timer/elapsed_timer.h"
 #include "components/crx_file/id_util.h"
 #include "content/public/common/content_switches.h"
@@ -507,6 +508,15 @@ void NativeExtensionBindingsSystem::UpdateBindingsForContext(
     return success.IsJust() && success.FromJust();
   };
 
+  auto set_restricted_accessor = [chrome, isolate,
+                                  v8_context](base::StringPiece accessor_name) {
+    v8::Local<v8::String> api_name =
+        gin::StringToSymbol(isolate, accessor_name);
+    v8::Maybe<bool> success = chrome->SetLazyDataProperty(
+        v8_context, api_name, &ThrowDeveloperModeRestrictedError, api_name);
+    return success.IsJust() && success.FromJust();
+  };
+
   bool is_webpage = false;
   switch (context->context_type()) {
     case Feature::UNSPECIFIED_CONTEXT:
@@ -571,6 +581,23 @@ void NativeExtensionBindingsSystem::UpdateBindingsForContext(
         GetFirstDifferentAPIName(feature, base::StringPiece());
     last_accessor = accessor_name;
     if (!set_accessor(accessor_name)) {
+      LOG(ERROR) << "Failed to create API on Chrome object.";
+      return;
+    }
+  }
+
+  FeatureCache::FeatureNameVector dev_mode_features =
+      feature_cache_.GetDeveloperModeRestrictedFeatures(
+          context->context_type(), context->extension(), context->url());
+
+  for (const std::string& feature : dev_mode_features) {
+    base::StringPiece accessor_name =
+        GetFirstDifferentAPIName(feature, base::StringPiece());
+    // This code only works for restricting top-level features to developer
+    // mode. For sub-features, this would result in overwriting the accessor
+    // for the root API object and restricting the whole API.
+    DCHECK_EQ(accessor_name, feature);
+    if (!set_restricted_accessor(accessor_name)) {
       LOG(ERROR) << "Failed to create API on Chrome object.";
       return;
     }
@@ -658,6 +685,18 @@ void NativeExtensionBindingsSystem::BindingAccessor(
   v8::Local<v8::Object> binding = GetAPIHelper(context, api_name);
   if (!binding.IsEmpty())
     info.GetReturnValue().Set(binding);
+}
+
+void NativeExtensionBindingsSystem::ThrowDeveloperModeRestrictedError(
+    v8::Local<v8::Name> name,
+    const v8::PropertyCallbackInfo<v8::Value>& info) {
+  v8::Isolate* isolate = info.GetIsolate();
+  isolate->ThrowException(v8::Exception::Error(gin::StringToV8(
+      isolate,
+      base::StringPrintf(
+          "The '%s' API is only available for users in developer mode.",
+          gin::V8ToString(isolate, info.Data()).c_str()))));
+  return;
 }
 
 // static
