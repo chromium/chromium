@@ -21,7 +21,8 @@ chrome.tabs.getCurrent(function(tab) {
                     url: url,
                     type: 'websocket',
                     frameUrl: 'unknown frame URL',
-                    initiator: getDomain(initiators.WEB_INITIATED)
+                    initiator: getDomain(initiators.WEB_INITIATED),
+                    documentId: 1
                   },
                   retval: {cancel: true}
                 },
@@ -34,7 +35,8 @@ chrome.tabs.getCurrent(function(tab) {
                     type: 'websocket',
                     fromCache: false,
                     initiator: getDomain(initiators.WEB_INITIATED),
-                    error: 'net::ERR_BLOCKED_BY_CLIENT'
+                    error: 'net::ERR_BLOCKED_BY_CLIENT',
+                    documentId: 1
                   }
                 },
               ],

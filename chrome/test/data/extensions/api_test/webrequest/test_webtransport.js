@@ -15,6 +15,7 @@ chrome.tabs.getCurrent(function(tab) {
           const url = `https://localhost:${testWebTransportPort}/echo`;
           const frameId = hasFrame ? 0 : -1;
           const tabId = hasFrame ? 0 : -1;
+          const documentId = hasFrame ? 1 : undefined;
           expect(
               [
                 // events
@@ -28,7 +29,8 @@ chrome.tabs.getCurrent(function(tab) {
                     frameUrl: url,
                     frameId: frameId,
                     tabId: tabId,
-                    initiator: getDomain(initiators.WEB_INITIATED)
+                    initiator: getDomain(initiators.WEB_INITIATED),
+                    documentId: documentId
                   },
                 },
                 {
@@ -41,6 +43,7 @@ chrome.tabs.getCurrent(function(tab) {
                     frameId: frameId,
                     tabId: tabId,
                     initiator: getDomain(initiators.WEB_INITIATED),
+                    documentId: documentId
                   },
                 },
                 {
@@ -53,6 +56,7 @@ chrome.tabs.getCurrent(function(tab) {
                     frameId: frameId,
                     tabId: tabId,
                     initiator: getDomain(initiators.WEB_INITIATED),
+                    documentId: documentId
                   },
                 },
                 {
@@ -66,7 +70,8 @@ chrome.tabs.getCurrent(function(tab) {
                     tabId: tabId,
                     statusCode: 200,
                     statusLine: 'HTTP/1.1 200',
-                    initiator: getDomain(initiators.WEB_INITIATED)
+                    initiator: getDomain(initiators.WEB_INITIATED),
+                    documentId: documentId
                   },
                 },
                 {
@@ -82,6 +87,7 @@ chrome.tabs.getCurrent(function(tab) {
                     statusLine: 'HTTP/1.1 200',
                     fromCache: false,
                     initiator: getDomain(initiators.WEB_INITIATED),
+                    documentId: documentId
                   },
                 },
                 {
@@ -97,6 +103,7 @@ chrome.tabs.getCurrent(function(tab) {
                     statusLine: 'HTTP/1.1 200',
                     fromCache: false,
                     initiator: getDomain(initiators.WEB_INITIATED),
+                    documentId: documentId
                   },
                 },
               ],
@@ -121,6 +128,7 @@ chrome.tabs.getCurrent(function(tab) {
           const url = `https://localhost:${testWebTransportPort}/echo`;
           const frameId = hasFrame ? 0 : -1;
           const tabId = hasFrame ? 0 : -1;
+          const documentId = hasFrame ? 1 : undefined;
 
           expect(
               [
@@ -135,7 +143,8 @@ chrome.tabs.getCurrent(function(tab) {
                     frameId: frameId,
                     tabId: tabId,
                     frameUrl: url,
-                    initiator: getDomain(initiators.WEB_INITIATED)
+                    initiator: getDomain(initiators.WEB_INITIATED),
+                    documentId: documentId
                   },
                   retval: {cancel: true}
                 },
@@ -150,7 +159,8 @@ chrome.tabs.getCurrent(function(tab) {
                     tabId: tabId,
                     fromCache: false,
                     initiator: getDomain(initiators.WEB_INITIATED),
-                    error: 'net::ERR_BLOCKED_BY_CLIENT'
+                    error: 'net::ERR_BLOCKED_BY_CLIENT',
+                    documentId: documentId
                   }
                 },
               ],
@@ -170,6 +180,7 @@ chrome.tabs.getCurrent(function(tab) {
           const url = `https://localhost:${testWebTransportPort}/invalid`;
           const frameId = hasFrame ? 0 : -1;
           const tabId = hasFrame ? 0 : -1;
+          const documentId = hasFrame ? 1 : undefined;
           expect(
               [
                 // events
@@ -183,7 +194,8 @@ chrome.tabs.getCurrent(function(tab) {
                     frameId: frameId,
                     tabId: tabId,
                     frameUrl: url,
-                    initiator: getDomain(initiators.WEB_INITIATED)
+                    initiator: getDomain(initiators.WEB_INITIATED),
+                    documentId: documentId
                   },
                 },
                 {
@@ -195,7 +207,8 @@ chrome.tabs.getCurrent(function(tab) {
                     type: 'webtransport',
                     frameId: frameId,
                     tabId: tabId,
-                    initiator: getDomain(initiators.WEB_INITIATED)
+                    initiator: getDomain(initiators.WEB_INITIATED),
+                    documentId: documentId
                   },
                   retval: {cancel: true}
                 },
@@ -210,7 +223,8 @@ chrome.tabs.getCurrent(function(tab) {
                     tabId: tabId,
                     fromCache: false,
                     initiator: getDomain(initiators.WEB_INITIATED),
-                    error: 'net::ERR_BLOCKED_BY_CLIENT'
+                    error: 'net::ERR_BLOCKED_BY_CLIENT',
+                    documentId: documentId
                   }
                 },
               ],
@@ -283,6 +297,7 @@ chrome.tabs.getCurrent(function(tab) {
           const url = `https://localhost:${testWebTransportPort}/invalid`;
           const frameId = hasFrame ? 0 : -1;
           const tabId = hasFrame ? 0 : -1;
+          const documentId = hasFrame ? 1 : undefined;
 
           expect(
               [
@@ -297,7 +312,8 @@ chrome.tabs.getCurrent(function(tab) {
                     frameId: frameId,
                     tabId: tabId,
                     frameUrl: url,
-                    initiator: getDomain(initiators.WEB_INITIATED)
+                    initiator: getDomain(initiators.WEB_INITIATED),
+                    documentId: documentId
                   },
                 },
                 {
@@ -309,7 +325,8 @@ chrome.tabs.getCurrent(function(tab) {
                     type: 'webtransport',
                     frameId: frameId,
                     tabId: tabId,
-                    initiator: getDomain(initiators.WEB_INITIATED)
+                    initiator: getDomain(initiators.WEB_INITIATED),
+                    documentId: documentId
                   },
                 },
                 {
@@ -321,7 +338,8 @@ chrome.tabs.getCurrent(function(tab) {
                     type: 'webtransport',
                     frameId: frameId,
                     tabId: tabId,
-                    initiator: getDomain(initiators.WEB_INITIATED)
+                    initiator: getDomain(initiators.WEB_INITIATED),
+                    documentId: documentId
                   },
                 },
                 {
@@ -335,7 +353,8 @@ chrome.tabs.getCurrent(function(tab) {
                     tabId: tabId,
                     fromCache: false,
                     initiator: getDomain(initiators.WEB_INITIATED),
-                    error: 'net::ERR_METHOD_NOT_SUPPORTED'
+                    error: 'net::ERR_METHOD_NOT_SUPPORTED',
+                    documentId: documentId
                   }
                 },
               ],
@@ -361,6 +380,7 @@ chrome.tabs.getCurrent(function(tab) {
           const url = `https://localhost:${testWebTransportPort}/echo`;
           const frameId = hasFrame ? 0 : -1;
           const tabId = hasFrame ? 0 : -1;
+          const documentId = hasFrame ? 1 : undefined;
 
           expect(
               [
@@ -375,7 +395,8 @@ chrome.tabs.getCurrent(function(tab) {
                     frameId: frameId,
                     tabId: tabId,
                     frameUrl: url,
-                    initiator: getDomain(initiators.WEB_INITIATED)
+                    initiator: getDomain(initiators.WEB_INITIATED),
+                    documentId: documentId
                   },
                 },
                 {
@@ -387,7 +408,8 @@ chrome.tabs.getCurrent(function(tab) {
                     type: 'webtransport',
                     frameId: frameId,
                     tabId: tabId,
-                    initiator: getDomain(initiators.WEB_INITIATED)
+                    initiator: getDomain(initiators.WEB_INITIATED),
+                    documentId: documentId
                   },
                 },
                 {
@@ -399,7 +421,8 @@ chrome.tabs.getCurrent(function(tab) {
                     type: 'webtransport',
                     frameId: frameId,
                     tabId: tabId,
-                    initiator: getDomain(initiators.WEB_INITIATED)
+                    initiator: getDomain(initiators.WEB_INITIATED),
+                    documentId: documentId
                   },
                 },
                 {
@@ -413,7 +436,8 @@ chrome.tabs.getCurrent(function(tab) {
                     tabId: tabId,
                     statusCode: 200,
                     statusLine: 'HTTP/1.1 200',
-                    initiator: getDomain(initiators.WEB_INITIATED)
+                    initiator: getDomain(initiators.WEB_INITIATED),
+                    documentId: documentId
                   },
                   retval: {cancel: true}
                 },
@@ -428,7 +452,8 @@ chrome.tabs.getCurrent(function(tab) {
                     tabId: tabId,
                     fromCache: false,
                     initiator: getDomain(initiators.WEB_INITIATED),
-                    error: 'net::ERR_BLOCKED_BY_CLIENT'
+                    error: 'net::ERR_BLOCKED_BY_CLIENT',
+                    documentId: documentId
                   }
                 },
               ],

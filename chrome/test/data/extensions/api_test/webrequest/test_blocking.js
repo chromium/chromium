@@ -577,7 +577,8 @@ runTests([
             tabId: 1,
             type: "xmlhttprequest",
             frameUrl: "unknown frame URL",
-            initiator: getDomain(initiators.WEB_INITIATED)
+            initiator: getDomain(initiators.WEB_INITIATED),
+            documentId: 1
           }
         },
         {
@@ -587,7 +588,8 @@ runTests([
             url: getURLSetHeader(),
             tabId: 1,
             type: "xmlhttprequest",
-            initiator: getDomain(initiators.WEB_INITIATED)
+            initiator: getDomain(initiators.WEB_INITIATED),
+            documentId: 1
           }
         },
         { label: "x-onSendHeaders",
@@ -596,7 +598,8 @@ runTests([
             url: getURLSetHeader(),
             tabId: 1,
             type: "xmlhttprequest",
-            initiator: getDomain(initiators.WEB_INITIATED)
+            initiator: getDomain(initiators.WEB_INITIATED),
+            documentId: 1
           }
         },
         {
@@ -609,7 +612,8 @@ runTests([
             statusLine: "HTTP/1.1 200 OK",
             statusCode: 200,
             responseHeadersExist: true,
-            initiator: getDomain(initiators.WEB_INITIATED)
+            initiator: getDomain(initiators.WEB_INITIATED),
+            documentId: 1
           },
           retval_function: function(name, details) {
             responseHeaders = details.responseHeaders;
@@ -637,7 +641,8 @@ runTests([
             type: "xmlhttprequest",
             ip: "127.0.0.1",
             initiator: getDomain(initiators.WEB_INITIATED),
-            responseHeadersExist: true
+            responseHeadersExist: true,
+            documentId: 1
           }
         },
         { label: "x-onCompleted",
@@ -651,7 +656,8 @@ runTests([
             type: "xmlhttprequest",
             ip: "127.0.0.1",
             initiator: getDomain(initiators.WEB_INITIATED),
-            responseHeadersExist: true
+            responseHeadersExist: true,
+            documentId: 1
           }
         },
       ],
@@ -720,7 +726,8 @@ runTests([
             tabId: 1,
             type: "xmlhttprequest",
             frameUrl: "unknown frame URL",
-            initiator: getDomain(initiators.WEB_INITIATED)
+            initiator: getDomain(initiators.WEB_INITIATED),
+            documentId: 1
           }
         },
         {
@@ -730,7 +737,8 @@ runTests([
             url: getURLNonUTF8SetHeader(),
             tabId: 1,
             type: "xmlhttprequest",
-            initiator: getDomain(initiators.WEB_INITIATED)
+            initiator: getDomain(initiators.WEB_INITIATED),
+            documentId: 1
           }
         },
         { label: "x-onSendHeaders",
@@ -739,7 +747,8 @@ runTests([
             url: getURLNonUTF8SetHeader(),
             tabId: 1,
             type: "xmlhttprequest",
-            initiator: getDomain(initiators.WEB_INITIATED)
+            initiator: getDomain(initiators.WEB_INITIATED),
+            documentId: 1
           }
         },
         {
@@ -752,7 +761,8 @@ runTests([
             statusLine: "HTTP/1.1 200 OK",
             statusCode: 200,
             responseHeadersExist: true,
-            initiator: getDomain(initiators.WEB_INITIATED)
+            initiator: getDomain(initiators.WEB_INITIATED),
+            documentId: 1
           },
           retval_function: function(name, details) {
             responseHeaders = details.responseHeaders;
@@ -787,7 +797,8 @@ runTests([
             type: "xmlhttprequest",
             ip: "127.0.0.1",
             initiator: getDomain(initiators.WEB_INITIATED),
-            responseHeadersExist: true
+            responseHeadersExist: true,
+            documentId: 1
           }
         },
         { label: "x-onCompleted",
@@ -801,7 +812,8 @@ runTests([
             type: "xmlhttprequest",
             ip: "127.0.0.1",
             initiator: getDomain(initiators.WEB_INITIATED),
-            responseHeadersExist: true
+            responseHeadersExist: true,
+            documentId: 1
           }
         },
       ],
@@ -963,7 +975,8 @@ runTests([
             url: getURLHttpXHRData(),
             tabId: 1,
             type: "xmlhttprequest",
-            initiator: getDomain(initiators.WEB_INITIATED)
+            initiator: getDomain(initiators.WEB_INITIATED),
+            documentId: 1
           }
         },
         { label: "x-onResponseStarted",
@@ -976,7 +989,8 @@ runTests([
             tabId: 1,
             type: "xmlhttprequest",
             ip: "127.0.0.1",
-            initiator: getDomain(initiators.WEB_INITIATED)
+            initiator: getDomain(initiators.WEB_INITIATED),
+            documentId: 1
             // Request to chrome-extension:// url has no IP.
           }
         },
@@ -990,7 +1004,8 @@ runTests([
             tabId: 1,
             type: "xmlhttprequest",
             ip: "127.0.0.1",
-            initiator: getDomain(initiators.WEB_INITIATED)
+            initiator: getDomain(initiators.WEB_INITIATED),
+            documentId: 1
             // Request to chrome-extension:// url has no IP.
           }
         },
@@ -1084,7 +1099,8 @@ runTests([
             tabId: 1,
             type: "xmlhttprequest",
             frameUrl: "unknown frame URL",
-            initiator: getDomain(initiators.WEB_INITIATED)
+            initiator: getDomain(initiators.WEB_INITIATED),
+            documentId: 1
           }
         },
         {
@@ -1094,7 +1110,8 @@ runTests([
             url: getURLHttpXHRData(),
             tabId: 1,
             type: "xmlhttprequest",
-            initiator: getDomain(initiators.WEB_INITIATED)
+            initiator: getDomain(initiators.WEB_INITIATED),
+            documentId: 1
           }
         },
         { label: "x-onSendHeaders",
@@ -1103,7 +1120,8 @@ runTests([
             url: getURLHttpXHRData(),
             tabId: 1,
             type: "xmlhttprequest",
-            initiator: getDomain(initiators.WEB_INITIATED)
+            initiator: getDomain(initiators.WEB_INITIATED),
+            documentId: 1
           }
         },
         { label: "x-onResponseStarted",
@@ -1117,7 +1135,8 @@ runTests([
             type: "xmlhttprequest",
             ip: "127.0.0.1",
             // Request to chrome-extension:// url has no IP.
-            initiator: getDomain(initiators.WEB_INITIATED)
+            initiator: getDomain(initiators.WEB_INITIATED),
+            documentId: 1
           }
         },
         {
@@ -1129,7 +1148,8 @@ runTests([
             type: "xmlhttprequest",
             statusLine: "HTTP/1.1 200 OK",
             statusCode: 200,
-            initiator: getDomain(initiators.WEB_INITIATED)
+            initiator: getDomain(initiators.WEB_INITIATED),
+            documentId: 1
           }
         },
         { label: "x-onCompleted",
@@ -1143,7 +1163,8 @@ runTests([
             type: "xmlhttprequest",
             ip: "127.0.0.1",
             // Request to chrome-extension:// url has no IP.
-            initiator: getDomain(initiators.WEB_INITIATED)
+            initiator: getDomain(initiators.WEB_INITIATED),
+            documentId: 1
           }
         },
         { label: "b-onBeforeRequest",
@@ -1262,7 +1283,8 @@ runTests([
             type: "script",
             url: getURLHttpScriptJS(),
             frameUrl: getURLHttpScriptPage(),
-            initiator: getServerDomain(initiators.WEB_INITIATED)
+            initiator: getServerDomain(initiators.WEB_INITIATED),
+            documentId: 1
           },
           retval: {
             redirectUrl: getDummyScriptDataURL()
@@ -1277,7 +1299,8 @@ runTests([
             statusLine: "HTTP/1.1 307 Internal Redirect",
             statusCode: 307,
             type: "script",
-            initiator: getServerDomain(initiators.WEB_INITIATED)
+            initiator: getServerDomain(initiators.WEB_INITIATED),
+            documentId: 1
           }
         },
         { label: "data-onBeforeRequest",
@@ -1288,6 +1311,7 @@ runTests([
             url: getURLHttpScriptJSFetchedData(),
             frameUrl: getURLHttpScriptPage(),
             initiator: getServerDomain(initiators.WEB_INITIATED),
+            documentId: 1
           },
           retval: {cancel: true}
         },
@@ -1299,7 +1323,8 @@ runTests([
             fromCache: false,
             type: "xmlhttprequest",
             error: "net::ERR_BLOCKED_BY_CLIENT",
-            initiator: getServerDomain(initiators.WEB_INITIATED)
+            initiator: getServerDomain(initiators.WEB_INITIATED),
+            documentId: 1
           }
         },
       ],
@@ -1339,7 +1364,8 @@ function testLoadCORSImage(crossOriginAttributeValue) {
           url: requestedUrl,
           // Frame URL unavailable because requests are filtered by type=image.
           frameUrl: "unknown frame URL",
-          initiator: initiator
+          initiator: initiator,
+          documentId: 1
         },
         retval: {redirectUrl: redirectTarget}
       },
@@ -1352,7 +1378,8 @@ function testLoadCORSImage(crossOriginAttributeValue) {
           statusLine: "HTTP/1.1 307 Internal Redirect",
           statusCode: 307,
           fromCache: false,
-          initiator: initiator
+          initiator: initiator,
+          documentId: 1
         }
       },
       { label: "onBeforeRequest-2",
@@ -1362,7 +1389,8 @@ function testLoadCORSImage(crossOriginAttributeValue) {
           url: redirectTarget,
           // Frame URL unavailable because requests are filtered by type=image.
           frameUrl: "unknown frame URL",
-          initiator: initiator
+          initiator: initiator,
+          documentId: 1
         },
       },
       {
@@ -1371,7 +1399,8 @@ function testLoadCORSImage(crossOriginAttributeValue) {
         details: {
           type: "image",
           url: redirectTarget,
-          initiator: initiator
+          initiator: initiator,
+          documentId: 1
         }
       },
       {
@@ -1380,7 +1409,8 @@ function testLoadCORSImage(crossOriginAttributeValue) {
         details: {
           type: "image",
           url: redirectTarget,
-          initiator: initiator
+          initiator: initiator,
+          documentId: 1
         }
       },
       {
@@ -1391,7 +1421,8 @@ function testLoadCORSImage(crossOriginAttributeValue) {
           url: redirectTarget,
           statusLine: "HTTP/1.1 200 OK",
           statusCode: 200,
-          initiator: initiator
+          initiator: initiator,
+          documentId: 1
         }
       },
       { label: "onResponseStarted",
@@ -1403,7 +1434,8 @@ function testLoadCORSImage(crossOriginAttributeValue) {
           statusCode: 200,
           ip: "127.0.0.1",
           statusLine: "HTTP/1.1 200 OK",
-          initiator: initiator
+          initiator: initiator,
+          documentId: 1
         }
       },
       { label: "onCompleted",
@@ -1415,7 +1447,8 @@ function testLoadCORSImage(crossOriginAttributeValue) {
           statusCode: 200,
           ip: "127.0.0.1",
           statusLine: "HTTP/1.1 200 OK",
-          initiator: initiator
+          initiator: initiator,
+          documentId: 1
         }
       },
       // After the image loads, the test will load the following URL
@@ -1428,7 +1461,8 @@ function testLoadCORSImage(crossOriginAttributeValue) {
           url: getServerURL("signal_that_image_loaded_successfully"),
           // Frame URL unavailable because requests are filtered by type=image.
           frameUrl: "unknown frame URL",
-          initiator: initiator
+          initiator: initiator,
+          documentId: 1
         },
         retval: {cancel: true}
       },
@@ -1439,7 +1473,8 @@ function testLoadCORSImage(crossOriginAttributeValue) {
           url: getServerURL("signal_that_image_loaded_successfully"),
           fromCache: false,
           error: "net::ERR_BLOCKED_BY_CLIENT",
-          initiator: initiator
+          initiator: initiator,
+          documentId: 1
         }
       },
     ],

@@ -104,6 +104,8 @@ runTests([
             parentFrameId: 0,
             initiator: getServerDomain(initiators.WEB_INITIATED,
               "a.test", "https"),
+            parentDocumentId: 1,
+            frameType: 'sub_frame'
           }
         },
         { label: 'onBeforeSendHeaders-2',
@@ -116,6 +118,8 @@ runTests([
             parentFrameId: 0,
             initiator: getServerDomain(initiators.WEB_INITIATED,
               "a.test", "https"),
+            parentDocumentId: 1,
+            frameType: 'sub_frame'
           }
         },
         { label: 'onSendHeaders-2',
@@ -128,6 +132,8 @@ runTests([
             parentFrameId: 0,
             initiator: getServerDomain(initiators.WEB_INITIATED,
               "a.test", "https"),
+            parentDocumentId: 1,
+            frameType: 'sub_frame'
           }
         },
         { label: 'onHeadersReceived-2',
@@ -142,6 +148,8 @@ runTests([
             parentFrameId: 0,
             initiator: getServerDomain(initiators.WEB_INITIATED,
               "a.test", "https"),
+            parentDocumentId: 1,
+            frameType: 'sub_frame'
           }
         },
         { label: 'onResponseStarted-2',
@@ -158,6 +166,8 @@ runTests([
             parentFrameId: 0,
             initiator: getServerDomain(initiators.WEB_INITIATED,
               "a.test", "https"),
+            parentDocumentId: 1,
+            frameType: 'sub_frame'
           }
         },
         { label: 'onCompleted-2',
@@ -174,6 +184,8 @@ runTests([
             parentFrameId: 0,
             initiator: getServerDomain(initiators.WEB_INITIATED,
               "a.test", "https"),
+            parentDocumentId: 1,
+            frameType: 'sub_frame'
           }
         },
         { label: 'onBeforeRequest-3',
@@ -185,6 +197,8 @@ runTests([
             frameId: 2,
             parentFrameId: 1,
             initiator: fencedFrameInitiator,
+            parentDocumentId: 2,
+            frameType: 'fenced_frame'
           }
         },
         { label: 'onBeforeSendHeaders-3',
@@ -196,6 +210,8 @@ runTests([
             frameId: 2,
             parentFrameId: 1,
             initiator: fencedFrameInitiator,
+            parentDocumentId: 2,
+            frameType: 'fenced_frame'
           }
         },
         { label: 'onSendHeaders-3',
@@ -207,6 +223,8 @@ runTests([
             frameId: 2,
             parentFrameId: 1,
             initiator: fencedFrameInitiator,
+            parentDocumentId: 2,
+            frameType: 'fenced_frame'
           }
         },
         { label: 'onHeadersReceived-3',
@@ -220,6 +238,8 @@ runTests([
             frameId: 2,
             parentFrameId: 1,
             initiator: fencedFrameInitiator,
+            parentDocumentId: 2,
+            frameType: 'fenced_frame'
           }
         },
         { label: 'onBeforeRedirect-3',
@@ -236,6 +256,8 @@ runTests([
             frameId: 2,
             parentFrameId: 1,
             initiator: fencedFrameInitiator,
+            parentDocumentId: 2,
+            frameType: 'fenced_frame'
           }
         },
         { label: 'onBeforeRequest-4',
@@ -247,6 +269,8 @@ runTests([
             frameId: 2,
             parentFrameId: 1,
             initiator: fencedFrameInitiator,
+            parentDocumentId: 2,
+            frameType: 'fenced_frame'
           }
         },
         { label: 'onBeforeSendHeaders-4',
@@ -258,6 +282,8 @@ runTests([
             frameId: 2,
             parentFrameId: 1,
             initiator: fencedFrameInitiator,
+            parentDocumentId: 2,
+            frameType: 'fenced_frame'
           }
         },
         { label: 'onSendHeaders-4',
@@ -269,6 +295,8 @@ runTests([
             frameId: 2,
             parentFrameId: 1,
             initiator: fencedFrameInitiator,
+            parentDocumentId: 2,
+            frameType: 'fenced_frame'
           }
         },
         { label: 'onHeadersReceived-4',
@@ -282,6 +310,8 @@ runTests([
             frameId: 2,
             parentFrameId: 1,
             initiator: fencedFrameInitiator,
+            parentDocumentId: 2,
+            frameType: 'fenced_frame'
           }
         },
         { label: 'onResponseStarted-4',
@@ -297,6 +327,8 @@ runTests([
             frameId: 2,
             parentFrameId: 1,
             initiator: fencedFrameInitiator,
+            parentDocumentId: 2,
+            frameType: 'fenced_frame'
           }
         },
         { label: 'onCompleted-4',
@@ -312,6 +344,8 @@ runTests([
             frameId: 2,
             parentFrameId: 1,
             initiator: fencedFrameInitiator,
+            parentDocumentId: 2,
+            frameType: 'fenced_frame'
           }
         },
       ],

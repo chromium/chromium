@@ -19,7 +19,10 @@ runTests([
         details: {
           type: 'xmlhttprequest',
           url,
+          documentId: 2,
           frameId: 1,
+          frameType: 'sub_frame',
+          parentDocumentId: 1,
           parentFrameId: 0,
           frameUrl: 'unknown frame URL',
           initiator: initiator
@@ -30,7 +33,10 @@ runTests([
         details: {
           type: 'xmlhttprequest',
           url,
+          documentId: 2,
           frameId: 1,
+          frameType: 'sub_frame',
+          parentDocumentId: 1,
           parentFrameId: 0,
           initiator: initiator
         },
@@ -40,7 +46,10 @@ runTests([
         details: {
           type: 'xmlhttprequest',
           url,
+          documentId: 2,
           frameId: 1,
+          frameType: 'sub_frame',
+          parentDocumentId: 1,
           parentFrameId: 0,
           initiator: initiator
         },
@@ -50,7 +59,10 @@ runTests([
         details: {
           type: 'xmlhttprequest',
           url,
+          documentId: 2,
           frameId: 1,
+          frameType: 'sub_frame',
+          parentDocumentId: 1,
           parentFrameId: 0,
           fromCache: false,
           error: 'net::ERR_ABORTED',
@@ -92,7 +104,8 @@ runTests([
           url,
           frameUrl: 'unknown frame URL',
           tabId: 1,
-          initiator: initiator
+          initiator: initiator,
+          documentId: 1
         }
       },
       { label: 'onBeforeSendHeaders',
@@ -101,7 +114,8 @@ runTests([
           type: 'xmlhttprequest',
           url,
           tabId: 1,
-          initiator: initiator
+          initiator: initiator,
+          documentId: 1
         },
       },
       { label: 'onSendHeaders',
@@ -110,7 +124,8 @@ runTests([
           type: 'xmlhttprequest',
           url,
           tabId: 1,
-          initiator: initiator
+          initiator: initiator,
+          documentId: 1
         },
       },
       { label: 'onErrorOccurred',
@@ -121,7 +136,8 @@ runTests([
           fromCache: false,
           error: 'net::ERR_ABORTED',
           tabId: 1,
-          initiator: initiator
+          initiator: initiator,
+          documentId: 1
         },
       }],
       [['onBeforeRequest', 'onBeforeSendHeaders', 'onSendHeaders',

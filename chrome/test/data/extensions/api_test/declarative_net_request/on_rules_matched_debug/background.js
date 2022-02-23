@@ -37,8 +37,7 @@ function verifyExpectedRuleInfo(expectedRuleInfo) {
   // The request ID may not be known but should be populated.
   chrome.test.assertTrue(matchedRule.request.hasOwnProperty('requestId'));
   delete matchedRule.request.requestId;
-  chrome.test.assertTrue(matchedRule.request.hasOwnProperty('documentId'));
-  delete matchedRule.request.documentId;
+  chrome.test.assertFalse(matchedRule.request.hasOwnProperty('documentId'));
 
   // Remove frame/parentFrameId/parentDocumentId if not set in the
   // expectedRules. The values of these fields vary depending on what type of

@@ -78,11 +78,22 @@ runTests([
       delete results[0].url;
       delete results[1].url;
 
+
+      // documentId/parentDocumentId are unique identifiers. Only
+      // their presence is useful not the explicit value.
+      for (var i=0; i < results.length; ++i) {
+        chrome.test.assertFalse('documentId' in results[i]);
+        chrome.test.assertTrue('parentDocumentId' in results[i]);
+        delete results[i].parentDocumentId;
+      }
+
       // The main purpose of this check is to see whether the frameId/tabId
       // makes sense.
       chrome.test.assertEq([{
         method: 'GET',
+        documentLifecycle: 'active',
         frameId: 1,
+        frameType: 'sub_frame',
         parentFrameId: 0,
         tabId,
         type: 'sub_frame',
@@ -91,7 +102,9 @@ runTests([
         error: 'net::ERR_ABORTED',
       }, {
         method: 'GET',
+        documentLifecycle: 'active',
         frameId: 2,
+        frameType: 'sub_frame',
         parentFrameId: 0,
         tabId,
         type: 'sub_frame',
@@ -126,10 +139,18 @@ runTests([
     const frameUrl = getSlowURL(hostname3);
 
     awaitOnErrorOccurred(1, function(results) {
+      // documentId/parentDocumentId are unique identifiers. Only
+      // their presence is useful not the explicit value.
+      chrome.test.assertFalse('documentId' in results[0]);
+      chrome.test.assertTrue('parentDocumentId' in results[0]);
+      delete results[0].parentDocumentId;
+
       chrome.test.assertEq([{
         method: 'GET',
         url: frameUrl,
+        documentLifecycle: 'active',
         frameId: 3,
+        frameType: 'sub_frame',
         parentFrameId: 0,
         tabId,
         type: 'sub_frame',

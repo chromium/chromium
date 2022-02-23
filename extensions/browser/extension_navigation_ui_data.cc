@@ -37,7 +37,10 @@ ExtensionNavigationUIData::ExtensionNavigationUIData(
           ExtensionApiFrameIdMap::GetFrameId(navigation_handle),
           ExtensionApiFrameIdMap::GetParentFrameId(navigation_handle),
           GetFrameRoutingId(navigation_handle->GetParentFrameOrOuterDocument()),
-          ExtensionApiFrameIdMap::GetDocumentId(navigation_handle),
+          // Do not pass a valid document id in for the current document since
+          // the current document isn't relevant to the new navigation.
+          /*document_id=*/ExtensionApiFrameIdMap::DocumentId(),
+          /*parent_document_id=*/
           ExtensionApiFrameIdMap::GetDocumentId(
               navigation_handle->GetParentFrameOrOuterDocument()),
           ExtensionApiFrameIdMap::GetFrameType(navigation_handle),
@@ -57,7 +60,10 @@ ExtensionNavigationUIData::ExtensionNavigationUIData(
           ExtensionApiFrameIdMap::GetFrameId(frame_host),
           ExtensionApiFrameIdMap::GetParentFrameId(frame_host),
           GetFrameRoutingId(frame_host->GetParentOrOuterDocument()),
-          ExtensionApiFrameIdMap::GetDocumentId(frame_host),
+          // Do not pass a valid document id in for the current document since
+          // the current document isn't relevant to the new navigation.
+          /*document_id=*/ExtensionApiFrameIdMap::DocumentId(),
+          /*parent_document_id=*/
           ExtensionApiFrameIdMap::GetDocumentId(
               frame_host->GetParentOrOuterDocument()),
           ExtensionApiFrameIdMap::GetFrameType(frame_host),
@@ -73,8 +79,10 @@ ExtensionNavigationUIData::CreateForMainFrameNavigation(
       web_contents, tab_id, window_id, ExtensionApiFrameIdMap::kTopFrameId,
       ExtensionApiFrameIdMap::kInvalidFrameId,
       content::GlobalRenderFrameHostId(),
-      ExtensionApiFrameIdMap::GetDocumentId(web_contents->GetMainFrame()),
-      ExtensionApiFrameIdMap::DocumentId(),
+      // Do not pass a valid document id in for the current document since
+      // the current document isn't relevant to the new navigation.
+      /*document_id=*/ExtensionApiFrameIdMap::DocumentId(),
+      /*parent_document_id=*/ExtensionApiFrameIdMap::DocumentId(),
       api::extension_types::FRAME_TYPE_OUTERMOST_FRAME,
       api::extension_types::DOCUMENT_LIFECYCLE_ACTIVE));
 }

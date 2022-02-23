@@ -14,6 +14,7 @@ function setExpectationsForNonObservablePreflight() {
   const initiator = getServerURL('').slice(0, -1);
   const type = 'xmlhttprequest';
   const frameUrl = 'unknown frame URL';
+  const documentId = 1;
 
   expect(
       [  // events
@@ -25,6 +26,7 @@ function setExpectationsForNonObservablePreflight() {
             initiator,
             type,
             frameUrl,
+            documentId,
           },
         },
         { label: 'onBeforeSendHeaders',
@@ -34,6 +36,7 @@ function setExpectationsForNonObservablePreflight() {
             method,
             initiator,
             type,
+            documentId,
           },
         },
         { label: 'onSendHeaders',
@@ -43,6 +46,7 @@ function setExpectationsForNonObservablePreflight() {
             method,
             initiator,
             type,
+            documentId,
           },
         },
         { // CORS fails due to lack of 'access-control-allow-headers' header.
@@ -55,6 +59,7 @@ function setExpectationsForNonObservablePreflight() {
             initiator,
             type,
             fromCache: false,
+            documentId,
           }
         }
       ],
@@ -72,6 +77,7 @@ function setExpectationsForObservablePreflight(extraInfoSpec) {
   const initiator = getServerURL('').slice(0, -1);
   const frameUrl = 'unknown frame URL';
   const type = 'xmlhttprequest';
+  const documentId = 1;
 
   const eventsForPreflight = [
     { label: 'onBeforeRequest-P',
@@ -82,6 +88,7 @@ function setExpectationsForObservablePreflight(extraInfoSpec) {
         initiator,
         type,
         frameUrl,
+        documentId,
       },
     },
     { label: 'onBeforeSendHeaders-P',
@@ -91,6 +98,7 @@ function setExpectationsForObservablePreflight(extraInfoSpec) {
         method: 'OPTIONS',
         initiator,
         type,
+        documentId,
       },
     },
     { label: 'onSendHeaders-P',
@@ -100,6 +108,7 @@ function setExpectationsForObservablePreflight(extraInfoSpec) {
         method: 'OPTIONS',
         initiator,
         type,
+        documentId,
       },
     },
     { label: 'onHeadersReceived-P',
@@ -111,6 +120,7 @@ function setExpectationsForObservablePreflight(extraInfoSpec) {
         statusLine: 'HTTP/1.1 200 OK',
         initiator,
         type,
+        documentId,
       },
     },
     { label: 'onResponseStarted-P',
@@ -124,6 +134,7 @@ function setExpectationsForObservablePreflight(extraInfoSpec) {
         statusLine: 'HTTP/1.1 200 OK',
         initiator,
         type,
+        documentId,
       },
     },
   ];
@@ -149,6 +160,7 @@ function setExpectationsForObservablePreflight(extraInfoSpec) {
         initiator,
         type: 'xmlhttprequest',
         frameUrl: 'unknown frame URL',
+        documentId: 1,
       },
     },
   ].concat(eventsForPreflight);
@@ -248,6 +260,7 @@ function setExpectationsForSuccessfulPreflight() {
   const initiator = getServerURL('').slice(0, -1);
   const frameUrl = 'unknown frame URL';
   const type = 'xmlhttprequest';
+  const documentId = 1;
 
   const events = [
     { label: 'onBeforeRequest-P',
@@ -258,6 +271,7 @@ function setExpectationsForSuccessfulPreflight() {
         initiator,
         type,
         frameUrl,
+        documentId,
       },
     },
     { label: 'onBeforeSendHeaders-P',
@@ -267,6 +281,7 @@ function setExpectationsForSuccessfulPreflight() {
         method: 'OPTIONS',
         initiator,
         type,
+        documentId,
       },
     },
     { label: 'onSendHeaders-P',
@@ -276,6 +291,7 @@ function setExpectationsForSuccessfulPreflight() {
         method: 'OPTIONS',
         initiator,
         type,
+        documentId,
       },
     },
     { label: 'onHeadersReceived-P',
@@ -288,6 +304,7 @@ function setExpectationsForSuccessfulPreflight() {
         initiator,
         type,
         responseHeadersExist: true,
+        documentId,
       },
       retval_function: (name, details) => {
         // Allow the 'x-foo' header, so that the preflight succeeds.
@@ -312,6 +329,7 @@ function setExpectationsForSuccessfulPreflight() {
         initiator,
         type,
         responseHeadersExist: true,
+        documentId,
       },
     },
     { label: 'onCompleted-P',
@@ -326,6 +344,7 @@ function setExpectationsForSuccessfulPreflight() {
         initiator,
         type,
         responseHeadersExist: true,
+        documentId,
       },
     },
     { label: 'onBeforeRequest',
@@ -336,6 +355,7 @@ function setExpectationsForSuccessfulPreflight() {
           initiator,
           type: 'xmlhttprequest',
           frameUrl: 'unknown frame URL',
+          documentId,
         },
       },
     { label: 'onBeforeSendHeaders',
@@ -345,6 +365,7 @@ function setExpectationsForSuccessfulPreflight() {
         method: 'GET',
         initiator,
         type,
+        documentId,
       },
     },
     { label: 'onSendHeaders',
@@ -354,6 +375,7 @@ function setExpectationsForSuccessfulPreflight() {
         method: 'GET',
         initiator,
         type,
+        documentId,
       },
     },
     { label: 'onHeadersReceived',
@@ -366,6 +388,7 @@ function setExpectationsForSuccessfulPreflight() {
         initiator,
         type,
         responseHeadersExist: true,
+        documentId,
       },
     },
     { label: 'onResponseStarted',
@@ -380,6 +403,7 @@ function setExpectationsForSuccessfulPreflight() {
         initiator,
         type,
         responseHeadersExist: true,
+        documentId,
       },
     },
     { label: 'onCompleted',
@@ -394,6 +418,7 @@ function setExpectationsForSuccessfulPreflight() {
         initiator,
         type,
         responseHeadersExist: true,
+        documentId,
       },
     },
   ];
