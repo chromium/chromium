@@ -61,6 +61,8 @@ Thumbs.db
 rust-project.json
 v8.log
 vs-chromium-project.txt
+# Store android emulator artifacts, used by //tools/android/avd/avd.py
+/.android_emulator/
 /.clangd
 /.clangd/
 /.clangd-index/

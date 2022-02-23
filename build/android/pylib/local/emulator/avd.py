@@ -26,6 +26,10 @@ from pylib import constants
 from pylib.local.emulator import ini
 from pylib.local.emulator.proto import avd_pb2
 
+# A common root directory to store the CIPD packages for creating or starting
+# the emulator instance, e.g. emulator binary, system images, AVDs.
+COMMON_CIPD_ROOT = os.path.join(constants.DIR_SOURCE_ROOT, '.android_emulator')
+
 _ALL_PACKAGES = object()
 _DEFAULT_AVDMANAGER_PATH = os.path.join(
     constants.ANDROID_SDK_ROOT, 'cmdline-tools', 'latest', 'bin', 'avdmanager')
@@ -193,10 +197,10 @@ class AvdConfig:
     self.avd_proto_path = avd_proto_path
     self._config = _Load(avd_proto_path)
 
-    self._emulator_home = os.path.join(constants.DIR_SOURCE_ROOT,
+    self._emulator_home = os.path.join(COMMON_CIPD_ROOT,
                                        self._config.avd_package.dest_path)
     self._emulator_sdk_root = os.path.join(
-        constants.DIR_SOURCE_ROOT, self._config.emulator_package.dest_path)
+        COMMON_CIPD_ROOT, self._config.emulator_package.dest_path)
     self._emulator_path = os.path.join(self._emulator_sdk_root, 'emulator',
                                        'emulator')
 
@@ -491,7 +495,7 @@ class AvdConfig:
         pkgs_by_dir[pkg.dest_path].append(pkg)
 
     for pkg_dir, pkgs in pkgs_by_dir.items():
-      cipd_root = os.path.join(constants.DIR_SOURCE_ROOT, pkg_dir)
+      cipd_root = os.path.join(COMMON_CIPD_ROOT, pkg_dir)
       yield cipd_root, pkgs
 
   def _InstallCipdPackages(self, packages):

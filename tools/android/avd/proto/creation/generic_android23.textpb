@@ -7,19 +7,19 @@
 emulator_package {
   package_name: "chromium/third_party/android_sdk/public/emulator"
   version: "qrZePjKjcYAEId2PuvAx2MQsYIfhgn_DV1qfYiFrGMUC"  # 30.6.5
-  dest_path: ".emulator_sdk"
+  dest_path: "generic_android23"
 }
 
 system_image_package {
   package_name: "chromium/third_party/android_sdk/public/system-images/android-23/google_apis/x86"
   version: "3lLeyG6bG6CvZW9Lyb1fCyPKbSNNqxA2AOs89xt-Er8C"  # 33
-  dest_path: ".emulator_sdk"
+  dest_path: "generic_android23"
 }
 system_image_name: "system-images;android-23;google_apis;x86"
 
 avd_package {
   package_name: "chromium/third_party/android_sdk/public/avds/android-23/google_apis/x86"
-  dest_path: ".android"
+  dest_path: "generic_android23"
 }
 avd_name: "android_23_google_apis_x86"
 

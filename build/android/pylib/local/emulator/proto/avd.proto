@@ -14,7 +14,7 @@ message CIPDPackage {
   // Ignored when creating AVD packages.
   string version = 2;
   // Path into which the package should be installed.
-  // src-relative.
+  // relative to pylib.local.emulator.avd.COMMON_CIPD_ROOT.
   string dest_path = 3;
 }
 
