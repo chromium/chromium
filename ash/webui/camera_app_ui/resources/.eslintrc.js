@@ -486,6 +486,16 @@ module.exports = {
         'default': 'array-simple',
       },
     ],
+
+    // go/tsstyle#type-assertions-syntax
+    // go/tsstyle#type-assertions-and-object-literals
+    '@typescript-eslint/consistent-type-assertions': [
+      'error',
+      {
+        assertionStyle: 'as',
+        objectLiteralTypeAssertions: 'never',
+      },
+    ],
   }),
   'overrides': [{
     files: ['**/*.ts'],
